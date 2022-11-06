@@ -6,6 +6,7 @@ using UnityEngine;
 public class MoveMotorBase : MonoBehaviour
 {
     protected Transform m_rootTransform;
+    public Transform rootTransform { set { m_rootTransform = value; } get { return m_rootTransform; } }
 
     protected Animator m_animator;
 
@@ -24,8 +25,14 @@ public class MoveMotorBase : MonoBehaviour
     protected bool m_isRun;
 
     #region 移动参数
-    [SerializeField, Header("旋转速度")]
-    protected float m_rotateSpeed = 300f;
+    [SerializeField, Header("行走旋转速度")]
+    protected float m_rotateSpeed_Walk = 300f;
+
+    [SerializeField, Header("跑动旋转速度")]
+    protected float m_rotateSpeed_Run = 2f;
+
+    [SerializeField, Header("急转弯旋转速度")]
+    protected float m_rotateSpeed_Sharp = 0f;
     #endregion
 
     #region 动画状态
@@ -34,10 +41,13 @@ public class MoveMotorBase : MonoBehaviour
 
     #region 动画参数
     protected static int Forward_Hash = Animator.StringToHash("Forward");
-    protected static int Trun_Hash = Animator.StringToHash("Trun");
+    protected static int Trun_Hash = Animator.StringToHash("Turn");
+    protected static int ForwardMark_Hash = Animator.StringToHash("FowardMark");
+    protected static int TrunMark_Hash = Animator.StringToHash("TurnMark");
+    protected static int SharpTurnning_Hash = Animator.StringToHash("SharpTurnning");
     #endregion
 
-    protected void Start()
+    protected virtual void Start()
     {
         m_mainCamera = Camera.main;
         m_animator = GetComponent<Animator>();
@@ -69,13 +79,13 @@ public class MoveMotorBase : MonoBehaviour
         target.y = 0;
 
         Quaternion targetRotate = Quaternion.LookRotation(target, Vector3.up);
-        m_rootTransform.rotation = Quaternion.RotateTowards(m_rootTransform.rotation, targetRotate, m_rotateSpeed * Time.deltaTime);
+        m_rootTransform.rotation = Quaternion.RotateTowards(m_rootTransform.rotation, targetRotate, m_rotateSpeed_Walk * Time.deltaTime);
     }
 
     protected virtual void Move()
     {
         //1.45f和5.85f的阈值由动画片段计算得出
-        m_targetSpeed = m_isRun? 5.85f : 1.45f;
+        m_targetSpeed = m_isRun ? 2.7f : 1.45f;
         m_targetSpeed *= m_targetDirection.magnitude;
         m_currentSpeed = Mathf.Lerp(m_currentSpeed, m_targetSpeed, 0.1f);
         m_animator.SetFloat(Forward_Hash, m_currentSpeed);

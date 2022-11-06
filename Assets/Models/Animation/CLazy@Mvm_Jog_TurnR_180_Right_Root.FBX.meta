@@ -1,11 +1,11 @@
 fileFormatVersion: 2
-guid: 198ca0e4719943d48a09115fbbc838fe
+guid: a9ce13db122dbf649a8d13e35378487a
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable:
   - first:
       74: 1827226128182048838
-    second: Mvm_Dash_TurnR_180_Right_Root
+    second: Mvm_Jog_TurnR_180_Right_Root
   externalObjects: {}
   materials:
     materialImportMode: 2
@@ -22,10 +22,10 @@ ModelImporter:
     rigImportErrors: 
     rigImportWarnings: "Copied Avatar Rig Configuration mis-match. Bone length in
       copied configuration does not match position in animation file:\n\t'thigh_l'
-      : position error = 11.318871 mm\n\t'calf_l' : position error = 10.234694 mm\n\t'foot_l'
-      : position error = 11.967687 mm\n\t'ball_l' : position error = 8.305410 mm\n\t'thigh_r'
-      : position error = 26.333210 mm\n\t'calf_r' : position error = 9.010909 mm\n\t'foot_r'
-      : position error = 8.592267 mm\n\t'ball_r' : position error = 2.209917 mm\n"
+      : position error = 15.715605 mm\n\t'calf_l' : position error = 11.556810 mm\n\t'foot_l'
+      : position error = 11.269911 mm\n\t'ball_l' : position error = 5.815802 mm\n\t'thigh_r'
+      : position error = 23.437271 mm\n\t'calf_r' : position error = 9.058685 mm\n\t'foot_r'
+      : position error = 8.863388 mm\n\t'ball_r' : position error = 1.655277 mm\n"
     animationImportErrors: 
     animationImportWarnings: "\nClip 'Take 001' has import animation warnings that
       might lower retargeting quality:\nNote: Activate translation DOF on avatar
@@ -83,13 +83,13 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Mvm_Dash_TurnR_180_Right_Root
+      name: Mvm_Jog_TurnR_180_Right_Root
       takeName: Take 001
       internalID: 0
       firstFrame: 0
-      lastFrame: 32
+      lastFrame: 37
       wrapMode: 0
-      orientationOffsetY: 0
+      orientationOffsetY: 25
       level: 0
       cycleOffset: 0
       loop: 0
