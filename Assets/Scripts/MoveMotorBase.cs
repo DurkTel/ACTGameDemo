@@ -5,6 +5,15 @@ using UnityEngine;
 
 public class MoveMotorBase : MonoBehaviour
 {
+    public enum MoveState
+    { 
+        WALK,
+        RUN,
+        DASH,
+    }
+
+    protected MoveState m_moveState = MoveState.RUN;
+
     protected Transform m_rootTransform;
     public Transform rootTransform { set { m_rootTransform = value; } get { return m_rootTransform; } }
 
@@ -22,9 +31,16 @@ public class MoveMotorBase : MonoBehaviour
 
     protected CharacterController m_characterController;
 
-    protected bool m_isRun;
-
     #region 移动参数
+    [SerializeField, Header("行走速度")]
+    protected float m_moveSpeed_Walk = 1.45f;
+
+    [SerializeField, Header("跑动速度")]
+    protected float m_moveSpeed_Run = 2.7f;
+
+    [SerializeField, Header("冲刺速度")]
+    protected float m_moveSpeed_Rash = 5.85f;
+
     [SerializeField, Header("行走旋转速度")]
     protected float m_rotateSpeed_Walk = 300f;
 
@@ -32,7 +48,7 @@ public class MoveMotorBase : MonoBehaviour
     protected float m_rotateSpeed_Run = 2f;
 
     [SerializeField, Header("急转弯旋转速度")]
-    protected float m_rotateSpeed_Sharp = 0f;
+    protected float m_rotateSpeed_Sharp = 50f;
     #endregion
 
     #region 动画状态
@@ -85,10 +101,55 @@ public class MoveMotorBase : MonoBehaviour
     protected virtual void Move()
     {
         //1.45f和5.85f的阈值由动画片段计算得出
-        m_targetSpeed = m_isRun ? 2.7f : 1.45f;
+        m_targetSpeed = GetMoveSpeed();
         m_targetSpeed *= m_targetDirection.magnitude;
         m_currentSpeed = Mathf.Lerp(m_currentSpeed, m_targetSpeed, 0.1f);
         m_animator.SetFloat(Forward_Hash, m_currentSpeed);
         m_characterController.Move(m_animator.deltaPosition);
+    }
+
+    protected virtual float GetMoveSpeed()
+    {
+        float moveSpeed = m_rotateSpeed_Run;
+
+        switch (m_moveState)
+        {
+            case MoveState.WALK:
+                moveSpeed = m_moveSpeed_Walk;
+                break;
+            case MoveState.RUN:
+                moveSpeed = m_moveSpeed_Run;
+                break;
+            case MoveState.DASH:
+                moveSpeed = m_moveSpeed_Rash;
+                break;
+            default:
+                break;
+        }
+
+        return moveSpeed;
+    }
+
+    protected virtual float GetRotateSpeed()
+    {
+        float rotateSpeed = m_rotateSpeed_Run;
+        switch (m_moveState)
+        {
+            case MoveState.WALK:
+                rotateSpeed = m_rotateSpeed_Walk;
+                break;
+            case MoveState.RUN:
+                rotateSpeed = m_rotateSpeed_Run;
+                break;
+            case MoveState.DASH:
+                rotateSpeed = 0;
+                break;
+            default:
+                break;
+        }
+
+        rotateSpeed = m_animator.GetBool(SharpTurnning_Hash) ? m_rotateSpeed_Sharp : rotateSpeed;
+
+        return rotateSpeed;
     }
 }

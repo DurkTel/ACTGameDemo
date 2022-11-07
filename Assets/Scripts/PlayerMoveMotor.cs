@@ -18,7 +18,17 @@ public class PlayerMoveMotor : MoveMotorBase
 
     public void Run(InputAction.CallbackContext context)
     {
-        m_isRun = context.phase == InputActionPhase.Performed;
+        if (m_moveState == MoveState.WALK) return;
+        m_moveState = context.phase == InputActionPhase.Performed ? MoveState.DASH : MoveState.RUN;
+    }
+
+    public void Walk(InputAction.CallbackContext context)
+    {
+        if (m_moveState == MoveState.DASH) return;
+        if (context.phase == InputActionPhase.Performed)
+        {
+            m_moveState = m_moveState == MoveState.RUN ? MoveState.WALK : MoveState.RUN;
+        }
     }
 
     private void Update()
@@ -52,8 +62,7 @@ public class PlayerMoveMotor : MoveMotorBase
             m_animator.SetFloat(TrunMark_Hash, -rad);
         }
 
-        float rotateSpeed = m_isRun ? m_rotateSpeed_Run : m_rotateSpeed_Walk;
-        rotateSpeed = m_animator.GetBool(SharpTurnning_Hash) ? m_rotateSpeed_Sharp : rotateSpeed;
+        float rotateSpeed = GetRotateSpeed();
 
         Quaternion targetRotate = Quaternion.LookRotation(target, Vector3.up);
         //动画的旋转叠加输入控制旋转
