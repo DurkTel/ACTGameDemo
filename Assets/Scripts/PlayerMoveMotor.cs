@@ -13,7 +13,7 @@ public class PlayerMoveMotor : MoveMotorBase
     }
     public void GetInputDirection(InputAction.CallbackContext context)
     {
-        m_targetDirection = context.ReadValue<Vector2>();
+        m_inputDirection = context.ReadValue<Vector2>();
     }
 
     public void Run(InputAction.CallbackContext context)
@@ -31,43 +31,49 @@ public class PlayerMoveMotor : MoveMotorBase
         }
     }
 
-    private void Update()
+    public void Jump(InputAction.CallbackContext context)
     {
-
+        if (m_jumpState != JumpState.NONE && !m_isGround) return;
+        if (context.phase == InputActionPhase.Performed)
+        {
+            m_jumpState = JumpState.JUMPUP;
+            m_verticalSpeed = Mathf.Sqrt(-2 * m_gravity * m_jumpHeight);
+        }
     }
 
-    protected override void Rotate()
+    protected override void Update()
     {
-        if (m_targetDirection.Equals(Vector2.zero))
+        base.Update();
+    }
+
+    protected override void UpdateRotate()
+    {
+        if (m_inputDirection.Equals(Vector2.zero))
         {
-            m_animator.SetFloat(Trun_Hash, 0);
+            m_animator.SetFloat(Turn_Hash, 0);
+            m_targetDirection = Vector3.zero;
             return;
         }
 
-        m_currentDirection.x = m_targetDirection.x;
-        m_currentDirection.z = m_targetDirection.y;
+        m_currentDirection.x = m_inputDirection.x;
+        m_currentDirection.z = m_inputDirection.y;
 
         //输入方向相对与相机的方向
         Vector3 target = m_mainCamera.transform.TransformDirection(m_currentDirection);
         //求与平面平行的向量
         target = Vector3.ProjectOnPlane(target, Vector3.up).normalized;
         Vector3 roleDelta = m_rootTransform.InverseTransformDirection(target);
-
+        //m_targetDirection = target;
         //计算目标角度与当前角度的夹角弧度
         float rad = Mathf.Atan2(roleDelta.x, roleDelta.z);
-        if (Mathf.Abs(rad) >= 3 && !m_animator.GetBool(SharpTurnning_Hash)) //夹角弧度大于3 急转弯
-        {
-            m_animator.SetBool(SharpTurnning_Hash, true);
-            m_animator.SetFloat(ForwardMark_Hash, m_currentSpeed);
-            m_animator.SetFloat(TrunMark_Hash, -rad);
-        }
+        if (Mathf.Abs(rad) >= 3)
+            m_animator.SetTrigger(SharpTurn_Hash);
 
         float rotateSpeed = GetRotateSpeed();
-
         Quaternion targetRotate = Quaternion.LookRotation(target, Vector3.up);
         //动画的旋转叠加输入控制旋转
         m_rootTransform.rotation = Quaternion.RotateTowards(m_rootTransform.rotation, targetRotate, rotateSpeed * Time.deltaTime) * m_animator.deltaRotation;
-        m_animator.SetFloat(Trun_Hash, rad, 0.2f, Time.deltaTime);
-
+        m_animator.SetFloat(Turn_Hash, rad, 0.2f, Time.deltaTime);
+        m_animator.SetInteger(TurnWay_Hash, rad > 0 ? 1 : -1);  
     }
 }
