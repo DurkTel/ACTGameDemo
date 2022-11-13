@@ -51,6 +51,8 @@ public class MoveMotorBase : MonoBehaviour
     [SerializeField]
     protected bool m_isGround;
 
+    protected bool m_isFall;
+
     protected Camera m_mainCamera;
 
     protected CharacterController m_characterController;
@@ -75,6 +77,9 @@ public class MoveMotorBase : MonoBehaviour
     [SerializeField, Header("跑动旋转速度")]
     protected float m_rotateSpeed_Run = 2f;
 
+    [SerializeField, Header("滞空旋转速度")]
+    protected float m_rotateSpeed_Air = 200f;
+
     [SerializeField, Header("急转弯旋转速度")]
     protected float m_rotateSpeed_Sharp = 50f;
 
@@ -86,6 +91,9 @@ public class MoveMotorBase : MonoBehaviour
 
     [SerializeField, Header("重力加速度")]
     protected float m_gravity = -9.8f;
+
+    [SerializeField, Header("空气阻尼")]
+    protected float m_airDamping = 2f;
     #endregion
 
     #region 动画状态
@@ -99,9 +107,11 @@ public class MoveMotorBase : MonoBehaviour
     public static int FootStep_Hash = Animator.StringToHash("FootStep");
     public static int Moving_Hash = Animator.StringToHash("Moving");
     public static int Ground_Hash = Animator.StringToHash("Ground");
+    public static int Fall_Hash = Animator.StringToHash("Fall");
     public static int MoveState_Hash = Animator.StringToHash("MoveState");
     public static int TurnWay_Hash = Animator.StringToHash("TurnWay");
     public static int SharpTurn_Hash = Animator.StringToHash("SharpTurn");
+    public static int DoubleJump_Hash = Animator.StringToHash("DoubleJump");
     #endregion
 
     protected virtual void Start()
@@ -128,14 +138,35 @@ public class MoveMotorBase : MonoBehaviour
         UpdateMove();
     }
 
+    protected virtual void Run()
+    { 
+        
+    }
+
+    protected virtual void Walk()
+    {
+
+    }
+
+    protected virtual void Jump()
+    {
+
+    }
+
     protected void UpdateCurrentDirection(Vector2 targetDir)
     {
         m_inputDirection = targetDir;
     }
 
+    protected virtual float UpdateAirDamping()
+    {
+        return m_airDamping;
+    }
+
     protected void UpdateGravity()
     {
-        m_verticalSpeed = m_isGround && m_verticalSpeed <= 0f ? 0f : m_verticalSpeed + m_gravity * Time.deltaTime;
+        float damping = UpdateAirDamping();
+        m_verticalSpeed = m_isGround && m_verticalSpeed <= 0f ? 0f : m_verticalSpeed + (damping + m_gravity) * Time.deltaTime;
 
 
         if (m_verticalSpeed < 0f)
@@ -167,6 +198,9 @@ public class MoveMotorBase : MonoBehaviour
         {
             m_isGround = false;
         }
+        m_isFall = !Physics.SphereCast(m_rootTransform.position + Vector3.up * 0.5f, m_characterController.radius, Vector3.down, out RaycastHit hit, 1f, m_groundLayer);
+
+        m_animator.SetBool(Fall_Hash, m_isFall);
         m_animator.SetBool(Ground_Hash, m_isGround);
     }
 
@@ -208,7 +242,7 @@ public class MoveMotorBase : MonoBehaviour
         m_animator.SetFloat(Forward_Hash, m_currentSpeed);
         m_animator.SetFloat(Vertical_Hash, m_verticalSpeed);
 
-        if (m_jumpState == JumpState.NONE || m_jumpState == JumpState.FALL)
+        if (m_jumpState == JumpState.NONE)
         {
             Vector3 deltaMove = m_animator.deltaPosition;
             deltaMove.y = m_verticalSpeed * Time.deltaTime;
@@ -217,7 +251,7 @@ public class MoveMotorBase : MonoBehaviour
             m_speedMark[m_speedMarkIndex++] = m_animator.velocity;
             m_speedMarkIndex %= 3;
         }
-        else if (m_jumpState == JumpState.JUMPUP || m_jumpState == JumpState.JUMPDOWN)
+        else
         {
             Vector3 averageSpeed = Vector3.zero;
             foreach (var item in m_speedMark)
@@ -226,7 +260,7 @@ public class MoveMotorBase : MonoBehaviour
             }
 
             //记录的是速度 计算出位置 不直接记录位置是因为会因为帧率造成误差
-            Vector3 deltaMove = ((averageSpeed / 3) + m_targetDirection) * Time.deltaTime;
+            Vector3 deltaMove = ((averageSpeed / 6) + m_targetDirection * 2) * Time.deltaTime;
             deltaMove.y = m_verticalSpeed * Time.deltaTime;
             m_characterController.Move(deltaMove);
         }
@@ -258,6 +292,11 @@ public class MoveMotorBase : MonoBehaviour
     protected virtual float GetRotateSpeed()
     {
         float rotateSpeed = m_rotateSpeed_Run;
+        if (m_jumpState != JumpState.NONE)
+            return m_rotateSpeed_Air;
+        else if (m_animator.CurrentlyInAnimationTag("SharpTurn"))
+            return m_rotateSpeed_Sharp;
+
         switch (m_moveState)
         {
             case MoveState.WALK:
@@ -273,7 +312,6 @@ public class MoveMotorBase : MonoBehaviour
                 break;
         }
 
-        rotateSpeed = m_animator.CurrentlyInAnimationTag("SharpTurn") ? m_rotateSpeed_Sharp : rotateSpeed;
 
         return rotateSpeed;
     }
@@ -289,9 +327,8 @@ public class MoveMotorBase : MonoBehaviour
         //前进方向
         Vector3 localForward = transform.TransformPoint(Vector3.forward);
         Gizmos.DrawLine(transform.position, localForward);
-        //着地检测射线（这里的一条线 实际是一个球柱）
-        Vector3 startPos = m_rootTransform.position + (Vector3.up * 0.5f);
-        Gizmos.DrawLine(startPos, startPos + Vector3.down * (0.5f + m_characterController.skinWidth * 2));
+        //着地检测射线
+        Gizmos.DrawWireSphere(m_rootTransform.position + (Vector3.up * 0.5f) + Vector3.down * (0.5f - m_characterController.radius + m_characterController.skinWidth * 2), m_characterController.radius);
     }
 #endif
 }
