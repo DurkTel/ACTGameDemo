@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using static MoveMotorBase;
 
 public class MoveMotorBase : MonoBehaviour
 {
@@ -61,6 +62,8 @@ public class MoveMotorBase : MonoBehaviour
 
     private Transform m_rightFootTran;
 
+    private int m_jumpCount;
+
     #region 移动参数
     [SerializeField, Header("行走速度")]
     protected float m_moveSpeed_Walk = 1.45f;
@@ -89,6 +92,9 @@ public class MoveMotorBase : MonoBehaviour
     [SerializeField, Header("跳跃高度")]
     protected float m_jumpHeight = 2f;
 
+    [SerializeField, Header("跳跃次数")]
+    protected int m_jumpFrequency = 2;
+
     [SerializeField, Header("重力加速度")]
     protected float m_gravity = -9.8f;
 
@@ -112,6 +118,7 @@ public class MoveMotorBase : MonoBehaviour
     public static int TurnWay_Hash = Animator.StringToHash("TurnWay");
     public static int SharpTurn_Hash = Animator.StringToHash("SharpTurn");
     public static int DoubleJump_Hash = Animator.StringToHash("DoubleJump");
+    public static int TargetDir_Hash = Animator.StringToHash("TargetDir");
     #endregion
 
     protected virtual void Start()
@@ -127,6 +134,7 @@ public class MoveMotorBase : MonoBehaviour
     protected virtual void Update()
     {
         CalculateFootStep();
+        CalculateWallSpace();
         UpdateGravity();
         UpdateGround();
     }
@@ -150,7 +158,13 @@ public class MoveMotorBase : MonoBehaviour
 
     protected virtual void Jump()
     {
+        if (++m_jumpCount >= m_jumpFrequency)
+            return;
 
+        if (m_jumpState != JumpState.NONE)
+            m_animator.SetTrigger(DoubleJump_Hash);
+        m_jumpState = JumpState.JUMPUP;
+        m_verticalSpeed = Mathf.Sqrt(-2 * m_gravity * m_jumpHeight);
     }
 
     protected void UpdateCurrentDirection(Vector2 targetDir)
@@ -191,6 +205,7 @@ public class MoveMotorBase : MonoBehaviour
         if (Physics.SphereCast(m_rootTransform.position + Vector3.up * 0.5f, m_characterController.radius, 
             Vector3.down, out RaycastHit hitInfo, 0.5f - m_characterController.radius + m_characterController.skinWidth * 2, m_groundLayer))
         {
+            m_jumpCount = 0;
             m_isGround = true;
             m_jumpState = m_verticalSpeed == 0 ? JumpState.NONE : m_jumpState;
         }
@@ -202,6 +217,18 @@ public class MoveMotorBase : MonoBehaviour
 
         m_animator.SetBool(Fall_Hash, m_isFall);
         m_animator.SetBool(Ground_Hash, m_isGround);
+    }
+
+    protected void CalculateWallSpace()
+    {
+        for (int i = 1; i < 4; i++)
+        {
+            //Debug.DrawRay(m_rootTransform.position + Vector3.up * i, m_rootTransform.forward, Color.red);
+            if (Physics.Raycast(m_rootTransform.position + Vector3.up * i, m_rootTransform.forward, out RaycastHit hit, 1f))
+            {
+                print(1111);
+            }
+        }
     }
 
     protected void CalculateFootStep()

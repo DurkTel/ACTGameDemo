@@ -40,10 +40,7 @@ public class PlayerMoveMotor : MoveMotorBase
         //if (m_jumpState != JumpState.NONE || !m_isGround || !m_animator.CurrentlyInAnimationTag("Forward")) return;
         if (context.performed)
         {
-            if (m_jumpState != JumpState.NONE)
-                m_animator.SetTrigger(DoubleJump_Hash);
-            m_jumpState = JumpState.JUMPUP;
-            m_verticalSpeed = Mathf.Sqrt(-2 * m_gravity * m_jumpHeight);
+            Jump();
         }
     }
 
@@ -72,6 +69,7 @@ public class PlayerMoveMotor : MoveMotorBase
         m_targetDirection = target;
         //计算目标角度与当前角度的夹角弧度
         float rad = Mathf.Atan2(roleDelta.x, roleDelta.z);
+        float deg = rad * Mathf.Rad2Deg;
         if (Mathf.Abs(rad) >= 3)
             m_animator.SetTrigger(SharpTurn_Hash);
 
@@ -79,8 +77,9 @@ public class PlayerMoveMotor : MoveMotorBase
         Quaternion targetRotate = Quaternion.LookRotation(target, Vector3.up);
         //动画的旋转叠加输入控制旋转
         m_rootTransform.rotation = Quaternion.RotateTowards(m_rootTransform.rotation, targetRotate, rotateSpeed * Time.deltaTime) * m_animator.deltaRotation;
+        m_animator.SetFloat(TargetDir_Hash, deg);
         m_animator.SetFloat(Turn_Hash, rad, 0.2f, Time.deltaTime);
-        m_animator.SetInteger(TurnWay_Hash, rad > 0 ? 1 : -1);  
+        m_animator.SetInteger(TurnWay_Hash, rad > 0 ? 1 : -1);
     }
 
     protected override float UpdateAirDamping()
