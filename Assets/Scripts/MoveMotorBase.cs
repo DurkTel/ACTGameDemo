@@ -7,6 +7,7 @@ using static MoveMotorBase;
 
 public class MoveMotorBase : MonoBehaviour
 {
+
     public enum MoveState
     { 
         NONE,
@@ -115,8 +116,6 @@ public class MoveMotorBase : MonoBehaviour
     public static int Ground_Hash = Animator.StringToHash("Ground");
     public static int Fall_Hash = Animator.StringToHash("Fall");
     public static int MoveState_Hash = Animator.StringToHash("MoveState");
-    public static int TurnWay_Hash = Animator.StringToHash("TurnWay");
-    public static int SharpTurn_Hash = Animator.StringToHash("SharpTurn");
     public static int DoubleJump_Hash = Animator.StringToHash("DoubleJump");
     public static int TargetDir_Hash = Animator.StringToHash("TargetDir");
     #endregion
@@ -167,7 +166,7 @@ public class MoveMotorBase : MonoBehaviour
         m_verticalSpeed = Mathf.Sqrt(-2 * m_gravity * m_jumpHeight);
     }
 
-    protected void UpdateCurrentDirection(Vector2 targetDir)
+    protected void UpdateTargetDirection(Vector2 targetDir)
     {
         m_inputDirection = targetDir;
     }
@@ -236,7 +235,7 @@ public class MoveMotorBase : MonoBehaviour
         Vector3 localForward = transform.TransformPoint(Vector3.forward);
         float left = Vector3.Dot(localForward, m_leftFootTran.position);
         float right = Vector3.Dot(localForward, m_rightFootTran.position);
-        m_animator.SetFloat(FootStep_Hash, left > right ? -1f : 1f);
+        m_animator.SetInteger(FootStep_Hash, left > right ? -1 : 1);
     }
 
     protected virtual void UpdateRotate()
@@ -349,13 +348,13 @@ public class MoveMotorBase : MonoBehaviour
     {
         if (!Application.isPlaying) return;
         //双脚前后方向
-        Gizmos.DrawLine(transform.position, m_leftFootTran.position);
-        Gizmos.DrawLine(transform.position, m_rightFootTran.position);
-        //前进方向
-        Vector3 localForward = transform.TransformPoint(Vector3.forward);
-        Gizmos.DrawLine(transform.position, localForward);
-        //着地检测射线
-        Gizmos.DrawWireSphere(m_rootTransform.position + (Vector3.up * 0.5f) + Vector3.down * (0.5f - m_characterController.radius + m_characterController.skinWidth * 2), m_characterController.radius);
+        //Gizmos.DrawLine(transform.position, m_leftFootTran.position);
+        //Gizmos.DrawLine(transform.position, m_rightFootTran.position);
+        ////前进方向
+        //Vector3 localForward = transform.TransformPoint(Vector3.forward);
+        //Gizmos.DrawLine(transform.position, localForward);
+        ////着地检测射线
+        //Gizmos.DrawWireSphere(m_rootTransform.position + (Vector3.up * 0.5f) + Vector3.down * (0.5f - m_characterController.radius + m_characterController.skinWidth * 2), m_characterController.radius);
     }
 #endif
 }

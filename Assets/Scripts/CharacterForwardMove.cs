@@ -20,7 +20,6 @@ public class CharacterForwardMove : StateMachineBehaviour
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        animator.ResetTrigger(MoveMotorBase.SharpTurn_Hash);
         for (int i = 0; i < m_forwardSpeedMark.Length; i++)
             m_forwardSpeedMark[i] = 0;
     }
@@ -41,7 +40,6 @@ public class CharacterForwardMove : StateMachineBehaviour
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        animator.ResetTrigger(MoveMotorBase.SharpTurn_Hash);
 
         float averageSpeed = 0f;
         int flag = 0;

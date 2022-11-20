@@ -70,8 +70,6 @@ public class PlayerMoveMotor : MoveMotorBase
         //计算目标角度与当前角度的夹角弧度
         float rad = Mathf.Atan2(roleDelta.x, roleDelta.z);
         float deg = rad * Mathf.Rad2Deg;
-        if (Mathf.Abs(rad) >= 3)
-            m_animator.SetTrigger(SharpTurn_Hash);
 
         float rotateSpeed = GetRotateSpeed();
         Quaternion targetRotate = Quaternion.LookRotation(target, Vector3.up);
@@ -79,7 +77,6 @@ public class PlayerMoveMotor : MoveMotorBase
         m_rootTransform.rotation = Quaternion.RotateTowards(m_rootTransform.rotation, targetRotate, rotateSpeed * Time.deltaTime) * m_animator.deltaRotation;
         m_animator.SetFloat(TargetDir_Hash, deg);
         m_animator.SetFloat(Turn_Hash, rad, 0.2f, Time.deltaTime);
-        m_animator.SetInteger(TurnWay_Hash, rad > 0 ? 1 : -1);
     }
 
     protected override float UpdateAirDamping()
