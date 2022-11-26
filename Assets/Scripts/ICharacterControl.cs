@@ -17,6 +17,7 @@ namespace DURK.CharacterControl
             MOVE = 1,
             JUMP = 2,
             FALL = 3,
+            CLIMB = 4,
         }
 
         /// <summary>
@@ -44,6 +45,7 @@ namespace DURK.CharacterControl
         public static int Bool_Ground_Hash = Animator.StringToHash("Ground");
         public static int Bool_Fall_Hash = Animator.StringToHash("Fall");
         public static int Trigger_DoubleJump_Hash = Animator.StringToHash("DoubleJump");
+        public static int Trigger_ClimbUp_Hash = Animator.StringToHash("ClimbUp");
         #endregion
 
         #region »ù±¾ÊôÐÔ

@@ -46,53 +46,120 @@ public class CharacterMotor : MonoBehaviour, ICharacterControl
 
     [SerializeField, Header("空气阻尼")]
     protected float m_airDamping = 2f;
+
+    [SerializeField, Header("最大攀爬高度")]
+    protected float m_maxClimbHeight = 3f;
     #endregion
-
+    /// <summary>
+    /// 根节点
+    /// </summary>
     public Transform rootTransform { get; set; }
+    /// <summary>
+    /// 动画机
+    /// </summary>
     public Animator animator { get; set; }
+    /// <summary>
+    /// 前进速度
+    /// </summary>
     public float forwardSpeed { get; set; }
+    /// <summary>
+    /// 垂直速度
+    /// </summary>
     public float verticalSpeed { get; set; }
+    /// <summary>
+    /// 是否着地
+    /// </summary>
     public bool isGround { get; set; }
+    /// <summary>
+    /// 是否可以下落
+    /// </summary>
     public bool isFall { get; set; }
+    /// <summary>
+    /// 角色控制器
+    /// </summary>
     public CharacterController characterController { get; set; }
-
-    protected Camera m_mainCamera;
-
-    protected float m_targetSpeed;
-
-    protected Vector2 m_inputDirection;
-
-    protected Vector3 m_targetDirection;
-
-    protected Vector3 m_currentDirection;
-
-    protected Vector3[] m_speedMark = new Vector3[3];
-
-    protected int m_speedMarkIndex;
-
+    /// <summary>
+    /// 移动模式
+    /// </summary>
     protected ICharacterControl.MoveType m_moveType = ICharacterControl.MoveType.RUN;
-
+    /// <summary>
+    /// 行为模式
+    /// </summary>
     protected ICharacterControl.MovementType m_movementType = ICharacterControl.MovementType.IDLE;
-
+    /// <summary>
+    /// 第三人称相机
+    /// </summary>
+    protected Camera m_mainCamera;
+    /// <summary>
+    /// 目标速度
+    /// </summary>
+    protected float m_targetSpeed;
+    /// <summary>
+    /// 输入方向
+    /// </summary>
+    protected Vector2 m_inputDirection;
+    /// <summary>
+    /// 目标方向
+    /// </summary>
+    protected Vector3 m_targetDirection;
+    /// <summary>
+    /// 当前方向
+    /// </summary>
+    protected Vector3 m_currentDirection;
+    /// <summary>
+    /// 速度记录
+    /// </summary>
+    protected Vector3[] m_speedMark = new Vector3[3];
+    /// <summary>
+    /// 速度记录下标
+    /// </summary>
+    protected int m_speedMarkIndex;
+    /// <summary>
+    /// 前方接触墙的法线方向
+    /// </summary>
+    protected Vector3 m_wallHitNormal;
+    /// <summary>
+    /// 前方接触墙的上方边缘点
+    /// </summary>
+    protected Vector3 m_wallHitEdge;
+    /// <summary>
+    /// 左脚尖
+    /// </summary>
     private Transform m_leftFootTran;
-
+    /// <summary>
+    /// 右脚尖
+    /// </summary>
     private Transform m_rightFootTran;
-
+    /// <summary>
+    /// 是否按住跳跃
+    /// </summary>
     private bool m_holdJumpBtn;
-
+    /// <summary>
+    /// 跳跃次数
+    /// </summary>
     private int m_jumpCount;
-
+    /// <summary>
+    /// 是否触发跳跃
+    /// </summary>
     private bool m_jumpFlag;
+    /// <summary>
+    /// 当前能否攀爬
+    /// </summary>
+    private bool m_climbReady;
+    /// <summary>
+    /// 当前是否攀爬中
+    /// </summary>
+    private bool m_climbIng;
 
 
     protected virtual void Start()
     {
         m_mainCamera = Camera.main;
         animator = GetComponent<Animator>();
-        characterController = GetComponentInParent<CharacterController>();
+        characterController = GetComponent<CharacterController>();
         rootTransform = characterController.gameObject.transform;
-        m_leftFootTran = transform.Find("root/pelvis/thigh_l/calf_l/foot_l/ball_l");
-        m_rightFootTran = transform.Find("root/pelvis/thigh_r/calf_r/foot_r/ball_r");
+        m_leftFootTran = transform.Find("Model/ClazyRunner/root/pelvis/thigh_l/calf_l/foot_l/ball_l");
+        m_rightFootTran = transform.Find("Model/ClazyRunner/root/pelvis/thigh_r/calf_r/foot_r/ball_r");
     }
 
     protected virtual void Update()
@@ -106,12 +173,17 @@ public class CharacterMotor : MonoBehaviour, ICharacterControl
 
     protected virtual void OnAnimatorMove()
     {
-        UpdateRotate();
         UpdateMove();
+        UpdateRotate();
     }
 
     public void CalculateGravity()
     {
+        if (!characterController.enabled)
+        {
+            verticalSpeed = 0f;
+            return;
+        }
         float damping = UpdateAirDamping();
         verticalSpeed = isGround && verticalSpeed <= 0f ? 0f : verticalSpeed + (damping + m_gravity) * Time.deltaTime;
     }
@@ -150,31 +222,63 @@ public class CharacterMotor : MonoBehaviour, ICharacterControl
 
     public void CalculateWallSpace()
     {
+        m_climbReady = false;
+        if (m_climbIng) return;
+
         Debug.DrawRay(rootTransform.position + Vector3.up + Vector3.up * 0.5f, rootTransform.forward, Color.red);
         if (Physics.Raycast(rootTransform.position + Vector3.up + Vector3.up * 0.5f, rootTransform.forward, out RaycastHit obsHit, 1f, m_wallLayer))
         {
             //墙面的法线方向
-            Vector3 climbHitNormal = obsHit.normal; 
-            Debug.DrawRay(rootTransform.position + Vector3.up + Vector3.up * 1f, -climbHitNormal, Color.red);
-            if (Physics.Raycast(rootTransform.position + Vector3.up + Vector3.up * 1f, -climbHitNormal, out RaycastHit hit2, 1f, m_wallLayer))
-            {
-                Debug.DrawRay(rootTransform.position + Vector3.up + Vector3.up * 1.5f, -climbHitNormal, Color.red);
-                if (Physics.Raycast(rootTransform.position + Vector3.up + Vector3.up * 1.5f, -climbHitNormal, out RaycastHit hit3, 1f, m_wallLayer))
-                {
-
-                }
-                else
-                {
-                    Debug.DrawRay(hit2.point + Vector3.up * 2f, Vector3.down * 2f, Color.red);
-                    if (Physics.Raycast(hit2.point + Vector3.up * 2f, Vector3.down, 2f))
-                    {
-                        animator.SetInteger(ICharacterControl.Int_ClimbType_Hash, 1);
-                    }
-                }
-            }
+            m_wallHitNormal = obsHit.normal;
+            Vector3 target = obsHit.point;
+            target.y = obsHit.collider.bounds.size.y;
+            m_wallHitEdge = target;
+            if(m_wallHitEdge.y <= m_maxClimbHeight)
+                m_climbReady = true;
         }
     }
 
+    protected virtual void Jump()
+    {
+        if (m_climbIng)
+        {
+            animator.SetTrigger(ICharacterControl.Trigger_ClimbUp_Hash);
+            animator.SetInteger(ICharacterControl.Int_ClimbType_Hash, 0);
+            return;
+        }
+        else if (m_climbReady)
+        {
+            animator.SetInteger(ICharacterControl.Int_ClimbType_Hash, 1);
+            m_climbIng = true;
+            return;
+        }
+
+
+        if (++m_jumpCount >= m_jumpFrequency)
+            return;
+
+        if (m_movementType == ICharacterControl.MovementType.JUMP)
+            animator.SetTrigger(DoubleJump_Hash);
+
+        m_jumpFlag = true;
+        verticalSpeed = Mathf.Sqrt(-2 * m_gravity * m_jumpHeight);
+    }
+
+    public void UpdateMovementType()
+    {
+        m_movementType = ICharacterControl.MovementType.IDLE;
+
+        if (Mathf.Abs(verticalSpeed) > 0f)
+            m_movementType = !m_jumpFlag && verticalSpeed < 0f ? ICharacterControl.MovementType.FALL : ICharacterControl.MovementType.JUMP;
+        else if (m_climbIng)
+            m_movementType = ICharacterControl.MovementType.CLIMB;
+        else if (forwardSpeed >= 0.01f)
+            m_movementType = ICharacterControl.MovementType.MOVE;
+
+        animator.SetInteger(ICharacterControl.Int_MovementType_Hash, (int)m_movementType);
+    }
+
+    #region 移动更新
     public float GetMoveSpeed()
     {
         float moveSpeed = m_rotateSpeed_Run;
@@ -197,6 +301,85 @@ public class CharacterMotor : MonoBehaviour, ICharacterControl
         return moveSpeed;
     }
 
+    public void UpdateMove()
+    {
+        animator.SetInteger(ICharacterControl.Int_MoveState_Hash, (int)m_moveType);
+
+        //1.45f和5.85f的阈值由动画片段计算得出
+        m_targetSpeed = GetMoveSpeed();
+        m_targetSpeed *= m_inputDirection.magnitude;
+        forwardSpeed = Mathf.Lerp(forwardSpeed, m_targetSpeed, 0.1f);
+        forwardSpeed = forwardSpeed <= 0.01f ? 0f : forwardSpeed;
+
+        animator.SetBool(ICharacterControl.Bool_Moving_Hash, !m_inputDirection.Equals(Vector2.zero));
+        animator.SetFloat(ICharacterControl.Float_Forward_Hash, forwardSpeed);
+        animator.SetFloat(ICharacterControl.Float_Vertical_Hash, verticalSpeed);
+
+        switch (m_movementType)
+        {
+            case ICharacterControl.MovementType.IDLE:
+                UpdateLocomotionMove();
+                break;
+            case ICharacterControl.MovementType.MOVE:
+                UpdateLocomotionMove();
+                break;
+            case ICharacterControl.MovementType.JUMP:
+                UpdateAirMove();
+                break;
+            case ICharacterControl.MovementType.FALL:
+                UpdateAirMove();
+                break;
+            case ICharacterControl.MovementType.CLIMB:
+                UpdateClimbMove();
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void UpdateLocomotionMove()
+    {
+        characterController.enabled = true;
+        Vector3 deltaMove = animator.deltaPosition;
+        deltaMove.y = verticalSpeed * Time.deltaTime;
+        characterController.Move(deltaMove);
+
+        m_speedMark[m_speedMarkIndex++] = animator.velocity;
+        m_speedMarkIndex %= 3;
+    }
+
+    private void UpdateAirMove()
+    {
+        Vector3 averageSpeed = Vector3.zero;
+        foreach (var item in m_speedMark)
+        {
+            averageSpeed += item;
+        }
+
+        //记录的是速度 计算出位置 不直接记录位置是因为会因为帧率造成误差
+        Vector3 deltaMove = ((averageSpeed / 6) + m_targetDirection * 2) * Time.deltaTime;
+        deltaMove.y = verticalSpeed * Time.deltaTime;
+        characterController.Move(deltaMove);
+    }
+
+    private void UpdateClimbMove()
+    {
+        characterController.enabled = false;
+        animator.ApplyBuiltinRootMotion();
+        if (animator.CurrentlyInAnimationTag("ClimbMatch"))
+        {
+            animator.MatchTarget(m_wallHitEdge + new Vector3(0, -0.06f, 0), Quaternion.identity, AvatarTarget.RightHand, new MatchTargetWeightMask(Vector3.one, 0f), 0f, 0.5f);
+        }
+
+        //if (animator.CurrentlyInAnimation("Wall_Climb_Exit_Root"))
+        //    animator.MatchTarget(m_wallHitEdge + new Vector3(0, -0.05f, 0), Quaternion.identity, AvatarTarget.RightHand, new MatchTargetWeightMask(Vector3.one, 0f), 0f, 0f);
+
+    }
+
+    #endregion
+
+
+    #region 旋转更新
     public float GetRotateSpeed()
     {
         float rotateSpeed = m_rotateSpeed_Run;
@@ -224,67 +407,24 @@ public class CharacterMotor : MonoBehaviour, ICharacterControl
         return rotateSpeed;
     }
 
-    public void UpdateMovementType()
-    {
-        m_movementType = ICharacterControl.MovementType.IDLE;
-
-        if (Mathf.Abs(verticalSpeed) > 0f)
-            m_movementType = !m_jumpFlag && verticalSpeed < 0f ? ICharacterControl.MovementType.FALL : ICharacterControl.MovementType.JUMP;
-        else if (forwardSpeed >= 0.01f)
-            m_movementType = ICharacterControl.MovementType.MOVE;
-
-        animator.SetInteger(ICharacterControl.Int_MovementType_Hash, (int)m_movementType);
-    }
-
-    public void UpdateMove()
-    {
-        animator.SetInteger(ICharacterControl.Int_MoveState_Hash, (int)m_moveType);
-
-        //1.45f和5.85f的阈值由动画片段计算得出
-        m_targetSpeed = GetMoveSpeed();
-        m_targetSpeed *= m_inputDirection.magnitude;
-        forwardSpeed = Mathf.Lerp(forwardSpeed, m_targetSpeed, 0.1f);
-        forwardSpeed = forwardSpeed <= 0.01f ? 0f : forwardSpeed;
-
-        animator.SetBool(ICharacterControl.Bool_Moving_Hash, !m_inputDirection.Equals(Vector2.zero));
-        animator.SetFloat(ICharacterControl.Float_Forward_Hash, forwardSpeed);
-        animator.SetFloat(ICharacterControl.Float_Vertical_Hash, verticalSpeed);
-
-        if (m_movementType != ICharacterControl.MovementType.JUMP && m_movementType != ICharacterControl.MovementType.FALL)
-        {
-            Vector3 deltaMove = animator.deltaPosition;
-            deltaMove.y = verticalSpeed * Time.deltaTime;
-            characterController.Move(deltaMove);
-
-            m_speedMark[m_speedMarkIndex++] = animator.velocity;
-            m_speedMarkIndex %= 3;
-        }
-        else
-        {
-            Vector3 averageSpeed = Vector3.zero;
-            foreach (var item in m_speedMark)
-            {
-                averageSpeed += item;
-            }
-
-            //记录的是速度 计算出位置 不直接记录位置是因为会因为帧率造成误差
-            Vector3 deltaMove = ((averageSpeed / 6) + m_targetDirection * 2) * Time.deltaTime;
-            deltaMove.y = verticalSpeed * Time.deltaTime;
-            characterController.Move(deltaMove);
-        }
-    }
-
     public void UpdateRotate()
     {
-        if (m_inputDirection.Equals(Vector2.zero))
-        {
-            animator.SetFloat(ICharacterControl.Float_Turn_Hash, 0);
-            m_targetDirection = Vector3.zero;
-            return;
-        }
-
         m_currentDirection.x = m_inputDirection.x;
         m_currentDirection.z = m_inputDirection.y;
+
+        switch (m_movementType)
+        {
+            case ICharacterControl.MovementType.CLIMB:
+                UpdateClimbRotate();
+                break;
+            default:
+                UpdateLocomotionRotate();
+                break;
+        }
+    }
+
+    private void UpdateLocomotionRotate()
+    {
 
         //输入方向相对与相机的方向
         Vector3 target = m_mainCamera.transform.TransformDirection(m_currentDirection);
@@ -295,15 +435,51 @@ public class CharacterMotor : MonoBehaviour, ICharacterControl
         //计算目标角度与当前角度的夹角弧度
         float rad = Mathf.Atan2(roleDelta.x, roleDelta.z);
         float deg = rad * Mathf.Rad2Deg;
+        animator.SetFloat(ICharacterControl.Float_TargetDir_Hash, deg);
+        animator.SetFloat(ICharacterControl.Float_Turn_Hash, rad, 0.2f, Time.deltaTime);
+
+        if (target.Equals(Vector3.zero))
+            return;
 
         float rotateSpeed = GetRotateSpeed();
         Quaternion targetRotate = Quaternion.LookRotation(target, Vector3.up);
         //动画的旋转叠加输入控制旋转
         rootTransform.rotation = Quaternion.RotateTowards(rootTransform.rotation, targetRotate, rotateSpeed * Time.deltaTime) * animator.deltaRotation;
-        animator.SetFloat(ICharacterControl.Float_TargetDir_Hash, deg);
-        animator.SetFloat(ICharacterControl.Float_Turn_Hash, rad, 0.2f, Time.deltaTime);
     }
 
+    private void UpdateClimbRotate()
+    {
+        if (animator.CurrentlyInAnimationTag("ClimbMatch"))
+        {
+            Quaternion targetRotate = Quaternion.LookRotation(-m_wallHitNormal, Vector3.up);
+            rootTransform.rotation = Quaternion.RotateTowards(rootTransform.rotation, targetRotate, 500f * Time.deltaTime);
+        }
+    }
+
+    #endregion
+
+    #region 动画状态更新
+    public void OnAnimationStateEnter(int shortNameHash)
+    {
+
+    }
+    public void OnAnimationStateExit(int shortNameHash)
+    {
+        if (Animator.StringToHash("Wall_Climb_Exit_Root") == shortNameHash)
+        {
+            m_climbIng = false;
+            characterController.enabled = true;
+        }
+    }
+
+    public void OnStateMove(int shortNameHash)
+    {
+        
+    }
+
+    #endregion
+
+    #region 用户输入
     public void UpdateTargetDirection(Vector2 targetDir)
     {
         m_inputDirection = targetDir;
@@ -312,18 +488,6 @@ public class CharacterMotor : MonoBehaviour, ICharacterControl
     protected float UpdateAirDamping()
     {
         return m_holdJumpBtn ? 0f : m_airDamping;
-    }
-
-    protected virtual void Jump()
-    {
-        if (++m_jumpCount >= m_jumpFrequency)
-            return;
-
-        if (m_movementType == ICharacterControl.MovementType.JUMP)
-            animator.SetTrigger(DoubleJump_Hash);
-
-        m_jumpFlag = true;
-        verticalSpeed = Mathf.Sqrt(-2 * m_gravity * m_jumpHeight);
     }
 
     public void GetInputDirection(InputAction.CallbackContext context)
@@ -356,5 +520,5 @@ public class CharacterMotor : MonoBehaviour, ICharacterControl
             Jump();
         }
     }
-
+    #endregion
 }

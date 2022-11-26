@@ -520,7 +520,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 402717239}
-  m_LocalRotation: {x: 0.19408722, y: 0.000000015015528, z: -0.0000000029708143, w: 0.9809843}
+  m_LocalRotation: {x: 0.19121997, y: -0.012737139, z: 0.0024816005, w: 0.98146147}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -598,8 +598,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 666805681}
-  m_LocalRotation: {x: 0.22219689, y: -0.000000021667258, z: 0.000000004937835, w: 0.9750018}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0.030724285, y: -0.019397652, z: -0.0005963736, w: 0.9993395}
+  m_LocalPosition: {x: 0, y: -1.5205765, z: 0.9789963}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1056,6 +1056,8 @@ GameObject:
   - component: {fileID: 860299199}
   - component: {fileID: 860299197}
   - component: {fileID: 860299200}
+  - component: {fileID: 860299201}
+  - component: {fileID: 860299202}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -1090,7 +1092,7 @@ MonoBehaviour:
   m_ActionEvents:
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1809682577}
+      - m_Target: {fileID: 860299202}
         m_TargetAssemblyTypeName: CharacterMotor, Assembly-CSharp
         m_MethodName: RequestRun
         m_Mode: 0
@@ -1106,7 +1108,7 @@ MonoBehaviour:
     m_ActionName: GamePlay/Run[/Keyboard/leftShift]
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1809682577}
+      - m_Target: {fileID: 860299202}
         m_TargetAssemblyTypeName: CharacterMotor, Assembly-CSharp
         m_MethodName: GetInputDirection
         m_Mode: 0
@@ -1126,7 +1128,7 @@ MonoBehaviour:
     m_ActionName: GamePlay/Look[/Mouse/delta]
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1809682577}
+      - m_Target: {fileID: 860299202}
         m_TargetAssemblyTypeName: CharacterMotor, Assembly-CSharp
         m_MethodName: RequestWalk
         m_Mode: 0
@@ -1142,7 +1144,7 @@ MonoBehaviour:
     m_ActionName: GamePlay/Walk[/Keyboard/capsLock]
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1809682577}
+      - m_Target: {fileID: 860299202}
         m_TargetAssemblyTypeName: CharacterMotor, Assembly-CSharp
         m_MethodName: RequestJump
         m_Mode: 0
@@ -1168,15 +1170,15 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 860299196}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: 0, y: 0.4878596, z: 0, w: 0.8729221}
+  m_LocalPosition: {x: -2.5171154, y: -0.005519867, z: -12.492455}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1253336826}
   m_Father: {fileID: 0}
   m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 58.4, z: 0}
 --- !u!143 &860299200
 CharacterController:
   m_ObjectHideFlags: 0
@@ -1195,6 +1197,56 @@ CharacterController:
   m_SkinWidth: 0.03
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 1, z: 0}
+--- !u!95 &860299201
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 860299196}
+  m_Enabled: 1
+  m_Avatar: {fileID: 9000000, guid: d917c7129a9e4c74e84188b278d96de7, type: 3}
+  m_Controller: {fileID: 9100000, guid: 32ce9e60dbd7e7b4981046843240b140, type: 2}
+  m_CullingMode: 1
+  m_UpdateMode: 1
+  m_ApplyRootMotion: 1
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &860299202
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 860299196}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f874fc2e8e084b340ae7d1c34903001c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_groundLayer:
+    serializedVersion: 2
+    m_Bits: 2147483647
+  m_wallLayer:
+    serializedVersion: 2
+    m_Bits: 2147483647
+  m_moveSpeed_Walk: 1.45
+  m_moveSpeed_Run: 2.7
+  m_moveSpeed_Rash: 5.85
+  m_rotateSpeed_Walk: 200
+  m_rotateSpeed_Run: 2
+  m_rotateSpeed_Air: 300
+  m_rotateSpeed_Sharp: 100
+  m_jumpHeight: 2
+  m_jumpFrequency: 2
+  m_gravity: -9.8
+  m_airDamping: -4
+  m_maxClimbHeight: 3
 --- !u!1 &921129239
 GameObject:
   m_ObjectHideFlags: 0
@@ -1616,8 +1668,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0.19408724, y: 0.000000032866197, z: -0.0000000065025607, w: 0.9809843}
-  m_LocalPosition: {x: 0, y: 2.5, z: -3}
+  m_LocalRotation: {x: 0.19122002, y: -0.012737137, z: 0.0024816005, w: 0.98146147}
+  m_LocalPosition: {x: -2.5171154, y: 2.4944801, z: -15.492455}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1664,7 +1716,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh25398
+  m_Name: pb_Mesh25400
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -3255,7 +3307,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1382068814}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.5, z: -3}
+  m_LocalPosition: {x: -2.5171154, y: 2.4944801, z: -15.492455}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3545,7 +3597,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1511404353}
-  m_LocalRotation: {x: 0.16581723, y: -0.000000008188947, z: 0.0000000013769303, w: 0.9861565}
+  m_LocalRotation: {x: 0.16293745, y: -0.012803215, z: 0.0021145614, w: 0.9865511}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -6028,26 +6080,6 @@ SkinnedMeshRenderer:
     m_Center: {x: 0.09091738, y: -0.042750306, z: -0.0000013113022}
     m_Extent: {x: 0.93552995, y: 0.21564448, z: 0.95536226}
   m_DirtyAABB: 0
---- !u!95 &1800109920
-Animator:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1809452208}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: d917c7129a9e4c74e84188b278d96de7, type: 3}
-  m_Controller: {fileID: 9100000, guid: 32ce9e60dbd7e7b4981046843240b140, type: 2}
-  m_CullingMode: 1
-  m_UpdateMode: 1
-  m_ApplyRootMotion: 1
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &1809452192
 GameObject:
   m_ObjectHideFlags: 0
@@ -6185,9 +6217,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1809682576}
-  - component: {fileID: 1800109920}
-  - component: {fileID: 1809549830}
-  - component: {fileID: 1809682577}
   m_Layer: 0
   m_Name: ClazyRunner
   m_TagString: Untagged
@@ -7172,34 +7201,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1809549830
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1809452208}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f2576b4c81bb8d54890aad2e3d3e898e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_jumpState: 0
-  m_isGround: 0
-  m_moveSpeed_Walk: 1.45
-  m_moveSpeed_Run: 2.7
-  m_moveSpeed_Rash: 5.85
-  m_rotateSpeed_Walk: 200
-  m_rotateSpeed_Run: 2
-  m_rotateSpeed_Air: 300
-  m_rotateSpeed_Sharp: 100
-  m_groundLayer:
-    serializedVersion: 2
-    m_Bits: 2147483647
-  m_jumpHeight: 2
-  m_jumpFrequency: 2
-  m_gravity: -9.8
-  m_airDamping: -4
 --- !u!4 &1809682560
 Transform:
   m_ObjectHideFlags: 0
@@ -7343,35 +7344,6 @@ Transform:
   m_Father: {fileID: 1253336826}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1809682577
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1809452208}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f874fc2e8e084b340ae7d1c34903001c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_groundLayer:
-    serializedVersion: 2
-    m_Bits: 2147483647
-  m_wallLayer:
-    serializedVersion: 2
-    m_Bits: 2147483647
-  m_moveSpeed_Walk: 1.45
-  m_moveSpeed_Run: 2.7
-  m_moveSpeed_Rash: 5.85
-  m_rotateSpeed_Walk: 200
-  m_rotateSpeed_Run: 2
-  m_rotateSpeed_Air: 300
-  m_rotateSpeed_Sharp: 100
-  m_jumpHeight: 2
-  m_jumpFrequency: 2
-  m_gravity: -9.8
-  m_airDamping: -4
 --- !u!4 &1809682578
 Transform:
   m_ObjectHideFlags: 0

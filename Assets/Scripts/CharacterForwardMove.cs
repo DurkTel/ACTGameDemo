@@ -49,6 +49,7 @@ public class CharacterForwardMove : StateMachineBehaviour
             flag = m_forwardSpeedMark[i] != 0 ? flag + 1 : flag;
         }
 
+
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()
