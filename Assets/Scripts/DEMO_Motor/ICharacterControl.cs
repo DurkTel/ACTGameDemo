@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace DURK.CharacterControl
+namespace Demo_MoveMotor
 {
     public interface ICharacterControl
     {
