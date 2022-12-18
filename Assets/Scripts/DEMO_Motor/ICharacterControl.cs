@@ -29,6 +29,7 @@ namespace Demo_MoveMotor
             WALK,
             RUN,
             DASH,
+            WALLRUN,
         }
         #endregion
 
@@ -40,6 +41,7 @@ namespace Demo_MoveMotor
         public static int Int_MovementType_Hash = Animator.StringToHash("MovementType");
         public static int Int_FootStep_Hash = Animator.StringToHash("FootStep");
         public static int Int_MoveState_Hash = Animator.StringToHash("MoveState");
+        public static int Int_WallRunType_Hash = Animator.StringToHash("WallRunType");
         public static int Int_ClimbType_Hash = Animator.StringToHash("ClimbType");
         public static int Bool_Moving_Hash = Animator.StringToHash("Moving");
         public static int Bool_Ground_Hash = Animator.StringToHash("Ground");
@@ -62,7 +64,7 @@ namespace Demo_MoveMotor
         /// <summary>
         /// 更新状态
         /// </summary>
-        public void UpdateMovementType();
+        public void UpdateMovementType(MovementType type);
         /// <summary>
         /// 更新旋转
         /// </summary>
@@ -101,7 +103,7 @@ namespace Demo_MoveMotor
         /// <summary>
         /// 计算墙体接触
         /// </summary>
-        public void CalculateWallSpace();
+        public bool RequestClimb();
         /// <summary>
         /// 计算脚的前后关系
         /// </summary>

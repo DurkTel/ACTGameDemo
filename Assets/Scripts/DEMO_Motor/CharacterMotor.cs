@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using static MoveMotorBase;
 using UnityEngine.InputSystem;
+using static Demo_MoveMotor.ICharacterControl;
+using UnityEditor;
+
 
 namespace Demo_MoveMotor
 {
@@ -13,8 +16,11 @@ namespace Demo_MoveMotor
         [SerializeField, Header("地面层级")]
         protected LayerMask m_groundLayer;
 
-        [SerializeField, Header("墙壁层级")]
-        protected LayerMask m_wallLayer;
+        [SerializeField, Header("攀爬层级")]
+        protected LayerMask m_climbLayer;
+
+        [SerializeField, Header("墙跑层级")]
+        protected LayerMask m_wallRunLayer;
 
         [SerializeField, Header("行走速度")]
         protected float m_moveSpeed_Walk = 1.45f;
@@ -57,6 +63,10 @@ namespace Demo_MoveMotor
         /// </summary>
         public Transform rootTransform { get; set; }
         /// <summary>
+        /// 中心点
+        /// </summary>
+        public Transform pelvisTransform { get; set; }
+        /// <summary>
         /// 动画机
         /// </summary>
         public Animator animator { get; set; }
@@ -83,11 +93,11 @@ namespace Demo_MoveMotor
         /// <summary>
         /// 移动模式
         /// </summary>
-        protected ICharacterControl.MoveType m_moveType = ICharacterControl.MoveType.RUN;
+        protected MoveType m_moveType = MoveType.RUN;
         /// <summary>
         /// 行为模式
         /// </summary>
-        protected ICharacterControl.MovementType m_movementType = ICharacterControl.MovementType.IDLE;
+        protected MovementType m_movementType = MovementType.IDLE;
         /// <summary>
         /// 第三人称相机
         /// </summary>
@@ -121,7 +131,7 @@ namespace Demo_MoveMotor
         /// </summary>
         protected Vector3 m_wallHitNormal;
         /// <summary>
-        /// 前方接触墙的上方边缘点
+        /// 前方/侧面接触墙的边缘点
         /// </summary>
         protected Vector3 m_wallHitEdge;
         /// <summary>
@@ -140,18 +150,6 @@ namespace Demo_MoveMotor
         /// 跳跃次数
         /// </summary>
         private int m_jumpCount;
-        /// <summary>
-        /// 是否触发跳跃
-        /// </summary>
-        private bool m_jumpFlag;
-        /// <summary>
-        /// 当前能否攀爬
-        /// </summary>
-        private bool m_climbReady;
-        /// <summary>
-        /// 当前是否攀爬中
-        /// </summary>
-        private bool m_climbIng;
 
 
         protected virtual void Start()
@@ -162,15 +160,15 @@ namespace Demo_MoveMotor
             rootTransform = characterController.gameObject.transform;
             m_leftFootTran = transform.Find("Model/ClazyRunner/root/pelvis/thigh_l/calf_l/foot_l/ball_l");
             m_rightFootTran = transform.Find("Model/ClazyRunner/root/pelvis/thigh_r/calf_r/foot_r/ball_r");
+            pelvisTransform = transform.Find("Model/ClazyRunner/root/pelvis");
         }
 
         protected virtual void Update()
         {
             CalculateFootStep();
-            CalculateWallSpace();
             CalculateGravity();
             CalculateGround();
-            UpdateMovementType();
+
         }
 
         protected virtual void OnAnimatorMove()
@@ -181,7 +179,7 @@ namespace Demo_MoveMotor
 
         public void CalculateGravity()
         {
-            if (!characterController.enabled)
+            if (!characterController.enabled || m_moveType == MoveType.WALLRUN)
             {
                 verticalSpeed = 0f;
                 return;
@@ -195,7 +193,7 @@ namespace Demo_MoveMotor
             Vector3 localForward = transform.TransformPoint(Vector3.forward);
             float left = Vector3.Dot(localForward, m_leftFootTran.position);
             float right = Vector3.Dot(localForward, m_rightFootTran.position);
-            animator.SetInteger(ICharacterControl.Int_FootStep_Hash, left > right ? -1 : 1);
+            animator.SetInteger(Int_FootStep_Hash, left > right ? -1 : 1);
 
 #if UNITY_EDITOR
             Debug.DrawLine(localForward, m_leftFootTran.position, Color.green);
@@ -210,7 +208,6 @@ namespace Demo_MoveMotor
             {
                 m_jumpCount = 0;
                 isGround = true;
-                m_jumpFlag = false;
             }
             else
             {
@@ -218,71 +215,82 @@ namespace Demo_MoveMotor
             }
             isFall = !Physics.SphereCast(rootTransform.position + Vector3.up * 0.5f, characterController.radius, Vector3.down, out RaycastHit hit, 1f, m_groundLayer);
 
-            animator.SetBool(ICharacterControl.Bool_Fall_Hash, isFall);
-            animator.SetBool(ICharacterControl.Bool_Ground_Hash, isGround);
+            animator.SetBool(Bool_Fall_Hash, isFall);
+            animator.SetBool(Bool_Ground_Hash, isGround);
+
+            if (!isGround && isFall && m_movementType != MovementType.JUMP && verticalSpeed < 0f)
+                UpdateMovementType(MovementType.FALL);
         }
 
-        public void CalculateWallSpace()
+        public bool RequestClimb()
         {
-            m_climbReady = false;
-            if (m_climbIng) return;
+            if (m_movementType == MovementType.CLIMB) return false;
 
-            Debug.DrawRay(rootTransform.position + Vector3.up + Vector3.up * 0.5f, rootTransform.forward, Color.red);
-            if (Physics.Raycast(rootTransform.position + Vector3.up + Vector3.up * 0.5f, rootTransform.forward, out RaycastHit obsHit, 1f, m_wallLayer))
+            if (Physics.Raycast(rootTransform.position + Vector3.up + Vector3.up * 0.5f, rootTransform.forward, out RaycastHit obsHit, 1f, m_climbLayer))
             {
                 //墙面的法线方向
                 m_wallHitNormal = obsHit.normal;
                 Vector3 target = obsHit.point;
                 //墙的最大高度
                 target.y = obsHit.collider.bounds.size.y;
-                Debug.DrawRay(target, Vector3.down, Color.red);
-                if (Physics.Raycast(target + Vector3.up, Vector3.down, out RaycastHit wallHit, obsHit.collider.bounds.size.y + 1f, m_wallLayer))
+                if (Physics.Raycast(target + Vector3.up, Vector3.down, out RaycastHit wallHit, obsHit.collider.bounds.size.y + 1f, m_climbLayer))
                 {
                     m_wallHitEdge = wallHit.point;
                     if (m_wallHitEdge.y <= m_maxClimbHeight)
-                        m_climbReady = true;
+                        return true;
                 }
             }
+
+            return false;
+        }
+
+        public bool RequestWallRun()
+        {
+            if (isGround) return false;
+            RaycastHit hit;
+            if(Physics.Raycast(rootTransform.position, rootTransform.right, out hit, 1f, m_wallRunLayer) 
+                || Physics.Raycast(rootTransform.position, -rootTransform.right, out hit, 1f, m_wallRunLayer))
+            {
+                m_wallHitNormal = hit.normal;
+                m_wallHitEdge = hit.point;
+                return true;
+            }
+
+            return false;
         }
 
         protected virtual void Jump()
         {
-            if (m_climbIng)
+            if(m_movementType == MovementType.CLIMB)
             {
-                animator.SetTrigger(ICharacterControl.Trigger_ClimbUp_Hash);
-                animator.SetInteger(ICharacterControl.Int_ClimbType_Hash, 0);
+                animator.SetTrigger(Trigger_ClimbUp_Hash);
+                animator.SetInteger(Int_ClimbType_Hash, 0);
                 return;
             }
-            else if (m_climbReady)
+            else if (RequestClimb())
             {
-                animator.SetInteger(ICharacterControl.Int_ClimbType_Hash, 1);
-                m_climbIng = true;
+                animator.SetInteger(Int_ClimbType_Hash, 1);
+                UpdateMovementType(MovementType.CLIMB);
                 return;
             }
-
 
             if (++m_jumpCount >= m_jumpFrequency)
                 return;
 
-            if (m_movementType == ICharacterControl.MovementType.JUMP)
+            if (m_movementType == MovementType.JUMP)
                 animator.SetTrigger(DoubleJump_Hash);
 
-            m_jumpFlag = true;
+            UpdateMovementType(MovementType.JUMP);
+
             verticalSpeed = Mathf.Sqrt(-2 * m_gravity * m_jumpHeight);
         }
 
-        public void UpdateMovementType()
+        public void UpdateMovementType(MovementType movementType)
         {
-            m_movementType = ICharacterControl.MovementType.IDLE;
+            if (m_movementType == movementType) return;
 
-            if (Mathf.Abs(verticalSpeed) > 0f)
-                m_movementType = !m_jumpFlag && verticalSpeed < 0f ? ICharacterControl.MovementType.FALL : ICharacterControl.MovementType.JUMP;
-            else if (m_climbIng)
-                m_movementType = ICharacterControl.MovementType.CLIMB;
-            else if (forwardSpeed >= 0.01f)
-                m_movementType = ICharacterControl.MovementType.MOVE;
-
-            animator.SetInteger(ICharacterControl.Int_MovementType_Hash, (int)m_movementType);
+            m_movementType = movementType;
+            animator.SetInteger(Int_MovementType_Hash, (int)m_movementType);
 
         }
 
@@ -293,13 +301,13 @@ namespace Demo_MoveMotor
 
             switch (m_moveType)
             {
-                case ICharacterControl.MoveType.WALK:
+                case MoveType.WALK:
                     moveSpeed = m_moveSpeed_Walk;
                     break;
-                case ICharacterControl.MoveType.RUN:
+                case MoveType.RUN:
                     moveSpeed = m_moveSpeed_Run;
                     break;
-                case ICharacterControl.MoveType.DASH:
+                case MoveType.DASH:
                     moveSpeed = m_moveSpeed_Rash;
                     break;
                 default:
@@ -311,7 +319,7 @@ namespace Demo_MoveMotor
 
         public void UpdateMove()
         {
-            animator.SetInteger(ICharacterControl.Int_MoveState_Hash, (int)m_moveType);
+            animator.SetInteger(Int_MoveState_Hash, (int)m_moveType);
 
             //1.45f和5.85f的阈值由动画片段计算得出
             m_targetSpeed = GetMoveSpeed();
@@ -319,25 +327,25 @@ namespace Demo_MoveMotor
             forwardSpeed = Mathf.Lerp(forwardSpeed, m_targetSpeed, 0.1f);
             forwardSpeed = forwardSpeed <= 0.01f ? 0f : forwardSpeed;
 
-            animator.SetBool(ICharacterControl.Bool_Moving_Hash, !m_inputDirection.Equals(Vector2.zero));
-            animator.SetFloat(ICharacterControl.Float_Forward_Hash, forwardSpeed);
-            animator.SetFloat(ICharacterControl.Float_Vertical_Hash, verticalSpeed);
+            animator.SetBool(Bool_Moving_Hash, !m_inputDirection.Equals(Vector2.zero));
+            animator.SetFloat(Float_Forward_Hash, forwardSpeed);
+            animator.SetFloat(Float_Vertical_Hash, verticalSpeed);
             
             switch (m_movementType)
             {
-                case ICharacterControl.MovementType.IDLE:
+                case MovementType.IDLE:
                     UpdateLocomotionMove();
                     break;
-                case ICharacterControl.MovementType.MOVE:
+                case MovementType.MOVE:
                     UpdateLocomotionMove();
                     break;
-                case ICharacterControl.MovementType.JUMP:
+                case MovementType.JUMP:
                     UpdateAirMove();
                     break;
-                case ICharacterControl.MovementType.FALL:
+                case MovementType.FALL:
                     UpdateAirMove();
                     break;
-                case ICharacterControl.MovementType.CLIMB:
+                case MovementType.CLIMB:
                     UpdateClimbMove();
                     break;
                 default:
@@ -347,14 +355,26 @@ namespace Demo_MoveMotor
 
         private void UpdateLocomotionMove()
         {
+            if (RequestWallRun())
+            {
+                m_moveType = MoveType.WALLRUN;
+                animator.SetInteger(Int_WallRunType_Hash, 1);
+            }
+            else
+                m_moveType = MoveType.RUN;
             characterController.enabled = true;
             Vector3 deltaMove = animator.deltaPosition;
-            deltaMove.y = verticalSpeed * Time.deltaTime;
-
+            deltaMove.y = m_moveType == MoveType.WALLRUN? deltaMove.y : verticalSpeed * Time.deltaTime;
             characterController.Move(deltaMove);
-
+            
             m_speedMark[m_speedMarkIndex++] = animator.velocity;
             m_speedMarkIndex %= 3;
+            
+            if (m_moveType == MoveType.WALLRUN && animator.CurrentlyInAnimationTag("WallRunMatchCatch"))
+            {
+                animator.MatchTarget(m_wallHitEdge + m_wallHitNormal.normalized * 0.8f, Quaternion.identity, AvatarTarget.Root, new MatchTargetWeightMask(Vector3.one, 0f), 0f, 0.1f);
+            }
+
         }
 
         private void UpdateAirMove()
@@ -381,8 +401,6 @@ namespace Demo_MoveMotor
                 animator.MatchTarget(m_wallHitEdge + new Vector3(0, -0.06f, 0), Quaternion.identity, AvatarTarget.RightHand, new MatchTargetWeightMask(Vector3.one, 0f), 0f, 0.5f);
             }
 
-            //if (animator.CurrentlyInAnimation("Wall_Climb_Exit_Root"))
-            //    animator.MatchTarget(m_wallHitEdge + new Vector3(0, -0.05f, 0), Quaternion.identity, AvatarTarget.RightHand, new MatchTargetWeightMask(Vector3.one, 0f), 0.1f, 0.2f);
 
         }
 
@@ -392,20 +410,20 @@ namespace Demo_MoveMotor
         public float GetRotateSpeed()
         {
             float rotateSpeed = m_rotateSpeed_Run;
-            if (m_movementType == ICharacterControl.MovementType.JUMP || m_movementType == ICharacterControl.MovementType.FALL)
+            if (m_movementType == MovementType.JUMP || m_movementType == MovementType.FALL)
                 return m_rotateSpeed_Air;
             else if (animator.CurrentlyInAnimationTag("SharpTurn"))
                 return m_rotateSpeed_Sharp;
 
             switch (m_moveType)
             {
-                case ICharacterControl.MoveType.WALK:
+                case MoveType.WALK:
                     rotateSpeed = m_rotateSpeed_Walk;
                     break;
-                case ICharacterControl.MoveType.RUN:
+                case MoveType.RUN:
                     rotateSpeed = m_rotateSpeed_Run;
                     break;
-                case ICharacterControl.MoveType.DASH:
+                case MoveType.DASH:
                     rotateSpeed = 0;
                     break;
                 default:
@@ -423,7 +441,7 @@ namespace Demo_MoveMotor
 
             switch (m_movementType)
             {
-                case ICharacterControl.MovementType.CLIMB:
+                case MovementType.CLIMB:
                     UpdateClimbRotate();
                     break;
                 default:
@@ -434,7 +452,11 @@ namespace Demo_MoveMotor
 
         private void UpdateLocomotionRotate()
         {
-
+            if (m_moveType == MoveType.WALLRUN)
+            {
+                UpdateWallRunRotate();
+                return;
+            }
             //输入方向相对与相机的方向
             Vector3 target = m_mainCamera.transform.TransformDirection(m_currentDirection);
             //求与平面平行的向量
@@ -444,8 +466,8 @@ namespace Demo_MoveMotor
             //计算目标角度与当前角度的夹角弧度
             float rad = Mathf.Atan2(roleDelta.x, roleDelta.z);
             float deg = rad * Mathf.Rad2Deg;
-            animator.SetFloat(ICharacterControl.Float_TargetDir_Hash, deg);
-            animator.SetFloat(ICharacterControl.Float_Turn_Hash, rad, 0.2f, Time.deltaTime);
+            animator.SetFloat(Float_TargetDir_Hash, deg);
+            animator.SetFloat(Float_Turn_Hash, rad, 0.2f, Time.deltaTime);
 
             if (target.Equals(Vector3.zero))
                 return;
@@ -460,7 +482,17 @@ namespace Demo_MoveMotor
         {
             if (animator.CurrentlyInAnimationTag("ClimbMatchCatch"))
             {
-                Quaternion targetRotate = Quaternion.LookRotation(-m_wallHitNormal, Vector3.up);
+                
+                Quaternion targetRotate = Quaternion.LookRotation(-m_wallHitNormal);
+                rootTransform.rotation = Quaternion.RotateTowards(rootTransform.rotation, targetRotate, 500f * Time.deltaTime);
+            }
+        }
+
+        private void UpdateWallRunRotate()
+        {
+            if (animator.CurrentlyInAnimationTag("WallRunMatchCatch"))
+            {
+                Quaternion targetRotate = Quaternion.LookRotation(Vector3.Cross(-m_wallHitNormal, rootTransform.up));
                 rootTransform.rotation = Quaternion.RotateTowards(rootTransform.rotation, targetRotate, 500f * Time.deltaTime);
             }
         }
@@ -468,22 +500,29 @@ namespace Demo_MoveMotor
         #endregion
 
         #region 动画状态更新
-        public void OnAnimationStateEnter(int shortNameHash)
+        public void OnAnimationStateEnter(AnimatorStateInfo stateInfo)
         {
-
-        }
-        public void OnAnimationStateExit(int shortNameHash)
-        {
-            if (Animator.StringToHash("Wall_Climb_Exit_Root") == shortNameHash)
+            if (stateInfo.IsTag("Idle"))
             {
-                m_climbIng = false;
+                UpdateMovementType(MovementType.IDLE);
+            }
+            else if(stateInfo.IsTag("Forward"))
+            {
+                UpdateMovementType(MovementType.MOVE);
+            }
+        }
+
+        public void OnAnimationStateExit(AnimatorStateInfo stateInfo)
+        {
+            if (Animator.StringToHash("Wall_Climb_Exit_Root") == stateInfo.shortNameHash)
+            {
                 characterController.enabled = true;
             }
         }
 
-        public void OnAnimationStateMove(int shortNameHash)
+        public void OnAnimationStateMove(AnimatorStateInfo stateInfo)
         {
-            if (Animator.StringToHash("Wall_Climb_Exit_Root") == shortNameHash)
+            if (Animator.StringToHash("Wall_Climb_Exit_Root") == stateInfo.shortNameHash)
             {
                 rootTransform.localPosition += Vector3.down * 0.002f;
             }
@@ -509,16 +548,16 @@ namespace Demo_MoveMotor
 
         public void RequestRun(InputAction.CallbackContext context)
         {
-            if (m_moveType == ICharacterControl.MoveType.WALK) return;
-            m_moveType = context.phase == InputActionPhase.Performed ? ICharacterControl.MoveType.DASH : ICharacterControl.MoveType.RUN;
+            if (m_moveType == MoveType.WALK) return;
+            m_moveType = context.phase == InputActionPhase.Performed ? MoveType.DASH : MoveType.RUN;
         }
 
         public void RequestWalk(InputAction.CallbackContext context)
         {
-            if (m_moveType == ICharacterControl.MoveType.DASH) return;
+            if (m_moveType == MoveType.DASH) return;
             if (context.performed)
             {
-                m_moveType = m_moveType == ICharacterControl.MoveType.RUN ? ICharacterControl.MoveType.WALK : ICharacterControl.MoveType.RUN;
+                m_moveType = m_moveType == MoveType.RUN ? MoveType.WALK : MoveType.RUN;
             }
         }
 
