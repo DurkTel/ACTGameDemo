@@ -101,10 +101,6 @@ namespace Demo_MoveMotor
         /// </summary>
         public void CalculateGround();
         /// <summary>
-        /// 计算墙体接触
-        /// </summary>
-        public bool RequestClimb();
-        /// <summary>
         /// 计算脚的前后关系
         /// </summary>
         public void CalculateFootStep();
