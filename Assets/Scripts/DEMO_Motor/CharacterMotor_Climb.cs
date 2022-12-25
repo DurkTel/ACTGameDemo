@@ -27,7 +27,7 @@ namespace Demo_MoveMotor
                         return true;
                 }
             }
-
+            
             return false;
         }
 
@@ -43,14 +43,14 @@ namespace Demo_MoveMotor
         }
         private void UpdateClimbMove()
         {
-            if (m_climbHolding && m_climbSignal)
+            if (m_climbHolding && m_climbSignal && animator.CurrentlyInAnimation("Wall_Climb_Hold"))
             {
                 m_climbHolding = false;
                 m_climbSignal = false;
                 animator.SetTrigger(Trigger_ClimbUp_Hash);
                 animator.SetInteger(Int_ClimbType_Hash, 0);
             }
-            else if (m_climbSignal)
+            else if (m_climbSignal && !animator.CurrentlyInAnimationTag("ClimbMatchCatch"))
             {
                 m_climbHolding = true;
                 m_climbSignal = false;

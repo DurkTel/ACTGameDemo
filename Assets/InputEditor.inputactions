@@ -197,6 +197,17 @@
                 },
                 {
                     "name": "",
+                    "id": "267021a9-1885-46ba-becc-ebc5ecafbf65",
+                    "path": "<Gamepad>/rightStick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Look",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "b0a7382b-7057-41d1-8d33-0ebcd87f3e10",
                     "path": "<Keyboard>/leftAlt",
                     "interactions": "",
@@ -210,6 +221,17 @@
                     "name": "",
                     "id": "499214c4-e673-4a4c-bff2-b58488f0f4ec",
                     "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "dda0d0b3-7565-48d1-a95a-c4eb24f9016a",
+                    "path": "<Gamepad>/buttonSouth",
                     "interactions": "",
                     "processors": "",
                     "groups": "",

@@ -9,6 +9,14 @@ namespace Demo_MoveMotor
     {
         private bool m_jumpSignal;
 
+        private bool JumpCondition()
+        {
+            if (m_movementType == MovementType.WALLMOVE || m_movementType == MovementType.CLIMB)
+                return false;
+
+            return true;
+        }
+
         private bool Request_Airborne(ref MovementType movement)
         {
             if (m_jumpSignal)
@@ -16,7 +24,7 @@ namespace Demo_MoveMotor
                 movement = MovementType.JUMP;
                 return true;
             }
-            else if(!isGround && isFall && m_movementType != MovementType.JUMP && verticalSpeed < 0f)
+            else if((!isGround && isFall && m_movementType != MovementType.JUMP && verticalSpeed < 0f) || (m_movementType == MovementType.WALLMOVE && m_wallRunDir == 0))
             {
                 movement = MovementType.FALL;
                 return true;
@@ -24,38 +32,18 @@ namespace Demo_MoveMotor
 
             return false;
         }
-        protected virtual void Jump()
-        {
-            //if (m_movementType == MovementType.CLIMB)
-            //{
-            //    animator.SetTrigger(Trigger_ClimbUp_Hash);
-            //    animator.SetInteger(Int_ClimbType_Hash, 0);
-            //    return;
-            //}
-            //else if (Request_Climb())
-            //{
-            //    animator.SetInteger(Int_ClimbType_Hash, 1);
-            //    UpdateMovementType(MovementType.CLIMB);
-            //    return;
-            //}
-
-            if (++m_jumpCount >= m_jumpFrequency)
-                return;
-
-            if (m_movementType == MovementType.JUMP)
-                animator.SetTrigger(Trigger_DoubleJump_Hash);
-
-            UpdateMovementType(MovementType.JUMP);
-
-            verticalSpeed = Mathf.Sqrt(-2 * m_gravity * m_jumpHeight);
-        }
 
         private void UpdateAirMove()
         {
             if (m_jumpSignal)
             {
                 m_jumpSignal = false;
+                if (++m_jumpCount > m_jumpFrequency)
+                    return;
+
                 verticalSpeed = Mathf.Sqrt(-2 * m_gravity * m_jumpHeight);
+                if (m_movementType == MovementType.JUMP)
+                    animator.SetTrigger(Trigger_DoubleJump_Hash);
             }
 
             Vector3 averageSpeed = Vector3.zero;

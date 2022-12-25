@@ -144,10 +144,14 @@ namespace Demo_MoveMotor
             UpdateTargetDirection();
             UpdateState();
             UpdateAnimator();
-            CalculateFootStep();
             CalculateGravity();
-            CalculateGround();
 
+        }
+
+        protected virtual void FixedUpdate()
+        {
+            CalculateFootStep();
+            CalculateGround();
         }
 
         protected virtual void OnAnimatorMove()
@@ -164,6 +168,7 @@ namespace Demo_MoveMotor
             Request_LocomotionMove(ref movement);
             Request_Airborne(ref movement);
             Request_Climb(ref movement);
+            Request_WallMove(ref movement);
 
             UpdateMovementType(movement);
         }
@@ -181,20 +186,6 @@ namespace Demo_MoveMotor
         }
 
 
-        public bool RequestWallRun()
-        {
-            if (isGround) return false;
-            RaycastHit hit;
-            if(Physics.Raycast(rootTransform.position, rootTransform.right, out hit, 1f, m_wallRunLayer) 
-                || Physics.Raycast(rootTransform.position, -rootTransform.right, out hit, 1f, m_wallRunLayer))
-            {
-                m_wallHitNormal = hit.normal;
-                m_wallHitEdge = hit.point;
-                return true;
-            }
-
-            return false;
-        }
 
         public void UpdateMovementType(MovementType movementType)
         {
@@ -230,17 +221,6 @@ namespace Demo_MoveMotor
 
         public void UpdateMove()
         {
-           
-            if (RequestWallRun() && !m_inputDirection.Equals(Vector2.zero))
-            {
-                m_moveType = MoveType.WALLRUN;
-                animator.SetInteger(Int_WallRunType_Hash, 1);
-            }
-            else
-            {
-                m_moveType = MoveType.RUN;
-                animator.SetInteger(Int_WallRunType_Hash, 0);
-            }
             switch (m_movementType)
             {
                 case MovementType.IDLE:
@@ -257,6 +237,9 @@ namespace Demo_MoveMotor
                     break;
                 case MovementType.CLIMB:
                     UpdateClimbMove();
+                    break;
+                case MovementType.WALLMOVE:
+                    UpdateWallMove();
                     break;
                 default:
                     break;
@@ -302,18 +285,12 @@ namespace Demo_MoveMotor
                 case MovementType.CLIMB:
                     UpdateClimbRotate();
                     break;
+                case MovementType.WALLMOVE:
+                    UpdateWallRunRotate();
+                    break;
                 default:
                     UpdateLocomotionRotate();
                     break;
-            }
-        }
-
-        private void UpdateWallRunRotate()
-        {
-            if (animator.CurrentlyInAnimationTag("WallRunMatchCatch"))
-            {
-                Quaternion targetRotate = Quaternion.LookRotation(Vector3.Cross(-m_wallHitNormal, rootTransform.up));
-                rootTransform.rotation = Quaternion.RotateTowards(rootTransform.rotation, targetRotate, 500f * Time.deltaTime);
             }
         }
 

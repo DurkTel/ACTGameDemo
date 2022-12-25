@@ -37,7 +37,6 @@ namespace Demo_MoveMotor
 
         private void UpdateLocomotionMove()
         {
-
             //1.45f和5.85f的阈值由动画片段计算得出
             m_targetSpeed = GetMoveSpeed();
             m_targetSpeed *= m_inputDirection.magnitude;
@@ -46,29 +45,18 @@ namespace Demo_MoveMotor
 
             characterController.enabled = true;
             Vector3 deltaMove = animator.deltaPosition;
-            deltaMove.y = m_moveType == MoveType.WALLRUN ? deltaMove.y : verticalSpeed * Time.deltaTime;
+            deltaMove.y = verticalSpeed * Time.deltaTime;
             characterController.Move(deltaMove);
 
             m_speedMark[m_speedMarkIndex++] = animator.velocity;
             m_speedMarkIndex %= 3;
-
-            if (m_moveType == MoveType.WALLRUN && animator.CurrentlyInAnimationTag("WallRunMatchCatch"))
-            {
-                animator.MatchTarget(m_wallHitEdge + m_wallHitNormal.normalized * 0.8f, Quaternion.identity, AvatarTarget.Root, new MatchTargetWeightMask(Vector3.one, 0f), 0f, 0.1f);
-            }
 
         }
 
 
         private void UpdateLocomotionRotate()
         {
-            if (m_moveType == MoveType.WALLRUN)
-            {
-                UpdateWallRunRotate();
-                return;
-            }
             
-
             if (m_targetDirection.Equals(Vector3.zero))
                 return;
 

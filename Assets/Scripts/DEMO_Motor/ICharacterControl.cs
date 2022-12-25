@@ -18,6 +18,7 @@ namespace Demo_MoveMotor
             JUMP = 2,
             FALL = 3,
             CLIMB = 4,
+            WALLMOVE = 5,
         }
 
         /// <summary>
@@ -29,7 +30,6 @@ namespace Demo_MoveMotor
             WALK,
             RUN,
             DASH,
-            WALLRUN,
         }
         #endregion
 

@@ -94,7 +94,7 @@ namespace Demo_MoveMotor
                 {
                     m_climbSignal = true;
                 }
-                else
+                else if(JumpCondition())
                 {
                     m_jumpSignal = true;
                 }

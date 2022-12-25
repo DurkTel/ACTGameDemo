@@ -10,7 +10,7 @@ namespace Demo_MoveMotor
     {
         public void CalculateGravity()
         {
-            if (!characterController.enabled || m_moveType == MoveType.WALLRUN)
+            if (!characterController.enabled)
             {
                 verticalSpeed = 0f;
                 return;
@@ -31,7 +31,7 @@ namespace Demo_MoveMotor
             {
                 isGround = false;
             }
-            isFall = !Physics.SphereCast(rootTransform.position + Vector3.up * 0.5f, characterController.radius, Vector3.down, out RaycastHit hit, 1f, m_groundLayer);
+            isFall = !Physics.SphereCast(rootTransform.position + Vector3.up * 0.5f, characterController.radius, Vector3.down, out RaycastHit hit, 0.8f, m_groundLayer);
 
         }
 

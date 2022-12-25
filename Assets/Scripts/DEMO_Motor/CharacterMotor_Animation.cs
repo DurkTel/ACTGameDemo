@@ -19,6 +19,9 @@ namespace Demo_MoveMotor
 
             animator.SetBool(Bool_Fall_Hash, isFall);
             animator.SetBool(Bool_Ground_Hash, isGround);
+
+            animator.SetInteger(Int_WallRunType_Hash, m_wallRunDir);
+
         }
 
         public void OnAnimationStateEnter(AnimatorStateInfo stateInfo)
@@ -47,6 +50,12 @@ namespace Demo_MoveMotor
             if (Animator.StringToHash("Wall_Climb_Exit_Root") == stateInfo.shortNameHash)
             {
                 rootTransform.localPosition += Vector3.down * 0.002f;
+            }
+
+            if (animator.CurrentlyInAnimationTag("WallRunMatchCatch") || animator.CurrentlyInAnimationTag("WallRunMatchCatch1"))
+            {
+                float mult = animator.CurrentlyInAnimationTag("WallRunMatchCatch") ? 0.8f : 0.6f;
+                animator.MatchTarget(m_wallHitEdge + m_wallHitNormal.normalized * mult, Quaternion.identity, AvatarTarget.Root, new MatchTargetWeightMask(Vector3.one, 0f), 0f, 0.1f);
             }
         }
     }
