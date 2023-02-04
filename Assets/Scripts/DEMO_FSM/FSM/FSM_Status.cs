@@ -78,6 +78,11 @@ public class FSM_Status<TStateId>
     {
         m_onExit?.Invoke(this);
     }
+
+    public virtual void OnAnimatorMove()
+    {
+
+    }
 }
 
 public class FSM_Status : FSM_Status<string>

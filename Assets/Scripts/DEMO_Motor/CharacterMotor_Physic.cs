@@ -8,6 +8,8 @@ namespace Demo_MoveMotor
 {
     public partial class CharacterMotor
     {
+        private float m_footstep = -1f;
+
         public void CalculateGravity()
         {
             if (!characterController.enabled)
@@ -40,7 +42,8 @@ namespace Demo_MoveMotor
             Vector3 localForward = transform.TransformPoint(Vector3.forward);
             float left = Vector3.Dot(localForward, m_leftFootTran.position);
             float right = Vector3.Dot(localForward, m_rightFootTran.position);
-            animator.SetInteger(Int_FootStep_Hash, left > right ? -1 : 1);
+            m_footstep = left > right ? -1f : 1f;
+            //animator.SetFloat(Float_Footstep_Hash, left > right ? -1f : 1f);
 
 #if UNITY_EDITOR
             Debug.DrawLine(localForward, m_leftFootTran.position, Color.green);

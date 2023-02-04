@@ -14,7 +14,7 @@ namespace Demo_MoveMotor
         {
             m_wallRunDir = 0;
 
-            if (!isGround && isFall && m_inputIng && Vector3.Angle(m_targetDirection, rootTransform.forward) < 45) //输入方向不能和角色前方超过45度
+            if (!isGround && isFall && m_holdDirection && Vector3.Angle(m_targetDirection, rootTransform.forward) < 45) //输入方向不能和角色前方超过45度
             {
                 RaycastHit hit;
 

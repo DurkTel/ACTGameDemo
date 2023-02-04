@@ -26,7 +26,7 @@ namespace Demo_MoveMotor
         /// <returns></returns>
         private bool Request_LocomotionMove(ref MovementType movement)
         {
-            if(m_movementType == MovementType.IDLE && m_inputIng)
+            if(m_movementType == MovementType.IDLE && m_holdDirection)
             {
                 movement = MovementType.MOVE;
                 return true;
@@ -57,11 +57,8 @@ namespace Demo_MoveMotor
         private void UpdateLocomotionRotate()
         {
             
-            if (m_targetDirection.Equals(Vector3.zero))
-                return;
-
             float rotateSpeed = GetRotateSpeed();
-            Quaternion targetRotate = Quaternion.LookRotation(m_targetDirection, Vector3.up);
+            Quaternion targetRotate = m_targetDirection.Equals(Vector3.zero) ? Quaternion.identity : Quaternion.LookRotation(m_targetDirection, Vector3.up);
             //动画的旋转叠加输入控制旋转
             rootTransform.rotation = Quaternion.RotateTowards(rootTransform.rotation, targetRotate, rotateSpeed * Time.deltaTime) * animator.deltaRotation;
         }

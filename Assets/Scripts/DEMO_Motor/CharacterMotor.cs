@@ -21,6 +21,12 @@ namespace Demo_MoveMotor
         [SerializeField, Header("墙跑层级")]
         protected LayerMask m_wallRunLayer;
 
+        [SerializeField, Header("移动缓动")]
+        protected float m_moveSmooth = 0.15f;
+
+        [SerializeField, Header("旋转缓动")]
+        protected float m_rotationSmooth = 0.1f;
+
         [SerializeField, Header("行走速度")]
         protected float m_moveSpeed_Walk = 1.45f;
 
@@ -141,6 +147,7 @@ namespace Demo_MoveMotor
 
         protected virtual void Update()
         {
+            UpdateInput();
             UpdateTargetDirection();
             UpdateState();
             UpdateAnimator();
@@ -176,7 +183,7 @@ namespace Demo_MoveMotor
         private bool Request_Idle(ref MovementType movement)
         {
             bool inAir = m_movementType == MovementType.JUMP || m_movementType == MovementType.FALL;
-            if ((!m_inputIng && m_movementType == MovementType.MOVE) || (verticalSpeed == 0 && inAir))
+            if ((!m_holdDirection && m_movementType == MovementType.MOVE) || (verticalSpeed == 0 && inAir))
             {
                 movement = MovementType.IDLE;
                 return true;
@@ -192,7 +199,7 @@ namespace Demo_MoveMotor
             if (m_movementType == movementType) return;
 
             m_movementType = movementType;
-            animator.SetInteger(Int_MovementType_Hash, (int)m_movementType);
+            //animator.SetInteger(Int_MovementType_Hash, (int)m_movementType);
 
         }
 
@@ -252,22 +259,14 @@ namespace Demo_MoveMotor
         #region 旋转更新
         public float GetRotateSpeed()
         {
-            float rotateSpeed = m_rotateSpeed_Run;
+            float rotateSpeed = 0;
             if (m_movementType == MovementType.JUMP || m_movementType == MovementType.FALL)
                 return m_rotateSpeed_Air;
-            else if (animator.CurrentlyInAnimationTag("SharpTurn"))
-                return m_rotateSpeed_Sharp;
 
             switch (m_moveType)
             {
                 case MoveType.WALK:
                     rotateSpeed = m_rotateSpeed_Walk;
-                    break;
-                case MoveType.RUN:
-                    rotateSpeed = m_rotateSpeed_Run;
-                    break;
-                case MoveType.DASH:
-                    rotateSpeed = 0;
                     break;
                 default:
                     break;

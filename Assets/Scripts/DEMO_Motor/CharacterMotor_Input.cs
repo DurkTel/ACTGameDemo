@@ -14,10 +14,6 @@ namespace Demo_MoveMotor
         /// </summary>
         protected Vector2 m_inputDirection;
         /// <summary>
-        /// 正在输入方向
-        /// </summary>
-        protected bool m_inputIng;
-        /// <summary>
         /// 当前方向
         /// </summary>
         protected Vector3 m_currentDirection;
@@ -33,10 +29,20 @@ namespace Demo_MoveMotor
         /// 目标角度与当前角度的弧度
         /// </summary>
         protected float m_targetDeg;
+        /// <summary>
+        /// 长按方向键生效
+        /// </summary>
+        protected bool m_holdDirection;
+
+        private float m_inputHoldTimer;
+
+        private bool m_inputHoldFlag;
+
+        protected bool m_turnInPlace;
+
 
         public void UpdateTargetDirection(Vector2 targetDir)
         {
-            m_inputIng = !targetDir.Equals(Vector2.zero);
             m_inputDirection = targetDir;
             m_currentDirection.x = m_inputDirection.x;
             m_currentDirection.z = m_inputDirection.y;
@@ -64,8 +70,24 @@ namespace Demo_MoveMotor
             return m_holdJumpBtn ? 0f : m_airDamping;
         }
 
+        private void UpdateInput()
+        {
+            if (m_inputHoldFlag)
+                m_inputHoldTimer += Time.deltaTime;
+            else
+                m_inputHoldTimer = 0;
+
+            m_holdDirection = m_inputHoldTimer >= 0.15f;
+        }
+
         public void GetInputDirection(InputAction.CallbackContext context)
         {
+            m_inputHoldFlag = context.performed;
+            if (context.canceled && !m_holdDirection)
+            {
+                m_turnInPlace = true;
+                animator.SetFloat(Float_TurnRotation_Hash, m_targetRad);
+            }
             UpdateTargetDirection(context.ReadValue<Vector2>());
         }
 

@@ -1,11 +1,11 @@
 fileFormatVersion: 2
-guid: 0d22916140b5da846b2386be35757348
+guid: dcaa8f0528d0d7848a688a81674ad761
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable:
   - first:
       74: 1827226128182048838
-    second: Mvm_Jog_Start_R180_Root
+    second: Mvm_Jog_Start_L90
   externalObjects: {}
   materials:
     materialImportMode: 2
@@ -22,10 +22,10 @@ ModelImporter:
     rigImportErrors: 
     rigImportWarnings: "Copied Avatar Rig Configuration mis-match. Bone length in
       copied configuration does not match position in animation file:\n\t'thigh_l'
-      : position error = 12.234776 mm\n\t'calf_l' : position error = 9.803539 mm\n\t'foot_l'
-      : position error = 9.153969 mm\n\t'ball_l' : position error = 3.075419 mm\n\t'thigh_r'
-      : position error = 12.245770 mm\n\t'calf_r' : position error = 12.784191 mm\n\t'foot_r'
-      : position error = 11.043537 mm\n\t'ball_r' : position error = 5.695065 mm\n"
+      : position error = 12.234776 mm\n\t'calf_l' : position error = 9.805722 mm\n\t'foot_l'
+      : position error = 9.154658 mm\n\t'ball_l' : position error = 3.075344 mm\n\t'thigh_r'
+      : position error = 12.245770 mm\n\t'calf_r' : position error = 12.784183 mm\n\t'foot_r'
+      : position error = 11.043579 mm\n\t'ball_r' : position error = 5.695075 mm\n"
     animationImportErrors: 
     animationImportWarnings: "\nClip 'Take 001' has import animation warnings that
       might lower retargeting quality:\nNote: Activate translation DOF on avatar
@@ -83,23 +83,23 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Mvm_Jog_Start_R180_Root
+      name: Mvm_Jog_Start_L90
       takeName: Take 001
       internalID: 0
       firstFrame: 0
-      lastFrame: 29
+      lastFrame: 18
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 1
+      loopTime: 0
       loopBlend: 0
-      loopBlendOrientation: 0
+      loopBlendOrientation: 1
       loopBlendPositionY: 1
-      loopBlendPositionXZ: 0
-      keepOriginalOrientation: 0
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 1
       keepOriginalPositionY: 0
       keepOriginalPositionXZ: 1
       heightFromFeet: 1

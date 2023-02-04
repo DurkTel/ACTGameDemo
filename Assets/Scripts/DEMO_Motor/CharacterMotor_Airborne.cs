@@ -42,8 +42,8 @@ namespace Demo_MoveMotor
                     return;
 
                 verticalSpeed = Mathf.Sqrt(-2 * m_gravity * m_jumpHeight);
-                if (m_movementType == MovementType.JUMP)
-                    animator.SetTrigger(Trigger_DoubleJump_Hash);
+                //if (m_movementType == MovementType.JUMP)
+                    //animator.SetTrigger(Trigger_DoubleJump_Hash);
             }
 
             Vector3 averageSpeed = Vector3.zero;

@@ -47,14 +47,14 @@ namespace Demo_MoveMotor
             {
                 m_climbHolding = false;
                 m_climbSignal = false;
-                animator.SetTrigger(Trigger_ClimbUp_Hash);
-                animator.SetInteger(Int_ClimbType_Hash, 0);
+                //animator.SetTrigger(Trigger_ClimbUp_Hash);
+                //animator.SetInteger(Int_ClimbType_Hash, 0);
             }
             else if (m_climbSignal && !animator.CurrentlyInAnimationTag("ClimbMatchCatch"))
             {
                 m_climbHolding = true;
                 m_climbSignal = false;
-                animator.SetInteger(Int_ClimbType_Hash, 1);
+                //animator.SetInteger(Int_ClimbType_Hash, 1);
             }
 
             characterController.enabled = false;
