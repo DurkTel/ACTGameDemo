@@ -71,6 +71,24 @@ public partial class @InputEditor : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Lock"",
+                    ""type"": ""Button"",
+                    ""id"": ""940a6f85-6abf-4274-a3db-5e8dff2b3eb5"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Escape"",
+                    ""type"": ""Button"",
+                    ""id"": ""0bb9c9c0-bfd1-4091-a045-353b6ddfdeb3"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -231,7 +249,7 @@ public partial class @InputEditor : IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""b0a7382b-7057-41d1-8d33-0ebcd87f3e10"",
-                    ""path"": ""<Keyboard>/leftAlt"",
+                    ""path"": ""<Keyboard>/z"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -260,6 +278,28 @@ public partial class @InputEditor : IInputActionCollection2, IDisposable
                     ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f96431a8-df15-41b8-8138-792fd053af34"",
+                    ""path"": ""<Keyboard>/capsLock"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Lock"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1afde551-1a58-4370-b65a-2037400ed28e"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Escape"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -273,6 +313,8 @@ public partial class @InputEditor : IInputActionCollection2, IDisposable
         m_GamePlay_Look = m_GamePlay.FindAction("Look", throwIfNotFound: true);
         m_GamePlay_Walk = m_GamePlay.FindAction("Walk", throwIfNotFound: true);
         m_GamePlay_Jump = m_GamePlay.FindAction("Jump", throwIfNotFound: true);
+        m_GamePlay_Lock = m_GamePlay.FindAction("Lock", throwIfNotFound: true);
+        m_GamePlay_Escape = m_GamePlay.FindAction("Escape", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -337,6 +379,8 @@ public partial class @InputEditor : IInputActionCollection2, IDisposable
     private readonly InputAction m_GamePlay_Look;
     private readonly InputAction m_GamePlay_Walk;
     private readonly InputAction m_GamePlay_Jump;
+    private readonly InputAction m_GamePlay_Lock;
+    private readonly InputAction m_GamePlay_Escape;
     public struct GamePlayActions
     {
         private @InputEditor m_Wrapper;
@@ -346,6 +390,8 @@ public partial class @InputEditor : IInputActionCollection2, IDisposable
         public InputAction @Look => m_Wrapper.m_GamePlay_Look;
         public InputAction @Walk => m_Wrapper.m_GamePlay_Walk;
         public InputAction @Jump => m_Wrapper.m_GamePlay_Jump;
+        public InputAction @Lock => m_Wrapper.m_GamePlay_Lock;
+        public InputAction @Escape => m_Wrapper.m_GamePlay_Escape;
         public InputActionMap Get() { return m_Wrapper.m_GamePlay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -370,6 +416,12 @@ public partial class @InputEditor : IInputActionCollection2, IDisposable
                 @Jump.started -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnJump;
                 @Jump.performed -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnJump;
                 @Jump.canceled -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnJump;
+                @Lock.started -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnLock;
+                @Lock.performed -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnLock;
+                @Lock.canceled -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnLock;
+                @Escape.started -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnEscape;
+                @Escape.performed -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnEscape;
+                @Escape.canceled -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnEscape;
             }
             m_Wrapper.m_GamePlayActionsCallbackInterface = instance;
             if (instance != null)
@@ -389,6 +441,12 @@ public partial class @InputEditor : IInputActionCollection2, IDisposable
                 @Jump.started += instance.OnJump;
                 @Jump.performed += instance.OnJump;
                 @Jump.canceled += instance.OnJump;
+                @Lock.started += instance.OnLock;
+                @Lock.performed += instance.OnLock;
+                @Lock.canceled += instance.OnLock;
+                @Escape.started += instance.OnEscape;
+                @Escape.performed += instance.OnEscape;
+                @Escape.canceled += instance.OnEscape;
             }
         }
     }
@@ -400,5 +458,7 @@ public partial class @InputEditor : IInputActionCollection2, IDisposable
         void OnLook(InputAction.CallbackContext context);
         void OnWalk(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
+        void OnLock(InputAction.CallbackContext context);
+        void OnEscape(InputAction.CallbackContext context);
     }
 }

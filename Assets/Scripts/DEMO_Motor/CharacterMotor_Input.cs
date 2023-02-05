@@ -55,7 +55,7 @@ namespace Demo_MoveMotor
         private void UpdateTargetDirection()
         {
             //输入方向相对与相机的方向
-            Vector3 target = m_mainCamera.transform.TransformDirection(m_currentDirection);
+            Vector3 target = m_isGazing ? m_camera.transform.forward : m_camera.transform.TransformDirection(m_currentDirection);
             //求与平面平行的向量
             target = Vector3.ProjectOnPlane(target, Vector3.up).normalized;
             Vector3 roleDelta = rootTransform.InverseTransformDirection(target);
@@ -120,6 +120,23 @@ namespace Demo_MoveMotor
                 {
                     m_jumpSignal = true;
                 }
+            }
+        }
+
+        public void RequestLock(InputAction.CallbackContext context)
+        {
+            if (context.performed)
+            {
+                m_isGazing = !m_isGazing;
+                CalculateLockon();
+            }
+        }
+
+        public void RequestEscape(InputAction.CallbackContext context)
+        {
+            if (context.performed)
+            {
+                Escape();
             }
         }
     }

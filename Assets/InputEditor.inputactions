@@ -49,6 +49,24 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Lock",
+                    "type": "Button",
+                    "id": "940a6f85-6abf-4274-a3db-5e8dff2b3eb5",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Escape",
+                    "type": "Button",
+                    "id": "0bb9c9c0-bfd1-4091-a045-353b6ddfdeb3",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -209,7 +227,7 @@
                 {
                     "name": "",
                     "id": "b0a7382b-7057-41d1-8d33-0ebcd87f3e10",
-                    "path": "<Keyboard>/leftAlt",
+                    "path": "<Keyboard>/z",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -236,6 +254,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f96431a8-df15-41b8-8138-792fd053af34",
+                    "path": "<Keyboard>/capsLock",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Lock",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1afde551-1a58-4370-b65a-2037400ed28e",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Escape",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

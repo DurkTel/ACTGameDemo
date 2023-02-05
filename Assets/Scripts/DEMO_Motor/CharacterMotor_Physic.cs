@@ -37,6 +37,32 @@ namespace Demo_MoveMotor
 
         }
 
+        public void CalculateLockon()
+        {
+            if(!m_isGazing)
+            {
+                m_camera.lockon = null;
+                return;
+            }
+            Collider[] colliders = Physics.OverlapSphere(rootTransform.position, m_lockonRadius, m_lockonLayer);
+            Transform newLock = null;
+            float minDis = -1f;
+            Vector2 pos1 = Vector2.zero;
+            Vector2 pos2 = new Vector2(rootTransform.position.x, rootTransform.position.z);
+            foreach (Collider coll in colliders)
+            {
+                pos1.Set(coll.transform.position.x, coll.transform.position.z);
+                float dis = Vector2.Distance(pos1, pos2);
+                if (minDis < 0 || dis < minDis)
+                {
+                    minDis = dis;
+                    newLock = coll.transform;
+                }
+            }
+
+            m_camera.lockon = newLock;
+        }
+
         public void CalculateFootStep()
         {
             Vector3 localForward = transform.TransformPoint(Vector3.forward);

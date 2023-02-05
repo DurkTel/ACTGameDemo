@@ -60,7 +60,13 @@ namespace Demo_MoveMotor
             float rotateSpeed = GetRotateSpeed();
             Quaternion targetRotate = m_targetDirection.Equals(Vector3.zero) ? Quaternion.identity : Quaternion.LookRotation(m_targetDirection, Vector3.up);
             //动画的旋转叠加输入控制旋转
-            rootTransform.rotation = Quaternion.RotateTowards(rootTransform.rotation, targetRotate, rotateSpeed * Time.deltaTime) * animator.deltaRotation;
+            Quaternion rotation = m_isGazing ? Quaternion.LookRotation(m_targetDirection) : Quaternion.RotateTowards(rootTransform.rotation, targetRotate, rotateSpeed * Time.deltaTime);
+            rootTransform.rotation = rotation * animator.deltaRotation;
+        }
+
+        private void Escape()
+        {
+            animator.CrossFadeInFixedTime("IdleEscape", 0.2f);
         }
     }
 }

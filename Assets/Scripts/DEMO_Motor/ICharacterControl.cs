@@ -52,6 +52,8 @@ namespace Demo_MoveMotor
         public static int Float_Movement_Hash = Animator.StringToHash("Float_Movement");
         public static int Float_InputMagnitude_Hash = Animator.StringToHash("Float_InputMagnitude");
         public static int Float_Input_Hash = Animator.StringToHash("Float_Input");
+        public static int Float_InputHorizontal_Hash = Animator.StringToHash("Float_InputHorizontal");
+        public static int Float_InputVertical_Hash = Animator.StringToHash("Float_InputVertical");
         public static int Float_RotationMagnitude_Hash = Animator.StringToHash("Float_RotationMagnitude");
         public static int Float_Rotation_Hash = Animator.StringToHash("Float_Rotation");
         public static int Float_Footstep_Hash = Animator.StringToHash("Float_Footstep");
@@ -61,6 +63,7 @@ namespace Demo_MoveMotor
         public static int Trigger_SharpTurn_Hash = Animator.StringToHash("Trigger_SharpTurn");
         public static int Trigger_TurnInPlace_Hash = Animator.StringToHash("Trigger_TurnInPlace");
         public static int Bool_MoveInput_Hash = Animator.StringToHash("Bool_MoveInput");
+        public static int Bool_Gazing_Hash = Animator.StringToHash("Bool_Gazing");
         #endregion
 
         #region »ù±¾ÊôÐÔ

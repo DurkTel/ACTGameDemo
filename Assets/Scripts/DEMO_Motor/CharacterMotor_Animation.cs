@@ -26,9 +26,12 @@ namespace Demo_MoveMotor
             animator.SetFloat(Float_Movement_Hash, (float)m_moveType);
             animator.SetFloat(Float_InputMagnitude_Hash, m_holdDirection ? m_inputDirection.magnitude * (float)m_moveType / 2f : 0f, m_moveSmooth, Time.deltaTime);
             animator.SetFloat(Float_Input_Hash, m_holdDirection ? m_inputDirection.magnitude : 0);
+            animator.SetFloat(Float_InputHorizontal_Hash, m_holdDirection ? m_inputDirection.x * (float)m_moveType / 2f : 0f, m_moveSmooth, Time.deltaTime);
+            animator.SetFloat(Float_InputVertical_Hash, m_holdDirection ? m_inputDirection.y * (float)m_moveType / 2f : 0f, m_moveSmooth, Time.deltaTime);
             animator.SetFloat(Float_RotationMagnitude_Hash, m_targetRad, m_rotationSmooth, Time.deltaTime);
             animator.SetFloat(Float_Rotation_Hash, m_targetRad);
             animator.SetBool(Bool_MoveInput_Hash, m_holdDirection);
+            animator.SetBool(Bool_Gazing_Hash, m_isGazing);
 
             if (m_turnInPlace)
             {

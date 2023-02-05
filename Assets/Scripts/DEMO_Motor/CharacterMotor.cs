@@ -12,6 +12,8 @@ namespace Demo_MoveMotor
     public partial class CharacterMotor : MonoBehaviour, ICharacterControl
     {
         #region 移动参数
+        [SerializeField, Header("轨道相机")]
+        protected OrbitCamera m_camera;
         [SerializeField, Header("地面层级")]
         protected LayerMask m_groundLayer;
 
@@ -21,26 +23,20 @@ namespace Demo_MoveMotor
         [SerializeField, Header("墙跑层级")]
         protected LayerMask m_wallRunLayer;
 
+        [SerializeField, Header("可锁定层级")]
+        protected LayerMask m_lockonLayer;
+
+        [SerializeField, Header("锁定范围")]
+        protected float m_lockonRadius = 10f;
+
         [SerializeField, Header("移动缓动")]
         protected float m_moveSmooth = 0.15f;
 
         [SerializeField, Header("旋转缓动")]
         protected float m_rotationSmooth = 0.1f;
 
-        [SerializeField, Header("行走速度")]
-        protected float m_moveSpeed_Walk = 1.45f;
-
-        [SerializeField, Header("跑动速度")]
-        protected float m_moveSpeed_Run = 2.7f;
-
-        [SerializeField, Header("冲刺速度")]
-        protected float m_moveSpeed_Rash = 5.85f;
-
         [SerializeField, Header("行走旋转速度")]
         protected float m_rotateSpeed_Walk = 300f;
-
-        [SerializeField, Header("跑动旋转速度")]
-        protected float m_rotateSpeed_Run = 2f;
 
         [SerializeField, Header("滞空旋转速度")]
         protected float m_rotateSpeed_Air = 200f;
@@ -104,11 +100,6 @@ namespace Demo_MoveMotor
         /// </summary>
         protected MovementType m_movementType = MovementType.IDLE;
         /// <summary>
-        /// 第三人称相机
-        /// </summary>
-        protected Camera m_mainCamera;
-        
-        /// <summary>
         /// 前方接触墙的法线方向
         /// </summary>
         protected Vector3 m_wallHitNormal;
@@ -116,6 +107,10 @@ namespace Demo_MoveMotor
         /// 前方/侧面接触墙的边缘点
         /// </summary>
         protected Vector3 m_wallHitEdge;
+        /// <summary>
+        /// 是否锁定状态
+        /// </summary>
+        protected bool m_isGazing;
         /// <summary>
         /// 左脚尖
         /// </summary>
@@ -136,7 +131,6 @@ namespace Demo_MoveMotor
 
         protected virtual void Start()
         {
-            m_mainCamera = Camera.main;
             animator = GetComponent<Animator>();
             characterController = GetComponent<CharacterController>();
             rootTransform = characterController.gameObject.transform;
@@ -206,22 +200,7 @@ namespace Demo_MoveMotor
         #region 移动更新
         public float GetMoveSpeed()
         {
-            float moveSpeed = m_rotateSpeed_Run;
-
-            switch (m_moveType)
-            {
-                case MoveType.WALK:
-                    moveSpeed = m_moveSpeed_Walk;
-                    break;
-                case MoveType.RUN:
-                    moveSpeed = m_moveSpeed_Run;
-                    break;
-                case MoveType.DASH:
-                    moveSpeed = m_moveSpeed_Rash;
-                    break;
-                default:
-                    break;
-            }
+            float moveSpeed = 0;
 
             return moveSpeed;
         }
