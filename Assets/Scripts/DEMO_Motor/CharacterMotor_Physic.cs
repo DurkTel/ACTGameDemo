@@ -6,9 +6,72 @@ using static Demo_MoveMotor.ICharacterControl;
 
 namespace Demo_MoveMotor
 {
-    public partial class CharacterMotor
+    public class CharacterMotor_Physic : CharacterMotor
     {
-        private float m_footstep = -1f;
+        /// <summary>
+        /// 前方接触墙的法线方向
+        /// </summary>
+        protected Vector3 m_wallHitNormal;
+        /// <summary>
+        /// 前方/侧面接触墙的边缘点
+        /// </summary>
+        protected Vector3 m_wallHitEdge;
+        /// <summary>
+        /// 左脚尖
+        /// </summary>
+        protected Transform m_leftFootTran;
+        /// <summary>
+        /// 右脚尖
+        /// </summary>
+        protected Transform m_rightFootTran;
+        /// <summary>
+        /// 脚步前后关系
+        /// </summary>
+        protected float m_footstep = -1f;
+
+        protected override void Start()
+        {
+            base.Start();
+            m_leftFootTran = transform.Find("Model/ClazyRunner/root/pelvis/thigh_l/calf_l/foot_l/ball_l");
+            m_rightFootTran = transform.Find("Model/ClazyRunner/root/pelvis/thigh_r/calf_r/foot_r/ball_r");
+        }
+
+        protected override void Update()
+        {
+            base.Update();
+            CalculateGravity();
+
+        }
+
+        protected override void FixedUpdate()
+        {
+            base.FixedUpdate();
+            CalculateAngularVelocity();
+            CalculateFootStep();
+            CalculateGround();
+        }
+
+        /// <summary>
+        /// 更新角速度
+        /// </summary>
+        protected void CalculateAngularVelocity()
+        {
+            Vector3 direction = m_targetDirection;
+            direction.y = 0f;
+            Vector3 roleDelta = rootTransform.InverseTransformDirection(direction);
+            //计算目标角度与当前角度的夹角弧度
+            float deg1 = Mathf.Atan2(roleDelta.x, roleDelta.z) * Mathf.Rad2Deg;
+            m_targetDeg = deg1;
+            deg1 *= 0.002f;
+
+            Vector3 localForward = rootTransform.InverseTransformDirection(m_lastForward);
+            float deg2 = Mathf.Atan2(localForward.x, localForward.z) * Mathf.Rad2Deg;
+
+            m_lastForward = rootTransform.forward;
+            m_angularVelocity = deg1 - deg2;
+            m_angularVelocity *= 0.002f;
+            m_angularVelocity = Mathf.Clamp(m_angularVelocity / Time.fixedDeltaTime, -1f, 1f);
+        }
 
         public void CalculateGravity()
         {
@@ -17,8 +80,7 @@ namespace Demo_MoveMotor
                 verticalSpeed = 0f;
                 return;
             }
-            float damping = UpdateAirDamping();
-            verticalSpeed = isGround && verticalSpeed <= 0f ? 0f : verticalSpeed + (damping + m_gravity) * Time.deltaTime;
+            verticalSpeed = isGround && verticalSpeed <= 0f ? 0f : verticalSpeed + m_gravity * Time.deltaTime;
         }
 
         public void CalculateGround()
@@ -63,13 +125,32 @@ namespace Demo_MoveMotor
             m_camera.lockon = newLock;
         }
 
+        public bool ClimbCondition()
+        {
+            if (Physics.Raycast(rootTransform.position + Vector3.up + Vector3.up * 0.5f, rootTransform.forward, out RaycastHit obsHit, 1f, m_climbLayer))
+            {
+                //墙面的法线方向
+                m_wallHitNormal = obsHit.normal;
+                Vector3 target = obsHit.point;
+                //墙的最大高度
+                target.y = obsHit.collider.bounds.size.y;
+                if (Physics.Raycast(target + Vector3.up, Vector3.down, out RaycastHit wallHit, obsHit.collider.bounds.size.y + 1f, m_climbLayer))
+                {
+                    m_wallHitEdge = wallHit.point;
+                    if (m_wallHitEdge.y <= m_maxClimbHeight)
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
         public void CalculateFootStep()
         {
             Vector3 localForward = transform.TransformPoint(Vector3.forward);
             float left = Vector3.Dot(localForward, m_leftFootTran.position);
             float right = Vector3.Dot(localForward, m_rightFootTran.position);
             m_footstep = left > right ? -1f : 1f;
-            //animator.SetFloat(Float_Footstep_Hash, left > right ? -1f : 1f);
 
 #if UNITY_EDITOR
             Debug.DrawLine(localForward, m_leftFootTran.position, Color.green);

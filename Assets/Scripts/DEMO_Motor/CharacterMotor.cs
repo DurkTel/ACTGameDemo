@@ -9,7 +9,7 @@ using UnityEditor;
 namespace Demo_MoveMotor
 {
 
-    public partial class CharacterMotor : MonoBehaviour, ICharacterControl
+    public partial class CharacterMotor : MonoBehaviour//, ICharacterControl
     {
         #region 移动参数
         [SerializeField, Header("轨道相机")]
@@ -29,20 +29,14 @@ namespace Demo_MoveMotor
         [SerializeField, Header("锁定范围")]
         protected float m_lockonRadius = 10f;
 
-        [SerializeField, Header("移动缓动")]
-        protected float m_moveSmooth = 0.15f;
+        [SerializeField, Header("移动速度")]
+        protected float m_moveSpeed = 1f;
 
-        [SerializeField, Header("旋转缓动")]
-        protected float m_rotationSmooth = 0.1f;
+        [SerializeField, Header("移动速度系数")]
+        protected float m_moveMultiplier = 1f;
 
-        [SerializeField, Header("行走旋转速度")]
-        protected float m_rotateSpeed_Walk = 300f;
-
-        [SerializeField, Header("滞空旋转速度")]
-        protected float m_rotateSpeed_Air = 200f;
-
-        [SerializeField, Header("急转弯旋转速度")]
-        protected float m_rotateSpeed_Sharp = 50f;
+        [SerializeField, Header("旋转速度")]
+        protected float m_rotateSpeed = 10f;
 
         [SerializeField, Header("跳跃高度")]
         protected float m_jumpHeight = 2f;
@@ -68,10 +62,6 @@ namespace Demo_MoveMotor
         /// </summary>
         public Transform pelvisTransform { get; set; }
         /// <summary>
-        /// 动画机
-        /// </summary>
-        public Animator animator { get; set; }
-        /// <summary>
         /// 前进速度
         /// </summary>
         public float forwardSpeed { get; set; }
@@ -92,6 +82,10 @@ namespace Demo_MoveMotor
         /// </summary>
         public CharacterController characterController { get; set; }
         /// <summary>
+        /// 动画机
+        /// </summary>
+        public Animator animator { get; set; }
+        /// <summary>
         /// 移动模式
         /// </summary>
         protected MoveType m_moveType = MoveType.RUN;
@@ -100,178 +94,102 @@ namespace Demo_MoveMotor
         /// </summary>
         protected MovementType m_movementType = MovementType.IDLE;
         /// <summary>
-        /// 前方接触墙的法线方向
-        /// </summary>
-        protected Vector3 m_wallHitNormal;
-        /// <summary>
-        /// 前方/侧面接触墙的边缘点
-        /// </summary>
-        protected Vector3 m_wallHitEdge;
-        /// <summary>
         /// 是否锁定状态
         /// </summary>
         protected bool m_isGazing;
         /// <summary>
-        /// 左脚尖
+        /// 目标角度与当前角度的夹角
         /// </summary>
-        private Transform m_leftFootTran;
-        /// <summary>
-        /// 右脚尖
-        /// </summary>
-        private Transform m_rightFootTran;
+        protected float m_targetDeg;
         /// <summary>
         /// 是否按住跳跃
         /// </summary>
-        private bool m_holdJumpBtn;
+        protected bool m_holdJumpBtn;
         /// <summary>
         /// 跳跃次数
         /// </summary>
-        private int m_jumpCount;
-
+        protected int m_jumpCount;
+        /// <summary>
+        /// 上一帧的前方向
+        /// </summary>
+        protected Vector3 m_lastForward;
+        /// <summary>
+        /// 目标方向
+        /// </summary>
+        protected Vector3 m_targetDirection;
 
         protected virtual void Start()
         {
             animator = GetComponent<Animator>();
             characterController = GetComponent<CharacterController>();
             rootTransform = characterController.gameObject.transform;
-            m_leftFootTran = transform.Find("Model/ClazyRunner/root/pelvis/thigh_l/calf_l/foot_l/ball_l");
-            m_rightFootTran = transform.Find("Model/ClazyRunner/root/pelvis/thigh_r/calf_r/foot_r/ball_r");
             pelvisTransform = transform.Find("Model/ClazyRunner/root/pelvis");
         }
 
         protected virtual void Update()
         {
-            UpdateInput();
-            UpdateTargetDirection();
-            UpdateState();
-            UpdateAnimator();
-            CalculateGravity();
-
+            
         }
 
         protected virtual void FixedUpdate()
         {
-            CalculateFootStep();
-            CalculateGround();
+            
         }
 
         protected virtual void OnAnimatorMove()
         {
-            UpdateMove();
-            UpdateRotate();
+            
         }
 
-        private void UpdateState()
+        #region 平面移动
+        /// <summary>
+        /// 旋转到目标方向
+        /// </summary>
+        /// <param name="direction">目标方向</param>
+        /// <param name="rotationSpeed">旋转速度</param>
+        public virtual void RotateToDirection(Vector3 direction, float rotationSpeed)
         {
-            MovementType movement = m_movementType;
+            direction.y = 0f;
+            if (direction.normalized.magnitude == 0)
+                direction = rootTransform.forward;
 
-            Request_Idle(ref movement);
-            Request_LocomotionMove(ref movement);
-            Request_Airborne(ref movement);
-            Request_Climb(ref movement);
-            Request_WallMove(ref movement);
-
-            UpdateMovementType(movement);
+            var euler = rootTransform.rotation.eulerAngles.NormalizeAngle();
+            var targetEuler = Quaternion.LookRotation(direction.normalized).eulerAngles.NormalizeAngle();
+            euler.y = Mathf.LerpAngle(euler.y, targetEuler.y, rotationSpeed * Time.fixedDeltaTime);
+            Quaternion newRotation = Quaternion.Euler(euler);
+            rootTransform.rotation = newRotation;
         }
 
-        private bool Request_Idle(ref MovementType movement)
+        public virtual void RotateToDirection(Vector3 direction)
         {
-            bool inAir = m_movementType == MovementType.JUMP || m_movementType == MovementType.FALL;
-            if ((!m_holdDirection && m_movementType == MovementType.MOVE) || (verticalSpeed == 0 && inAir))
-            {
-                movement = MovementType.IDLE;
-                return true;
-            }
-
-            return false;
+            RotateToDirection(direction, m_rotateSpeed);
         }
 
-
-
-        public void UpdateMovementType(MovementType movementType)
+        public virtual void RotateByRootMotor()
         {
-            if (m_movementType == movementType) return;
-
-            m_movementType = movementType;
-            //animator.SetInteger(Int_MovementType_Hash, (int)m_movementType);
-
+            rootTransform.rotation *= animator.deltaRotation;
         }
 
-        #region 移动更新
-        public float GetMoveSpeed()
+
+        public virtual void MoveToDirection(Vector3 direction)
         {
-            float moveSpeed = 0;
+            direction.y = 0f;
+            direction = direction.normalized * Mathf.Clamp(direction.magnitude, 0, 1f);
+            //这一帧的移动位置
+            Vector3 targetPosition = rootTransform.position + direction * m_moveSpeed * m_moveMultiplier * Time.fixedDeltaTime;
+            //这一帧的移动速度
+            Vector3 targetVelocity = (targetPosition - rootTransform.position) / Time.fixedDeltaTime;
 
-            return moveSpeed;
+            characterController.Move(targetVelocity);
+
         }
 
-        public void UpdateMove()
+        public virtual void MoveByMotor()
         {
-            switch (m_movementType)
-            {
-                case MovementType.IDLE:
-                    UpdateLocomotionMove();
-                    break;
-                case MovementType.MOVE:
-                    UpdateLocomotionMove();
-                    break;
-                case MovementType.JUMP:
-                    UpdateAirMove();
-                    break;
-                case MovementType.FALL:
-                    UpdateAirMove();
-                    break;
-                case MovementType.CLIMB:
-                    UpdateClimbMove();
-                    break;
-                case MovementType.WALLMOVE:
-                    UpdateWallMove();
-                    break;
-                default:
-                    break;
-            }
+            characterController.Move(animator.deltaPosition);
         }
-
 
         #endregion
 
-        #region 旋转更新
-        public float GetRotateSpeed()
-        {
-            float rotateSpeed = 0;
-            if (m_movementType == MovementType.JUMP || m_movementType == MovementType.FALL)
-                return m_rotateSpeed_Air;
-
-            switch (m_moveType)
-            {
-                case MoveType.WALK:
-                    rotateSpeed = m_rotateSpeed_Walk;
-                    break;
-                default:
-                    break;
-            }
-
-
-            return rotateSpeed;
-        }
-
-        public void UpdateRotate()
-        {
-
-            switch (m_movementType)
-            {
-                case MovementType.CLIMB:
-                    UpdateClimbRotate();
-                    break;
-                case MovementType.WALLMOVE:
-                    UpdateWallRunRotate();
-                    break;
-                default:
-                    UpdateLocomotionRotate();
-                    break;
-            }
-        }
-
-        #endregion
     }
 }

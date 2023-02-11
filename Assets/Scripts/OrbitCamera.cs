@@ -83,7 +83,7 @@ public class OrbitCamera : MonoBehaviour
     [SerializeField]
     private bool invertXAxis;
 
-    private Vector2 inputDelta;
+    public Vector2 inputDelta;
     [SerializeField]
     private float lockonHeight;
 
@@ -260,9 +260,8 @@ public class OrbitCamera : MonoBehaviour
         return direction.x < 0f ? 360f - angle : angle;
     }
 
-    public void GetAxisInput(InputAction.CallbackContext context)
+    public void GetAxisInput(Vector2 input)
     {
-        Vector2 input = context.ReadValue<Vector2>();
         if (invertYAxis)
             input.y = -input.y;
 

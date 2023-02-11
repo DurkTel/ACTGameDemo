@@ -35,27 +35,27 @@ namespace Demo_MoveMotor
 
         private void UpdateAirMove()
         {
-            if (m_jumpSignal)
-            {
-                m_jumpSignal = false;
-                if (++m_jumpCount > m_jumpFrequency)
-                    return;
+            //if (m_jumpSignal)
+            //{
+            //    m_jumpSignal = false;
+            //    if (++m_jumpCount > m_jumpFrequency)
+            //        return;
 
-                verticalSpeed = Mathf.Sqrt(-2 * m_gravity * m_jumpHeight);
-                //if (m_movementType == MovementType.JUMP)
-                    //animator.SetTrigger(Trigger_DoubleJump_Hash);
-            }
+            //    verticalSpeed = Mathf.Sqrt(-2 * m_gravity * m_jumpHeight);
+            //    //if (m_movementType == MovementType.JUMP)
+            //        //animator.SetTrigger(Trigger_DoubleJump_Hash);
+            //}
 
-            Vector3 averageSpeed = Vector3.zero;
-            foreach (var item in m_speedMark)
-            {
-                averageSpeed += item;
-            }
+            //Vector3 averageSpeed = Vector3.zero;
+            //foreach (var item in m_speedMark)
+            //{
+            //    averageSpeed += item;
+            //}
 
-            //记录的是速度 计算出位置 不直接记录位置是因为会因为帧率造成误差
-            Vector3 deltaMove = ((averageSpeed / 6) + m_targetDirection * 2) * Time.deltaTime;
-            deltaMove.y = verticalSpeed * Time.deltaTime;
-            characterController.Move(deltaMove);
+            ////记录的是速度 计算出位置 不直接记录位置是因为会因为帧率造成误差
+            //Vector3 deltaMove = ((averageSpeed / 6) + m_targetDirection * 2) * Time.deltaTime;
+            //deltaMove.y = verticalSpeed * Time.deltaTime;
+            //characterController.Move(deltaMove);
         }
 
 
