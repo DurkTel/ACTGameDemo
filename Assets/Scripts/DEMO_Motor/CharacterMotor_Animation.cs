@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,72 +8,115 @@ namespace Demo_MoveMotor
 {
     public class CharacterMotor_Animation : CharacterMotor_Physic
     {
-
+        protected XAnimationStateInfos m_stateInfos;
         protected override void Start()
         {
             base.Start();
+            RegisterListener();
+            m_stateInfos = new XAnimationStateInfos(animator);
+            m_stateInfos.RegisterListener();
         }
 
         protected override void Update()
         {
             base.Update();
+
         }
 
         protected override void FixedUpdate()
         {
             base.FixedUpdate();
-            UpdateAnimator();
+            UpdateAnimatorInfo();
+            UpdateAnimatorParameter();
 
         }
 
-        #region 动画参数
-        public static int Float_Movement_Hash = Animator.StringToHash("Float_Movement");
-        public static int Float_InputMagnitude_Hash = Animator.StringToHash("Float_InputMagnitude");
-        public static int Float_Input_Hash = Animator.StringToHash("Float_Input");
-        public static int Float_InputHorizontal_Hash = Animator.StringToHash("Float_InputHorizontal");
-        public static int Float_InputVertical_Hash = Animator.StringToHash("Float_InputVertical");
-        public static int Float_RotationMagnitude_Hash = Animator.StringToHash("Float_RotationMagnitude");
-        public static int Float_AngularVelocity_Hash = Animator.StringToHash("Float_AngularVelocity");
-        public static int Float_Rotation_Hash = Animator.StringToHash("Float_Rotation");
-        public static int Float_Footstep_Hash = Animator.StringToHash("Float_Footstep");
-        public static int Float_TurnRotation_Hash = Animator.StringToHash("Float_TurnRotation");
-        public static int Int_Movement_Hash = Animator.StringToHash("Int_Movement");
-        public static int Int_Footstep_Hash = Animator.StringToHash("Int_Footstep");
-        public static int Trigger_SharpTurn_Hash = Animator.StringToHash("Trigger_SharpTurn");
-        public static int Trigger_TurnInPlace_Hash = Animator.StringToHash("Trigger_TurnInPlace");
-        public static int Bool_MoveInput_Hash = Animator.StringToHash("Bool_MoveInput");
-        public static int Bool_Gazing_Hash = Animator.StringToHash("Bool_Gazing");
-        #endregion
+        protected override void OnEnable()
+        {
+        }
 
-        private void UpdateAnimator()
+        protected override void OnDisable()
+        {
+            RemoveListener();
+            m_stateInfos.RemoveListener();
+        }
+
+        protected override void PlayMachine(int type)
+        {
+            base.PlayMachine(type);
+            animator.SetInteger(Int_EnterMachineType_Hash, type);
+            animator.SetTrigger(Trigger_EnterMachine_Hash);
+        }
+
+        private void UpdateAnimatorParameter()
         {
 
             animator.SetInteger(Int_Movement_Hash, (int)m_moveType);
-            animator.SetFloat(Float_Movement_Hash, (float)m_moveType);
+            animator.SetFloat(Float_Movement_Hash, (float)m_moveType * m_targetDirection.magnitude, 0.2f, Time.fixedDeltaTime);
             animator.SetFloat(Float_InputMagnitude_Hash, m_targetDirection.magnitude, 0.2f, Time.fixedDeltaTime);
             animator.SetFloat(Float_Input_Hash, m_targetDirection.magnitude);
-            animator.SetFloat(Float_InputHorizontal_Hash, m_targetDirection.x);
-            animator.SetFloat(Float_InputVertical_Hash, m_targetDirection.z);
+            animator.SetFloat(Float_InputHorizontal_Hash, m_input.x, 0.2f, Time.fixedDeltaTime);
+            animator.SetFloat(Float_InputVertical_Hash, m_input.y, 0.2f, Time.fixedDeltaTime);
             //animator.SetFloat(Float_RotationMagnitude_Hash, m_targetRad, m_rotationSmooth, Time.deltaTime);
             animator.SetFloat(Float_AngularVelocity_Hash, m_angularVelocity, 0.2f, Time.fixedDeltaTime);
             animator.SetFloat(Float_Rotation_Hash, m_targetDeg);
-            //animator.SetBool(Bool_MoveInput_Hash, m_holdDirection);
+            animator.SetBool(Bool_MoveInput_Hash, m_targetDirection.sqrMagnitude != 0f);
             animator.SetBool(Bool_Gazing_Hash, m_isGazing);
 
-            //if (m_turnInPlace)
-            //{
-            //    animator.SetTrigger(Trigger_TurnInPlace_Hash);
-            //    m_turnInPlace = false;
-            //}
-
-            //if (Mathf.Abs(m_targetRad) >= 2.5f)
-            //    animator.SetTrigger(Trigger_SharpTurn_Hash);
         }
 
-        public void OnAnimationStateEnter(AnimatorStateInfo stateInfo)
+        private void UpdateAnimatorInfo()
+        {
+            m_baseLayerInfo = animator.GetCurrentAnimatorStateInfo(animator.GetLayerIndex("Base Layer"));
+
+        }
+
+        protected void PlayAnimation(string name, int layer = -1)
+        {
+            animator.Play(name, layer);
+        }
+
+        public void RegisterListener()
+        {
+            AnimationControl[] contrils = animator.GetBehaviours<AnimationControl>();
+            foreach (AnimationControl item in contrils)
+            {
+                item.OnStateChangeEvent += OnAnimationStateChange;
+            }
+        }
+
+        public void RemoveListener()
+        {
+            AnimationControl[] contrils = animator.GetBehaviours<AnimationControl>();
+            foreach (AnimationControl item in contrils)
+            {
+                item.OnStateChangeEvent -= OnAnimationStateChange;
+            }
+        }
+
+        public bool InAnimationTag(string tag)
+        {
+            if (m_stateInfos.IsTag(tag))
+                return true;
+
+            if (m_baseLayerInfo.IsTag(tag))
+                return true;
+
+            return false;
+        }
+
+        private void OnAnimationStateChange(bool enter, string[] tags, AnimatorStateInfo stateInfo, int layer)
+        {
+            if (enter)
+                OnAnimationStateEnter(tags, stateInfo, layer);
+            else
+                OnAnimationStateExit(tags, stateInfo, layer);
+        }
+
+        public void OnAnimationStateEnter(string[] tags, AnimatorStateInfo stateInfo, int layer)
         {
 
-            if (stateInfo.IsTag("Sharp Turn"))
+            if (InAnimationTag("RootMotor") || stateInfo.IsTag("Sharp Turn"))
             {
                 animator.SetFloat(Float_Footstep_Hash, m_footstep);
                 animator.SetFloat(Float_TurnRotation_Hash, m_targetDeg);
@@ -81,7 +125,7 @@ namespace Demo_MoveMotor
 
         }
 
-        public void OnAnimationStateExit(AnimatorStateInfo stateInfo)
+        public void OnAnimationStateExit(string[] tags, AnimatorStateInfo stateInfo, int layer)
         {
             if (Animator.StringToHash("Wall_Climb_Exit_Root") == stateInfo.shortNameHash)
             {
@@ -110,5 +154,26 @@ namespace Demo_MoveMotor
             //}
 
         }
+
+        #region 动画参数
+        public static int Float_Movement_Hash = Animator.StringToHash("Float_Movement");
+        public static int Float_InputMagnitude_Hash = Animator.StringToHash("Float_InputMagnitude");
+        public static int Float_Input_Hash = Animator.StringToHash("Float_Input");
+        public static int Float_InputHorizontal_Hash = Animator.StringToHash("Float_InputHorizontal");
+        public static int Float_InputVertical_Hash = Animator.StringToHash("Float_InputVertical");
+        public static int Float_RotationMagnitude_Hash = Animator.StringToHash("Float_RotationMagnitude");
+        public static int Float_AngularVelocity_Hash = Animator.StringToHash("Float_AngularVelocity");
+        public static int Float_Rotation_Hash = Animator.StringToHash("Float_Rotation");
+        public static int Float_Footstep_Hash = Animator.StringToHash("Float_Footstep");
+        public static int Float_TurnRotation_Hash = Animator.StringToHash("Float_TurnRotation");
+        public static int Int_Movement_Hash = Animator.StringToHash("Int_Movement");
+        public static int Int_Footstep_Hash = Animator.StringToHash("Int_Footstep");
+        public static int Int_EnterMachineType_Hash = Animator.StringToHash("Int_EnterMachineType");
+        public static int Trigger_SharpTurn_Hash = Animator.StringToHash("Trigger_SharpTurn");
+        public static int Trigger_TurnInPlace_Hash = Animator.StringToHash("Trigger_TurnInPlace");
+        public static int Trigger_EnterMachine_Hash = Animator.StringToHash("Trigger_EnterMachine");
+        public static int Bool_MoveInput_Hash = Animator.StringToHash("Bool_MoveInput");
+        public static int Bool_Gazing_Hash = Animator.StringToHash("Bool_Gazing");
+        #endregion
     }
 }

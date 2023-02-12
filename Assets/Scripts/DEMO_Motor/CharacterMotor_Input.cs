@@ -2,11 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static Demo_MoveMotor.ICharacterControl;
-using UnityEngine.InputSystem;
-using Runner.Input;
-using Unity.VisualScripting;
-using UnityEngine.Windows;
-using UnityEngine.EventSystems;
 
 namespace Demo_MoveMotor
 {
@@ -34,16 +29,6 @@ namespace Demo_MoveMotor
         protected Vector3 m_targetDirection;
 
         protected Vector3 m_currentDirectionSmooth;
-        /// <summary>
-        /// 目标角度与当前角度的弧度
-        /// </summary>
-        protected float m_targetDeg;
-        /// <summary>
-        /// 长按方向键生效
-        /// </summary>
-        protected bool m_holdDirection;
-
-        protected bool m_turnInPlace;
 
         public void Awake()
         {
@@ -54,11 +39,19 @@ namespace Demo_MoveMotor
         public void OnEnable()
         {
             inputActions.Enable();
+            inputActions.GamePlay.Walk.performed += m_controller.ControlWalk;
+            inputActions.GamePlay.Lock.performed += m_controller.ControlGazing;
+            inputActions.GamePlay.Escape.performed += m_controller.ControlEscape;
+
         }
 
         public void OnDisable()
         {
             inputActions.Disable();
+            inputActions.GamePlay.Walk.performed -= m_controller.ControlWalk;
+            inputActions.GamePlay.Lock.performed -= m_controller.ControlGazing;
+            inputActions.GamePlay.Escape.performed -= m_controller.ControlEscape;
+
         }
 
         public void Update()
@@ -77,6 +70,9 @@ namespace Demo_MoveMotor
 
             Vector3 moveDirection = m_camera.transform.TransformDirection(m_currentDirection);
             m_controller.SetTargetDirection(moveDirection);
+            m_controller.SetInputDirection(m_inputDirection);
+
+            m_controller.ControlSprint(inputActions.GamePlay.Run.phase);
         }
 
         public virtual void CameraInput()

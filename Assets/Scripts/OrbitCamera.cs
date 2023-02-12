@@ -114,7 +114,7 @@ public class OrbitCamera : MonoBehaviour
             maxVerticalAngle = minVerticalAngle;
     }
 
-    private void LateUpdate()
+    private void FixedUpdate()
     {
         UpdateFocusPoint();
         Quaternion lookRotation;
@@ -147,7 +147,7 @@ public class OrbitCamera : MonoBehaviour
             transform.SetPositionAndRotation(lookPosition, lookRotation);
         else
         {
-            float delta = lockonSmooth * Time.deltaTime;
+            float delta = lockonSmooth * Time.fixedUnscaledDeltaTime;
             transform.SetPositionAndRotation(Vector3.Slerp(transform.position, lookPosition, delta), Quaternion.Slerp(transform.rotation, lookRotation, delta));
         }
 
@@ -166,7 +166,7 @@ public class OrbitCamera : MonoBehaviour
             float t = 1f;
             if (distance > 0.01f && focusCentering > 0f)
             {
-                t = Mathf.Pow(1f - focusCentering, Time.unscaledDeltaTime);
+                t = Mathf.Pow(1f - focusCentering, Time.fixedUnscaledDeltaTime);
             }
             //与上次相比 焦点的位移大于缓动半径才进行设值
             if (distance > focusRadius)
@@ -191,7 +191,7 @@ public class OrbitCamera : MonoBehaviour
         const float e = 0.001f;
         if (inputDelta.x < -e || inputDelta.x > e || inputDelta.y < -e || inputDelta.y > e)
         {
-            orbitAngles += rotationSpeed * Time.unscaledDeltaTime * inputDelta;
+            orbitAngles += rotationSpeed * Time.fixedUnscaledDeltaTime * inputDelta;
             lastManualRotationTime = Time.unscaledTime;
             return true;
         }

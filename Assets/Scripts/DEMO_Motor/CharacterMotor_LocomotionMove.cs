@@ -68,9 +68,5 @@ namespace Demo_MoveMotor
             //rootTransform.rotation = rotation * animator.deltaRotation;
         }
 
-        private void Escape()
-        {
-            //animator.Play("Escape Empty");
-        }
     }
 }

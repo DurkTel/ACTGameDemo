@@ -29,7 +29,7 @@ namespace Demo_MoveMotor
             NONE,
             WALK,
             RUN,
-            DASH,
+            SPRINT,
         }
         #endregion
 

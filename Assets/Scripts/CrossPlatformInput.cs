@@ -60,7 +60,7 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
                     ""id"": ""dd78251d-cdec-499d-8c5a-25e92a8acbae"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""Press"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -95,7 +95,7 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""fa3e4364-c2bb-40b4-926a-3eeaca14fcab"",
-                    ""path"": ""<Keyboard>/leftShift"",
+                    ""path"": ""<Mouse>/rightButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -249,7 +249,7 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""b0a7382b-7057-41d1-8d33-0ebcd87f3e10"",
-                    ""path"": ""<Keyboard>/z"",
+                    ""path"": ""<Keyboard>/leftCtrl"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",

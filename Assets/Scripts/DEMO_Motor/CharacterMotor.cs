@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using static Demo_MoveMotor.ICharacterControl;
 using UnityEditor;
+using UnityEngine.InputSystem.XR;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 
 namespace Demo_MoveMotor
@@ -86,6 +88,14 @@ namespace Demo_MoveMotor
         /// </summary>
         public Animator animator { get; set; }
         /// <summary>
+        /// 动画状态
+        /// </summary>
+        protected AnimatorStateInfo m_baseLayerInfo;
+        /// <summary>
+        /// 输入方向
+        /// </summary>
+        protected Vector2 m_input;
+        /// <summary>
         /// 移动模式
         /// </summary>
         protected MoveType m_moveType = MoveType.RUN;
@@ -93,10 +103,6 @@ namespace Demo_MoveMotor
         /// 行为模式
         /// </summary>
         protected MovementType m_movementType = MovementType.IDLE;
-        /// <summary>
-        /// 是否锁定状态
-        /// </summary>
-        protected bool m_isGazing;
         /// <summary>
         /// 目标角度与当前角度的夹角
         /// </summary>
@@ -117,6 +123,22 @@ namespace Demo_MoveMotor
         /// 目标方向
         /// </summary>
         protected Vector3 m_targetDirection;
+        /// <summary>
+        /// 是否使用RootMotor
+        /// </summary>
+        protected bool m_useRootMotor;
+        /// <summary>
+        /// 是否在行走状态
+        /// </summary>
+        protected bool m_isWalk;
+        /// <summary>
+        /// 是否在冲刺状态
+        /// </summary>
+        protected bool m_isSprint;
+        /// <summary>
+        /// 是否锁定状态
+        /// </summary>
+        protected bool m_isGazing;
 
         protected virtual void Start()
         {
@@ -141,6 +163,19 @@ namespace Demo_MoveMotor
             
         }
 
+        protected virtual void OnEnable()
+        {
+
+        }
+
+        protected virtual void OnDisable()
+        {
+
+        }
+
+        protected virtual void PlayAnimation(string name, float duration) { }
+        protected virtual void PlayMachine(int type) { }
+
         #region 平面移动
         /// <summary>
         /// 旋转到目标方向
@@ -162,6 +197,8 @@ namespace Demo_MoveMotor
 
         public virtual void RotateToDirection(Vector3 direction)
         {
+            direction = m_isGazing ? m_camera.transform.forward : direction;
+
             RotateToDirection(direction, m_rotateSpeed);
         }
 
@@ -176,17 +213,26 @@ namespace Demo_MoveMotor
             direction.y = 0f;
             direction = direction.normalized * Mathf.Clamp(direction.magnitude, 0, 1f);
             //这一帧的移动位置
-            Vector3 targetPosition = rootTransform.position + direction * m_moveSpeed * m_moveMultiplier * Time.fixedDeltaTime;
+            Vector3 targetPosition = rootTransform.position + direction * m_moveSpeed * m_moveMultiplier * (float)m_moveType / 2f * Time.fixedDeltaTime;
             //这一帧的移动速度
             Vector3 targetVelocity = (targetPosition - rootTransform.position) / Time.fixedDeltaTime;
 
             characterController.Move(targetVelocity);
-
+            
         }
 
         public virtual void MoveByMotor()
         {
             characterController.Move(animator.deltaPosition);
+        }
+
+        #endregion
+
+
+        #region 行为
+        protected virtual void Escape()
+        {
+            PlayMachine(1);
         }
 
         #endregion
