@@ -139,6 +139,10 @@ namespace Demo_MoveMotor
         /// 是否锁定状态
         /// </summary>
         protected bool m_isGazing;
+        /// <summary>
+        /// 是否正在跳跃
+        /// </summary>
+        protected bool m_isJumping;
 
         protected virtual void Start()
         {
@@ -216,6 +220,7 @@ namespace Demo_MoveMotor
             Vector3 targetPosition = rootTransform.position + direction * m_moveSpeed * m_moveMultiplier * (float)m_moveType / 2f * Time.fixedDeltaTime;
             //这一帧的移动速度
             Vector3 targetVelocity = (targetPosition - rootTransform.position) / Time.fixedDeltaTime;
+            targetVelocity.y = verticalSpeed * Time.fixedDeltaTime;
 
             characterController.Move(targetVelocity);
             
@@ -233,6 +238,12 @@ namespace Demo_MoveMotor
         protected virtual void Escape()
         {
             PlayMachine(1);
+        }
+
+        protected virtual void AirBone(bool fall = false)
+        {
+            verticalSpeed = fall ? verticalSpeed : Mathf.Sqrt(-2 * m_gravity * m_jumpHeight);
+            PlayMachine(2);
         }
 
         #endregion

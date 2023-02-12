@@ -42,6 +42,7 @@ namespace Demo_MoveMotor
             inputActions.GamePlay.Walk.performed += m_controller.ControlWalk;
             inputActions.GamePlay.Lock.performed += m_controller.ControlGazing;
             inputActions.GamePlay.Escape.performed += m_controller.ControlEscape;
+            inputActions.GamePlay.Jump.performed += m_controller.ControlJump;
 
         }
 
@@ -51,6 +52,7 @@ namespace Demo_MoveMotor
             inputActions.GamePlay.Walk.performed -= m_controller.ControlWalk;
             inputActions.GamePlay.Lock.performed -= m_controller.ControlGazing;
             inputActions.GamePlay.Escape.performed -= m_controller.ControlEscape;
+            inputActions.GamePlay.Jump.performed -= m_controller.ControlJump;
 
         }
 

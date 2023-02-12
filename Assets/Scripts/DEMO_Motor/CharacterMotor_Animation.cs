@@ -20,13 +20,14 @@ namespace Demo_MoveMotor
         protected override void Update()
         {
             base.Update();
+            UpdateAnimatorInfo();
+            UpdateAnimatorState();
 
         }
 
         protected override void FixedUpdate()
         {
             base.FixedUpdate();
-            UpdateAnimatorInfo();
             UpdateAnimatorParameter();
 
         }
@@ -60,15 +61,21 @@ namespace Demo_MoveMotor
             //animator.SetFloat(Float_RotationMagnitude_Hash, m_targetRad, m_rotationSmooth, Time.deltaTime);
             animator.SetFloat(Float_AngularVelocity_Hash, m_angularVelocity, 0.2f, Time.fixedDeltaTime);
             animator.SetFloat(Float_Rotation_Hash, m_targetDeg);
+            animator.SetFloat(Float_JumpCount_Hash, m_jumpCount);
             animator.SetBool(Bool_MoveInput_Hash, m_targetDirection.sqrMagnitude != 0f);
             animator.SetBool(Bool_Gazing_Hash, m_isGazing);
+            animator.SetBool(Bool_Ground_Hash, isGround);
 
         }
 
         private void UpdateAnimatorInfo()
         {
             m_baseLayerInfo = animator.GetCurrentAnimatorStateInfo(animator.GetLayerIndex("Base Layer"));
+        }
 
+        private void UpdateAnimatorState()
+        {
+            m_isJumping = InAnimationTag("Air");
         }
 
         protected void PlayAnimation(string name, int layer = -1)
@@ -116,7 +123,7 @@ namespace Demo_MoveMotor
         public void OnAnimationStateEnter(string[] tags, AnimatorStateInfo stateInfo, int layer)
         {
 
-            if (InAnimationTag("RootMotor") || stateInfo.IsTag("Sharp Turn"))
+            if (InAnimationTag("MoveRootMotor") || InAnimationTag("RotatioRootMotor") || stateInfo.IsTag("Sharp Turn"))
             {
                 animator.SetFloat(Float_Footstep_Hash, m_footstep);
                 animator.SetFloat(Float_TurnRotation_Hash, m_targetDeg);
@@ -166,6 +173,7 @@ namespace Demo_MoveMotor
         public static int Float_Rotation_Hash = Animator.StringToHash("Float_Rotation");
         public static int Float_Footstep_Hash = Animator.StringToHash("Float_Footstep");
         public static int Float_TurnRotation_Hash = Animator.StringToHash("Float_TurnRotation");
+        public static int Float_JumpCount_Hash = Animator.StringToHash("Float_JumpCount");
         public static int Int_Movement_Hash = Animator.StringToHash("Int_Movement");
         public static int Int_Footstep_Hash = Animator.StringToHash("Int_Footstep");
         public static int Int_EnterMachineType_Hash = Animator.StringToHash("Int_EnterMachineType");
@@ -174,6 +182,7 @@ namespace Demo_MoveMotor
         public static int Trigger_EnterMachine_Hash = Animator.StringToHash("Trigger_EnterMachine");
         public static int Bool_MoveInput_Hash = Animator.StringToHash("Bool_MoveInput");
         public static int Bool_Gazing_Hash = Animator.StringToHash("Bool_Gazing");
+        public static int Bool_Ground_Hash = Animator.StringToHash("Bool_Ground");
         #endregion
     }
 }

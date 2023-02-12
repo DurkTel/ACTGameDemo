@@ -21,6 +21,7 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
 
         ControlLocomotion();
         ControlRotationType();
+        ControlFall();
     }
 
     public void SetTargetDirection(Vector3 direction)
@@ -51,13 +52,11 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
 
     public virtual bool ControlMoveRootMotor()
     {
-        if (m_isGazing) return false;
-
         float inputMagnitude = animator.GetFloat(Float_InputMagnitude_Hash);
-        if (InAnimationTag("RootMotor"))
+        if (InAnimationTag("MoveRootMotor"))
             return true;
 
-        if ((inputMagnitude >= 0.5f && Mathf.Abs(m_targetDeg) >= 160) || (InAnimationTag("Sharp Turn") && animator.CurrentAnimationClipProgress() <= 0.56f))
+        if ((inputMagnitude >= 0.5f && Mathf.Abs(m_targetDeg) >= 160 && !m_isGazing) || (InAnimationTag("Sharp Turn") && animator.CurrentAnimationClipProgress() <= 0.56f))
             return true;
 
         return false;
@@ -65,13 +64,11 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
 
     public virtual bool ControlRotatioRootMotor()
     {
-        if (m_isGazing) return false;
-
         float inputMagnitude = animator.GetFloat(Float_InputMagnitude_Hash);
-        if (InAnimationTag("RootMotor"))
+        if (InAnimationTag("RotatioRootMotor"))
             return true;
 
-        if ((inputMagnitude >= 0.5f && Mathf.Abs(m_targetDeg) >= 160) || (InAnimationTag("Sharp Turn") && animator.CurrentAnimationClipProgress() <= 0.56f))
+        if ((inputMagnitude >= 0.5f && Mathf.Abs(m_targetDeg) >= 160 && !m_isGazing) || (InAnimationTag("Sharp Turn") && animator.CurrentAnimationClipProgress() <= 0.56f))
             return true;
         
         return false;
@@ -98,7 +95,20 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
 
     public virtual void ControlEscape(CallbackContext value)
     {
+        if (m_input.Equals(Vector2.zero)) return;
         Escape();
+    }
+
+    public virtual void ControlJump(CallbackContext value)
+    {
+        if (++m_jumpCount >= m_jumpFrequency || InAnimationTag("BanJump") || animator.IsInTransition(0)) return;
+        AirBone();
+    }
+
+    public virtual void ControlFall()
+    {
+        if (m_isJumping || !isFall) return;
+        AirBone(true);
     }
 
 }

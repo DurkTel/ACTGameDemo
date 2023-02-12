@@ -80,7 +80,7 @@ namespace Demo_MoveMotor
                 verticalSpeed = 0f;
                 return;
             }
-            verticalSpeed = isGround && verticalSpeed <= 0f ? 0f : verticalSpeed + m_gravity * Time.deltaTime;
+            verticalSpeed = isGround && verticalSpeed <= 0f ? 0f : verticalSpeed + m_gravity * Time.fixedDeltaTime;
         }
 
         public void CalculateGround()
