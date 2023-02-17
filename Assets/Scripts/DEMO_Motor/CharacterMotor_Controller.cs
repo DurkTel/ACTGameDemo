@@ -102,13 +102,15 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
     public virtual void ControlJump(CallbackContext value)
     {
         if (++m_jumpCount >= m_jumpFrequency || InAnimationTag("BanJump") || animator.IsInTransition(0)) return;
-        AirBone();
+        m_isAirbone = true;
+        Jump();
+
     }
 
     public virtual void ControlFall()
     {
-        if (m_isJumping || !isFall) return;
-        AirBone(true);
+        if (m_isAirbone || !isFall) return;
+        Fall();
     }
 
 }

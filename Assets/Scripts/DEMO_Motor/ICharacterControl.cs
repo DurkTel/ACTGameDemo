@@ -41,51 +41,5 @@ namespace Demo_MoveMotor
         public bool isFall { get; set; }
         public CharacterController characterController { get; set; }
         #endregion
-
-        #region 更新状态
-        /// <summary>
-        /// 更新状态
-        /// </summary>
-        public void UpdateMovementType(MovementType type);
-        /// <summary>
-        /// 更新旋转
-        /// </summary>
-        public void UpdateRotate();
-        /// <summary>
-        /// 更新移动
-        /// </summary>
-        public void UpdateMove();
-        /// <summary>
-        /// 更新目标方向
-        /// </summary>
-        /// <param name="targetDir"></param>
-        public void UpdateTargetDirection(Vector2 targetDir);
-        /// <summary>
-        /// 获取移动速度
-        /// </summary>
-        /// <returns></returns>
-        public float GetMoveSpeed();
-        /// <summary>
-        /// 获取旋转速度
-        /// </summary>
-        /// <returns></returns>
-        public float GetRotateSpeed();
-
-        #endregion
-
-        #region 计算物理
-        /// <summary>
-        /// 计算重力
-        /// </summary>
-        //public void CalculateGravity();
-        ///// <summary>
-        ///// 计算着地
-        ///// </summary>
-        //public void CalculateGround();
-        ///// <summary>
-        ///// 计算脚的前后关系
-        ///// </summary>
-        //public void CalculateFootStep();
-        #endregion
     }
 }

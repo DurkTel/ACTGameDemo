@@ -11,7 +11,7 @@ using static UnityEditor.Experimental.GraphView.GraphView;
 namespace Demo_MoveMotor
 {
 
-    public partial class CharacterMotor : MonoBehaviour//, ICharacterControl
+    public partial class CharacterMotor : MonoBehaviour, ICharacterControl
     {
         #region 移动参数
         [SerializeField, Header("轨道相机")]
@@ -140,9 +140,17 @@ namespace Demo_MoveMotor
         /// </summary>
         protected bool m_isGazing;
         /// <summary>
-        /// 是否正在跳跃
+        /// 是否在空中
         /// </summary>
-        protected bool m_isJumping;
+        protected bool m_isAirbone;
+        /// <summary>
+        /// 是否正在下坠
+        /// </summary>
+        protected bool m_isFalling;
+        /// <summary>
+        /// 是否正在闪避
+        /// </summary>
+        protected bool m_isEscape;
 
         protected virtual void Start()
         {
@@ -197,6 +205,7 @@ namespace Demo_MoveMotor
             euler.y = Mathf.LerpAngle(euler.y, targetEuler.y, rotationSpeed * Time.fixedDeltaTime);
             Quaternion newRotation = Quaternion.Euler(euler);
             rootTransform.rotation = newRotation;
+            //rootTransform.rotation = Quaternion.RotateTowards(rootTransform.rotation, Quaternion.LookRotation(direction), rotationSpeed * Time.fixedDeltaTime);
         }
 
         public virtual void RotateToDirection(Vector3 direction)
@@ -240,10 +249,15 @@ namespace Demo_MoveMotor
             PlayMachine(1);
         }
 
-        protected virtual void AirBone(bool fall = false)
+        protected virtual void Jump()
         {
-            verticalSpeed = fall ? verticalSpeed : Mathf.Sqrt(-2 * m_gravity * m_jumpHeight);
+            verticalSpeed = Mathf.Sqrt(-2 * m_gravity * m_jumpHeight);
             PlayMachine(2);
+        }
+
+        protected virtual void Fall()
+        {
+            PlayMachine(3);
         }
 
         #endregion

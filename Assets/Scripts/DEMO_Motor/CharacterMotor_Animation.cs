@@ -19,10 +19,9 @@ namespace Demo_MoveMotor
 
         protected override void Update()
         {
-            base.Update();
             UpdateAnimatorInfo();
             UpdateAnimatorState();
-
+            base.Update();
         }
 
         protected override void FixedUpdate()
@@ -75,7 +74,8 @@ namespace Demo_MoveMotor
 
         private void UpdateAnimatorState()
         {
-            m_isJumping = InAnimationTag("Air");
+            m_isAirbone = InAnimationTag("Air");
+            m_isEscape = InAnimationTag("Escape");
         }
 
         protected void PlayAnimation(string name, int layer = -1)

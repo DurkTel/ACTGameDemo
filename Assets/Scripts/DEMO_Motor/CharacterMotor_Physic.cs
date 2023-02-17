@@ -39,7 +39,6 @@ namespace Demo_MoveMotor
         protected override void Update()
         {
             base.Update();
-            CalculateGravity();
 
         }
 
@@ -48,6 +47,7 @@ namespace Demo_MoveMotor
             base.FixedUpdate();
             CalculateAngularVelocity();
             CalculateFootStep();
+            CalculateGravity();
             CalculateGround();
         }
 
