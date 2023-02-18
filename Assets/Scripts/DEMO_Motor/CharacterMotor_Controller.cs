@@ -12,6 +12,7 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
     protected override void Update()
     {
         base.Update();
+        ControlFall();
 
     }
 
@@ -21,7 +22,12 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
 
         ControlLocomotion();
         ControlRotationType();
-        ControlFall();
+    }
+
+    protected override void OnAnimatorMove()
+    {
+        base.OnAnimatorMove();
+
     }
 
     public void SetTargetDirection(Vector3 direction)

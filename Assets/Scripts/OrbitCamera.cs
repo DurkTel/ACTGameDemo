@@ -114,7 +114,7 @@ public class OrbitCamera : MonoBehaviour
             maxVerticalAngle = minVerticalAngle;
     }
 
-    private void FixedUpdate()
+    private void LateUpdate()
     {
         UpdateFocusPoint();
         Quaternion lookRotation;
@@ -143,13 +143,15 @@ public class OrbitCamera : MonoBehaviour
             lookPosition = rectPosition - rectOffset;
         }
 
-        if (lockon == null)
+        //if (lockon == null)
+        //{
             transform.SetPositionAndRotation(lookPosition, lookRotation);
-        else
-        {
-            float delta = lockonSmooth * Time.fixedUnscaledDeltaTime;
-            transform.SetPositionAndRotation(Vector3.Slerp(transform.position, lookPosition, delta), Quaternion.Slerp(transform.rotation, lookRotation, delta));
-        }
+        //}
+        //else
+        //{
+        //    float delta = lockonSmooth * Time.fixedUnscaledDeltaTime;
+        //    transform.SetPositionAndRotation(Vector3.Slerp(transform.position, lookPosition, delta), Quaternion.Slerp(transform.rotation, lookRotation, delta));
+        //}
 
     }
 
@@ -166,7 +168,7 @@ public class OrbitCamera : MonoBehaviour
             float t = 1f;
             if (distance > 0.01f && focusCentering > 0f)
             {
-                t = Mathf.Pow(1f - focusCentering, Time.fixedUnscaledDeltaTime);
+                t = Mathf.Pow(1f - focusCentering, Time.deltaTime);
             }
             //与上次相比 焦点的位移大于缓动半径才进行设值
             if (distance > focusRadius)
@@ -191,7 +193,7 @@ public class OrbitCamera : MonoBehaviour
         const float e = 0.001f;
         if (inputDelta.x < -e || inputDelta.x > e || inputDelta.y < -e || inputDelta.y > e)
         {
-            orbitAngles += rotationSpeed * Time.fixedUnscaledDeltaTime * inputDelta;
+            orbitAngles += rotationSpeed * Time.deltaTime * inputDelta;
             lastManualRotationTime = Time.unscaledTime;
             return true;
         }
@@ -245,7 +247,7 @@ public class OrbitCamera : MonoBehaviour
 
         float headingAngle = GetAngle(movement / Mathf.Sqrt(movementDeltaSqr));
         float deltaAbs = Mathf.Abs(Mathf.DeltaAngle(orbitAngles.y, headingAngle));
-        float rotationChange = rotationSpeed * Mathf.Min(Time.unscaledDeltaTime, movementDeltaSqr);
+        float rotationChange = rotationSpeed * Mathf.Min(Time.deltaTime, movementDeltaSqr);
         if (deltaAbs < alignSmoothRange)
             rotationChange *= deltaAbs / alignSmoothRange;
         else if (180f - deltaAbs < alignSmoothRange)

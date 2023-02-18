@@ -57,7 +57,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Sharp Turn
-  m_Speed: 1.2
+  m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: 3437794821719552169}
@@ -119,7 +119,7 @@ BlendTree:
     m_Motion: {fileID: 7400000, guid: 2b2e19809af89f94daa1aac5e4db7ec6, type: 3}
     m_Threshold: -1
     m_Position: {x: -1, y: -1}
-    m_TimeScale: 1
+    m_TimeScale: 1.2
     m_CycleOffset: 0
     m_DirectBlendParameter: Float_InputMagnitude
     m_Mirror: 0
@@ -127,7 +127,7 @@ BlendTree:
     m_Motion: {fileID: 7400000, guid: c8ca889d04eb2ea44b91af606a00dc13, type: 3}
     m_Threshold: 1
     m_Position: {x: -1, y: 1}
-    m_TimeScale: 1
+    m_TimeScale: 1.2
     m_CycleOffset: 0
     m_DirectBlendParameter: Float_InputMagnitude
     m_Mirror: 0
@@ -135,7 +135,7 @@ BlendTree:
     m_Motion: {fileID: 7400000, guid: 9ed8a8309120e1f4fb4169de5dc1ad1d, type: 3}
     m_Threshold: 3
     m_Position: {x: 1, y: -1}
-    m_TimeScale: 1
+    m_TimeScale: 1.2
     m_CycleOffset: 0
     m_DirectBlendParameter: Float_Movement
     m_Mirror: 0
@@ -143,7 +143,7 @@ BlendTree:
     m_Motion: {fileID: 7400000, guid: a962171265eae2043840b8d2a1f2bf44, type: 3}
     m_Threshold: 5
     m_Position: {x: 1, y: 1}
-    m_TimeScale: 1
+    m_TimeScale: 1.2
     m_CycleOffset: 0
     m_DirectBlendParameter: Float_Movement
     m_Mirror: 0

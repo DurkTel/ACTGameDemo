@@ -202,7 +202,7 @@ namespace Demo_MoveMotor
 
             var euler = rootTransform.rotation.eulerAngles.NormalizeAngle();
             var targetEuler = Quaternion.LookRotation(direction.normalized).eulerAngles.NormalizeAngle();
-            euler.y = Mathf.LerpAngle(euler.y, targetEuler.y, rotationSpeed * Time.fixedDeltaTime);
+            euler.y = Mathf.LerpAngle(euler.y, targetEuler.y, rotationSpeed * Time.deltaTime);
             Quaternion newRotation = Quaternion.Euler(euler);
             rootTransform.rotation = newRotation;
             //rootTransform.rotation = Quaternion.RotateTowards(rootTransform.rotation, Quaternion.LookRotation(direction), rotationSpeed * Time.fixedDeltaTime);
@@ -226,10 +226,10 @@ namespace Demo_MoveMotor
             direction.y = 0f;
             direction = direction.normalized * Mathf.Clamp(direction.magnitude, 0, 1f);
             //这一帧的移动位置
-            Vector3 targetPosition = rootTransform.position + direction * m_moveSpeed * m_moveMultiplier * (float)m_moveType / 2f * Time.fixedDeltaTime;
+            Vector3 targetPosition = rootTransform.position + direction * m_moveSpeed * m_moveMultiplier * (float)m_moveType / 2f * Time.deltaTime;
             //这一帧的移动速度
-            Vector3 targetVelocity = (targetPosition - rootTransform.position) / Time.fixedDeltaTime;
-            targetVelocity.y = verticalSpeed * Time.fixedDeltaTime;
+            Vector3 targetVelocity = (targetPosition - rootTransform.position) / Time.deltaTime;
+            targetVelocity.y = verticalSpeed * Time.deltaTime;
 
             characterController.Move(targetVelocity);
             

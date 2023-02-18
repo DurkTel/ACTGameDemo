@@ -19,11 +19,11 @@ namespace Demo_MoveMotor
         /// <summary>
         /// 左脚尖
         /// </summary>
-        protected Transform m_leftFootTran;
+        [SerializeField] protected Transform m_leftFootTran;
         /// <summary>
         /// 右脚尖
         /// </summary>
-        protected Transform m_rightFootTran;
+        [SerializeField] protected Transform m_rightFootTran;
         /// <summary>
         /// 脚步前后关系
         /// </summary>
@@ -32,8 +32,8 @@ namespace Demo_MoveMotor
         protected override void Start()
         {
             base.Start();
-            m_leftFootTran = transform.Find("Model/ClazyRunner/root/pelvis/thigh_l/calf_l/foot_l/ball_l");
-            m_rightFootTran = transform.Find("Model/ClazyRunner/root/pelvis/thigh_r/calf_r/foot_r/ball_r");
+            //m_leftFootTran = transform.Find("Model/ClazyRunner/root/pelvis/thigh_l/calf_l/foot_l/ball_l");
+            //m_rightFootTran = transform.Find("Model/ClazyRunner/root/pelvis/thigh_r/calf_r/foot_r/ball_r");
         }
 
         protected override void Update()

@@ -21,6 +21,7 @@ namespace Demo_MoveMotor
         {
             UpdateAnimatorInfo();
             UpdateAnimatorState();
+
             base.Update();
         }
 
