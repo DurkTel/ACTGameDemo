@@ -42,4 +42,13 @@ public static class UnityExtension
 
         return new Vector3(delta.x, delta.y, delta.z);
     }
+
+    public static Vector3 BezierLerp(this Vector3 start, Vector3 end, Vector3 bezier, float t)
+    {
+        Vector3 point = Mathf.Pow(1 - t, 2) * start;
+        point += 2 * (1 - t) * t * bezier;
+        point += t * t * end;
+
+        return point;
+    }
 }

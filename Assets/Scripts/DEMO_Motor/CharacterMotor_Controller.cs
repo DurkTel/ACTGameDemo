@@ -12,8 +12,9 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
     protected override void Update()
     {
         base.Update();
-        ControlFall();
 
+        ControlFall();
+        ControlVault();
     }
 
     protected override void FixedUpdate()
@@ -27,7 +28,6 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
     protected override void OnAnimatorMove()
     {
         base.OnAnimatorMove();
-
     }
 
     public void SetTargetDirection(Vector3 direction)
@@ -42,7 +42,9 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
 
     public virtual void ControlLocomotion()
     {
-        if (ControlMoveRootMotor())
+        if (IsEnableCurveMotion())
+            CurveMove();
+        else if (ControlMoveRootMotor())
             MoveByMotor();
         else
             MoveToDirection(m_targetDirection);
@@ -58,11 +60,7 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
 
     public virtual bool ControlMoveRootMotor()
     {
-        float inputMagnitude = animator.GetFloat(Float_InputMagnitude_Hash);
-        if (InAnimationTag("MoveRootMotor"))
-            return true;
-
-        if ((inputMagnitude >= 0.5f && Mathf.Abs(m_targetDeg) >= 160 && !m_isGazing) || (InAnimationTag("Sharp Turn") && animator.CurrentAnimationClipProgress() <= 0.56f))
+        if (IsEnableRootMotion(1))
             return true;
 
         return false;
@@ -70,13 +68,12 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
 
     public virtual bool ControlRotatioRootMotor()
     {
-        float inputMagnitude = animator.GetFloat(Float_InputMagnitude_Hash);
-        if (InAnimationTag("RotatioRootMotor"))
+        if (IsEnableRootMotion(2))
             return true;
 
-        if ((inputMagnitude >= 0.5f && Mathf.Abs(m_targetDeg) >= 160 && !m_isGazing) || (InAnimationTag("Sharp Turn") && animator.CurrentAnimationClipProgress() <= 0.56f))
+        if (IsInTransition())
             return true;
-        
+
         return false;
     }
 
@@ -107,7 +104,7 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
 
     public virtual void ControlJump(CallbackContext value)
     {
-        if (++m_jumpCount >= m_jumpFrequency || InAnimationTag("BanJump") || animator.IsInTransition(0)) return;
+        if (++m_jumpCount >= m_jumpFrequency || m_isVault || IsInAnimationTag("BanJump") || IsInTransition()) return;
         m_isAirbone = true;
         Jump();
 
@@ -115,8 +112,17 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
 
     public virtual void ControlFall()
     {
-        if (m_isAirbone || !isFall) return;
+        if (m_isAirbone || !isFall || m_isVault || IsInTransition()) return;
         Fall();
+    }
+
+    public virtual void ControlVault()
+    {
+        if(!m_isVault && !m_input.Equals(Vector2.zero) && !IsInTransition() && CalculateVault())
+        {
+            Vault();
+            m_isVault = true;
+        }
     }
 
 }

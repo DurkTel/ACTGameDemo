@@ -1,7 +1,10 @@
 using Demo_MoveMotor;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.ProBuilder.Shapes;
 using static Demo_MoveMotor.ICharacterControl;
 
 namespace Demo_MoveMotor
@@ -32,8 +35,6 @@ namespace Demo_MoveMotor
         protected override void Start()
         {
             base.Start();
-            //m_leftFootTran = transform.Find("Model/ClazyRunner/root/pelvis/thigh_l/calf_l/foot_l/ball_l");
-            //m_rightFootTran = transform.Find("Model/ClazyRunner/root/pelvis/thigh_r/calf_r/foot_r/ball_r");
         }
 
         protected override void Update()
@@ -73,6 +74,9 @@ namespace Demo_MoveMotor
             m_angularVelocity = Mathf.Clamp(m_angularVelocity / Time.fixedDeltaTime, -1f, 1f);
         }
 
+        /// <summary>
+        /// 检测重力
+        /// </summary>
         public void CalculateGravity()
         {
             if (!characterController.enabled)
@@ -83,6 +87,9 @@ namespace Demo_MoveMotor
             verticalSpeed = isGround && verticalSpeed <= 0f ? 0f : verticalSpeed + m_gravity * Time.fixedDeltaTime;
         }
 
+        /// <summary>
+        /// 检测地面
+        /// </summary>
         public void CalculateGround()
         {
             if (Physics.SphereCast(rootTransform.position + Vector3.up * 0.5f, characterController.radius,
@@ -99,6 +106,9 @@ namespace Demo_MoveMotor
 
         }
 
+        /// <summary>
+        /// 检测锁定目标
+        /// </summary>
         public void CalculateLockon()
         {
             if(!m_isGazing)
@@ -145,6 +155,54 @@ namespace Demo_MoveMotor
             return false;
         }
 
+        [SerializeField] private float capsuleCastRadius = 0.2f;
+        [SerializeField] private float capsuleCastDistance = 1.2f;
+        [Space]
+        [SerializeField] private float maxVaultHeight = 1.5f;
+        [SerializeField] private float distanceAfterVault = 0.5f;
+        /// <summary>
+        /// 检测翻越物
+        /// </summary>
+        public bool CalculateVault()
+        {
+
+            Vector3 p1 = rootTransform.position + rootTransform.forward * capsuleCastDistance + Vector3.up * capsuleCastRadius;
+            Vector3 p2 = rootTransform.position + rootTransform.forward * capsuleCastDistance + Vector3.up * (maxVaultHeight - capsuleCastRadius);
+
+            m_debugHelper.DrawCapsule(p1, p2, capsuleCastRadius, Color.white);
+            m_debugHelper.DrawLabel("翻越检测", p1 + Vector3.up, Color.white);
+
+            //检测长度
+            if (Physics.CapsuleCast(p1, p2, capsuleCastRadius, -rootTransform.forward, out RaycastHit capsuleHit, capsuleCastDistance, m_vaultLayer, QueryTriggerInteraction.Ignore))
+            {
+                Vector3 startTop = capsuleHit.point;
+                startTop.y = rootTransform.position.y + maxVaultHeight + capsuleCastRadius;
+                m_debugHelper.DrawSphere(capsuleHit.point, capsuleCastRadius, Color.yellow, 1f);
+
+                //检测高度
+                if (Physics.SphereCast(startTop, capsuleCastRadius, Vector3.down, out RaycastHit top, maxVaultHeight, m_vaultLayer, QueryTriggerInteraction.Ignore))
+                {
+                    capsuleHit.normal = new Vector3(capsuleHit.normal.x, 0f, capsuleHit.normal.z);
+                    capsuleHit.normal.Normalize();
+
+                    m_debugHelper.DrawSphere(top.point, capsuleCastRadius, Color.blue, 1f);
+                    if (Physics.Raycast(rootTransform.position, rootTransform.forward, out RaycastHit hit, capsuleCastDistance, m_vaultLayer, QueryTriggerInteraction.Ignore))
+                    {
+                        m_stateInfos.matchTarget = new Vector3(hit.point.x, top.point.y - 0.8f, hit.point.z);
+                        m_debugHelper.DrawSphere(m_stateInfos.matchTarget, 0.1f, Color.red, 1f);
+                        characterController.enabled = false;
+                        //rootTransform.position = m_stateInfos.matchTarget;
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// 检测左右脚
+        /// </summary>
         public void CalculateFootStep()
         {
             Vector3 localForward = transform.TransformPoint(Vector3.forward);
@@ -152,10 +210,8 @@ namespace Demo_MoveMotor
             float right = Vector3.Dot(localForward, m_rightFootTran.position);
             m_footstep = left > right ? -1f : 1f;
 
-#if UNITY_EDITOR
-            Debug.DrawLine(localForward, m_leftFootTran.position, Color.green);
-            Debug.DrawLine(localForward, m_rightFootTran.position, Color.green);
-#endif
         }
+
     }
+
 }

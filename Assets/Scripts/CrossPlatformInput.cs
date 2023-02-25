@@ -293,7 +293,7 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""1afde551-1a58-4370-b65a-2037400ed28e"",
-                    ""path"": ""<Keyboard>/alt"",
+                    ""path"": ""<Keyboard>/x"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",

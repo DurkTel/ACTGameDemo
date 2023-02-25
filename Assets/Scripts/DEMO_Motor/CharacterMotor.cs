@@ -13,6 +13,9 @@ namespace Demo_MoveMotor
 
     public partial class CharacterMotor : MonoBehaviour, ICharacterControl
     {
+        protected DebugHelper m_debugHelper;
+
+
         #region 移动参数
         [SerializeField, Header("轨道相机")]
         protected OrbitCamera m_camera;
@@ -24,6 +27,9 @@ namespace Demo_MoveMotor
 
         [SerializeField, Header("墙跑层级")]
         protected LayerMask m_wallRunLayer;
+
+        [SerializeField, Header("翻越层级")]
+        protected LayerMask m_vaultLayer;
 
         [SerializeField, Header("可锁定层级")]
         protected LayerMask m_lockonLayer;
@@ -90,7 +96,9 @@ namespace Demo_MoveMotor
         /// <summary>
         /// 动画状态
         /// </summary>
-        protected AnimatorStateInfo m_baseLayerInfo;
+        protected AnimatorStateInfo m_baseLayerInfo, m_fullBodyLayerInfo;
+
+        protected XAnimationStateInfos m_stateInfos;
         /// <summary>
         /// 输入方向
         /// </summary>
@@ -124,10 +132,6 @@ namespace Demo_MoveMotor
         /// </summary>
         protected Vector3 m_targetDirection;
         /// <summary>
-        /// 是否使用RootMotor
-        /// </summary>
-        protected bool m_useRootMotor;
-        /// <summary>
         /// 是否在行走状态
         /// </summary>
         protected bool m_isWalk;
@@ -151,6 +155,15 @@ namespace Demo_MoveMotor
         /// 是否正在闪避
         /// </summary>
         protected bool m_isEscape;
+        /// <summary>
+        /// 是否正在翻越
+        /// </summary>
+        protected bool m_isVault;
+
+        protected virtual void Awake()
+        {
+            m_debugHelper = GetComponent<DebugHelper>();
+        }
 
         protected virtual void Start()
         {
@@ -206,6 +219,10 @@ namespace Demo_MoveMotor
             Quaternion newRotation = Quaternion.Euler(euler);
             rootTransform.rotation = newRotation;
             //rootTransform.rotation = Quaternion.RotateTowards(rootTransform.rotation, Quaternion.LookRotation(direction), rotationSpeed * Time.fixedDeltaTime);
+
+            m_debugHelper.DrawLine(rootTransform.position, rootTransform.position + direction, Color.green); //期望旋转
+            m_debugHelper.DrawLine(rootTransform.position, rootTransform.position + rootTransform.forward, Color.red, 0.05f); //当前旋转
+
         }
 
         public virtual void RotateToDirection(Vector3 direction)
@@ -215,14 +232,21 @@ namespace Demo_MoveMotor
             RotateToDirection(direction, m_rotateSpeed);
         }
 
+        /// <summary>
+        /// 使用根旋转
+        /// </summary>
         public virtual void RotateByRootMotor()
         {
             rootTransform.rotation *= animator.deltaRotation;
         }
 
-
+        /// <summary>
+        /// 移动到某个方向 使用CC
+        /// </summary>
+        /// <param name="direction"></param>
         public virtual void MoveToDirection(Vector3 direction)
         {
+            if (!characterController.enabled) return;
             direction.y = 0f;
             direction = direction.normalized * Mathf.Clamp(direction.magnitude, 0, 1f);
             //这一帧的移动位置
@@ -235,10 +259,22 @@ namespace Demo_MoveMotor
             
         }
 
+        /// <summary>
+        /// 使用根移动
+        /// </summary>
         public virtual void MoveByMotor()
         {
             characterController.Move(animator.deltaPosition);
         }
+
+        /// <summary>
+        /// 曲线移动 直接修改位置
+        /// </summary>
+        public virtual void CurveMove()
+        {
+            
+        }
+
 
         #endregion
 
@@ -258,6 +294,11 @@ namespace Demo_MoveMotor
         protected virtual void Fall()
         {
             PlayMachine(3);
+        }
+
+        protected virtual void Vault()
+        {
+            PlayAnimation("Vault", 0f);
         }
 
         #endregion

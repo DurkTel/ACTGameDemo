@@ -8,13 +8,12 @@ namespace Demo_MoveMotor
 {
     public class CharacterMotor_Animation : CharacterMotor_Physic
     {
-        protected XAnimationStateInfos m_stateInfos;
         protected override void Start()
         {
             base.Start();
-            RegisterListener();
             m_stateInfos = new XAnimationStateInfos(animator);
             m_stateInfos.RegisterListener();
+            RegisterAnimationEventListener();
         }
 
         protected override void Update()
@@ -38,7 +37,7 @@ namespace Demo_MoveMotor
 
         protected override void OnDisable()
         {
-            RemoveListener();
+            RemoveAnimationEventListener();
             m_stateInfos.RemoveListener();
         }
 
@@ -71,38 +70,46 @@ namespace Demo_MoveMotor
         private void UpdateAnimatorInfo()
         {
             m_baseLayerInfo = animator.GetCurrentAnimatorStateInfo(animator.GetLayerIndex("Base Layer"));
+            m_fullBodyLayerInfo = animator.GetCurrentAnimatorStateInfo(animator.GetLayerIndex("FullBody Layer"));
         }
 
         private void UpdateAnimatorState()
         {
-            m_isAirbone = InAnimationTag("Air");
-            m_isEscape = InAnimationTag("Escape");
+            m_isAirbone = IsInAnimationTag("Air");
+            m_isEscape = IsInAnimationTag("Escape");
+            m_isVault = IsInAnimationTag("Vault");
         }
 
-        protected void PlayAnimation(string name, int layer = -1)
+        protected override void PlayAnimation(string name, float duration)
         {
-            animator.Play(name, layer);
+            animator.CrossFadeInFixedTime(name, duration);
         }
 
-        public void RegisterListener()
+        public void RegisterAnimationEventListener()
         {
-            AnimationControl[] contrils = animator.GetBehaviours<AnimationControl>();
-            foreach (AnimationControl item in contrils)
+            foreach (var control in m_stateInfos.controls)
             {
-                item.OnStateChangeEvent += OnAnimationStateChange;
+                AnimationControlEvent e = control as AnimationControlEvent;
+                if (e != null)
+                { 
+                    e.OnStateChangeEvent += OnAnimationStateChange;
+                }
             }
         }
 
-        public void RemoveListener()
+        public void RemoveAnimationEventListener()
         {
-            AnimationControl[] contrils = animator.GetBehaviours<AnimationControl>();
-            foreach (AnimationControl item in contrils)
+            foreach (var control in m_stateInfos.controls)
             {
-                item.OnStateChangeEvent -= OnAnimationStateChange;
+                AnimationControlEvent e = control as AnimationControlEvent;
+                if (e != null)
+                {
+                    e.OnStateChangeEvent -= OnAnimationStateChange;
+                }
             }
         }
 
-        public bool InAnimationTag(string tag)
+        public bool IsInAnimationTag(string tag)
         {
             if (m_stateInfos.IsTag(tag))
                 return true;
@@ -110,37 +117,60 @@ namespace Demo_MoveMotor
             if (m_baseLayerInfo.IsTag(tag))
                 return true;
 
+            if (m_fullBodyLayerInfo.IsTag(tag))
+                return true;
+
             return false;
         }
 
-        private void OnAnimationStateChange(bool enter, string[] tags, AnimatorStateInfo stateInfo, int layer)
+        public bool IsEnableRootMotion(int type)
+        {
+            return m_stateInfos.IsEnableRootMotion(type);
+        }
+
+        public bool IsEnableCurveMotion()
+        {
+            return false;
+        }
+
+        public bool IsInTransition()
+        {
+            if (m_stateInfos.IsInTransition())
+                return true;
+
+            if (animator.IsInTransition(0))
+                return true;
+
+            if (animator.IsInTransition(1))
+                return true;
+
+            return false;
+        }
+
+        private void OnAnimationStateChange(AnimatorStateInfo stateInfo, int layer, bool enter)
         {
             if (enter)
-                OnAnimationStateEnter(tags, stateInfo, layer);
+            {
+                if (IsInAnimationTag("Sharp Turn"))
+                {
+                    animator.SetFloat(Float_Footstep_Hash, m_footstep);
+                    animator.SetFloat(Float_TurnRotation_Hash, m_targetDeg);
+                    animator.SetInteger(Int_Footstep_Hash, (int)m_footstep);
+                }
+                else if(IsInAnimationTag("Vault") || stateInfo.IsTag("Vault"))
+                {
+                    characterController.enabled = false;
+                }
+            }
             else
-                OnAnimationStateExit(tags, stateInfo, layer);
-        }
-
-        public void OnAnimationStateEnter(string[] tags, AnimatorStateInfo stateInfo, int layer)
-        {
-
-            if (InAnimationTag("MoveRootMotor") || InAnimationTag("RotatioRootMotor") || stateInfo.IsTag("Sharp Turn"))
             {
-                animator.SetFloat(Float_Footstep_Hash, m_footstep);
-                animator.SetFloat(Float_TurnRotation_Hash, m_targetDeg);
-                animator.SetInteger(Int_Footstep_Hash, (int)m_footstep);
-            }
-
-        }
-
-        public void OnAnimationStateExit(string[] tags, AnimatorStateInfo stateInfo, int layer)
-        {
-            if (Animator.StringToHash("Wall_Climb_Exit_Root") == stateInfo.shortNameHash)
-            {
-                characterController.enabled = true;
-                //UpdateMovementType(MovementType.IDLE);
+                if (IsInAnimationTag("Vault"))
+                {
+                    characterController.enabled = true;
+                }
             }
         }
+
 
         public void OnAnimationStateMove(AnimatorStateInfo stateInfo)
         {
@@ -155,11 +185,6 @@ namespace Demo_MoveMotor
                 animator.MatchTarget(m_wallHitEdge + m_wallHitNormal.normalized * mult, Quaternion.identity, AvatarTarget.Root, new MatchTargetWeightMask(Vector3.one, 0f), 0f, 0.1f);
             }
 
-            //if(animator.CurrentlyInAnimationTag("Sharp Turn"))
-            //{
-            //    animator.MatchTarget(animator.targetPosition, Quaternion.identity, AvatarTarget.Root, new MatchTargetWeightMask(Vector3.one, 0f), 0.9f, 1f);
-
-            //}
 
         }
 

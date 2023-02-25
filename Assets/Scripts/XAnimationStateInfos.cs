@@ -8,6 +8,7 @@ public class XAnimationStateInfos
 {
     public Animator animator;
     public AnimationControl[] controls;
+    public Vector3 matchTarget;
     public XStateInfo[] stateInfos = new XStateInfo[0];
     public XAnimationStateInfos(Animator animator)
     {
@@ -30,7 +31,7 @@ public class XAnimationStateInfos
         controls = animator.GetBehaviours<AnimationControl>();
         foreach (AnimationControl item in controls)
         {
-            item.stateInfos = this;
+            item.animationStateInfos = this;
         }
     }
 
@@ -38,40 +39,40 @@ public class XAnimationStateInfos
     {
         foreach (AnimationControl item in controls)
         {
-            item.stateInfos = null;
+            item.animationStateInfos = null;
         }
     }
 
-    public void AddStateInfo(string tag, int layer)
+    public void AddStateInfo(int layer)
     {
         if (stateInfos.Length > 0 && stateInfos.Length > layer)
         {
-            stateInfos[layer].tags ??= new List<string>();
-            stateInfos[layer].tags.Add(tag);
             stateInfos[layer].layer = layer;
-            stateInfos[layer].shortPathHash = 0;
+            stateInfos[layer].fullPathHash = 0;
             stateInfos[layer].normalizedTime = 0;
+            stateInfos[layer].enableRootMotionMove = false;
+            stateInfos[layer].enableRootMotionRotation = false;
         }
     }
 
-    public void RemoveStateInfo(string tag, int layer)
+    public void RemoveStateInfo(int layer)
     {
         if (stateInfos.Length > 0 && stateInfos.Length > layer)
         {
-            if (stateInfos[layer].tags.Contains(tag))
-                stateInfos[layer].tags.Remove(tag);
-
             stateInfos[layer].normalizedTime = 0;
-            stateInfos[layer].shortPathHash = 0;
+            stateInfos[layer].fullPathHash = 0;
+            stateInfos[layer].enableRootMotionMove = false;
+            stateInfos[layer].enableRootMotionRotation = false;
         }
     }
 
-    public void UpdateStateInfo(int layer, float normalizedTime, int fullPathHash)
+    public void UpdateStateInfo(int layer, float normalizedTime, int fullPathHash, bool inTransition)
     {
         if (stateInfos.Length > 0 && stateInfos.Length > layer)
         {
             stateInfos[layer].normalizedTime = normalizedTime;
-            stateInfos[layer].shortPathHash = fullPathHash;
+            stateInfos[layer].fullPathHash = fullPathHash;
+            stateInfos[layer].inTransition = inTransition;
         }
     }
 
@@ -80,7 +81,7 @@ public class XAnimationStateInfos
         if (stateInfos.Length > 0 && stateInfos.Length > layer)
         {
             int num = Animator.StringToHash(name);
-            return stateInfos[layer].shortPathHash == num;
+            return stateInfos[layer].fullPathHash == num;
         }
 
         return false;
@@ -110,6 +111,52 @@ public class XAnimationStateInfos
 
         return false;
     }
+
+    public bool IsEnableRootMotion(int layer, int type)
+    {
+        if (stateInfos.Length > 0 && stateInfos.Length > layer)
+        {
+
+            if (type == 1 ? stateInfos[layer].enableRootMotionMove : stateInfos[layer].enableRootMotionRotation)
+                return true;
+        }
+
+        return false;
+    }
+
+    public bool IsEnableRootMotion(int type)
+    {
+        foreach (var info in stateInfos)
+        {
+            if (IsEnableRootMotion(info.layer, type))
+                return true;
+        }
+
+        return false;
+    }
+
+    public bool IsInTransition(int layer)
+    {
+        if (stateInfos.Length > 0 && stateInfos.Length > layer)
+        {
+
+            if (stateInfos[layer].inTransition)
+                return true;
+        }
+
+        return false;
+    }
+
+    public bool IsInTransition()
+    {
+        foreach (var info in stateInfos)
+        {
+            if (IsInTransition(info.layer))
+                return true;
+        }
+
+        return false;
+    }
 }
 
 [System.Serializable]
@@ -117,9 +164,16 @@ public struct XStateInfo
 {
     public int layer;
 
-    public int shortPathHash;
+    public int fullPathHash;
+
+    public bool inTransition;
 
     public float normalizedTime;
+
+    public bool enableRootMotionMove;
+
+    public bool enableRootMotionRotation;
+
 
     public List<string> tags;
 }
