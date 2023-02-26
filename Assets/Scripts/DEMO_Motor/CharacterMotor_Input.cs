@@ -39,20 +39,22 @@ namespace Demo_MoveMotor
         public void OnEnable()
         {
             inputActions.Enable();
-            inputActions.GamePlay.Walk.performed += m_controller.ControlWalk;
-            inputActions.GamePlay.Lock.performed += m_controller.ControlGazing;
-            inputActions.GamePlay.Escape.performed += m_controller.ControlEscape;
-            inputActions.GamePlay.Jump.performed += m_controller.ControlJump;
+            inputActions.GamePlay.Walk.performed += m_controller.RequestWalk;
+            inputActions.GamePlay.Lock.performed += m_controller.RequestGazing;
+            inputActions.GamePlay.Escape.performed += m_controller.RequestEscape;
+            inputActions.GamePlay.Jump.performed += m_controller.RequestJump;
+            inputActions.GamePlay.Jump.performed += m_controller.RequestClimbEnd;
 
         }
 
         public void OnDisable()
         {
             inputActions.Disable();
-            inputActions.GamePlay.Walk.performed -= m_controller.ControlWalk;
-            inputActions.GamePlay.Lock.performed -= m_controller.ControlGazing;
-            inputActions.GamePlay.Escape.performed -= m_controller.ControlEscape;
-            inputActions.GamePlay.Jump.performed -= m_controller.ControlJump;
+            inputActions.GamePlay.Walk.performed -= m_controller.RequestWalk;
+            inputActions.GamePlay.Lock.performed -= m_controller.RequestGazing;
+            inputActions.GamePlay.Escape.performed -= m_controller.RequestEscape;
+            inputActions.GamePlay.Jump.performed -= m_controller.RequestJump;
+            inputActions.GamePlay.Jump.performed -= m_controller.RequestClimbEnd;
 
         }
 
@@ -74,7 +76,7 @@ namespace Demo_MoveMotor
             m_controller.SetTargetDirection(moveDirection);
             m_controller.SetInputDirection(m_inputDirection);
 
-            m_controller.ControlSprint(inputActions.GamePlay.Run.phase);
+            m_controller.RequestSprint(inputActions.GamePlay.Run.phase);
         }
 
         public virtual void CameraInput()

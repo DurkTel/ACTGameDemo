@@ -72,7 +72,7 @@ namespace Demo_MoveMotor
         /// <summary>
         /// 当前攀爬点位（手的位置）
         /// </summary>
-        private Vector3 m_currentClimbPoint;
+        protected Vector3 m_currentClimbPoint;
 
         protected override void Start()
         {
@@ -108,12 +108,6 @@ namespace Demo_MoveMotor
                 if (m_relativityRight <= -0.5f && !CalculateLege(-1))
                     m_relativityRight = 0f;
 
-                if (m_relativityForward >= 0.5f)
-                {
-                    Vector3 point = rootTransform.position;
-                    point.y = m_currentClimbPoint.y;
-                    m_stateInfos.AddMatchTargetList(new List<Vector3>() { point });
-                }
             }
         }
 

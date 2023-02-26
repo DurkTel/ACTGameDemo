@@ -124,13 +124,13 @@ namespace Demo_MoveMotor
 
         public bool IsInAnimationTag(string tag)
         {
-            if (m_stateInfos.IsTag(tag))
-                return true;
-
             if (m_baseLayerInfo.IsTag(tag))
                 return true;
 
             if (m_fullBodyLayerInfo.IsTag(tag))
+                return true;
+
+            if (m_stateInfos.IsTag(tag))
                 return true;
 
             return false;

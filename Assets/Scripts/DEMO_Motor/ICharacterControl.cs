@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Demo_MoveMotor
 {
@@ -40,6 +41,7 @@ namespace Demo_MoveMotor
         public bool isGround { get; set; }
         public bool isFall { get; set; }
         public CharacterController characterController { get; set; }
+
         #endregion
     }
 }

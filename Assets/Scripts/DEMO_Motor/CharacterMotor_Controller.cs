@@ -13,9 +13,9 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
     {
         base.Update();
 
-        ControlFall();
-        ControlVault();
-        ControlClimb();
+        RequestFall();
+        RequestVault();
+        RequestClimb();
     }
 
     protected override void FixedUpdate()
@@ -56,7 +56,10 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
         if (ControlRotatioRootMotor())
             RotateByRootMotor();
         else
-            RotateToDirection(m_targetDirection);
+        {
+            if (!m_isClimbing && !IsInAnimationName("Height Climb Exit"))
+                RotateToDirection(m_targetDirection);
+        }
     }
 
     public virtual bool ControlMoveRootMotor()
@@ -72,63 +75,63 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
         if (IsEnableRootMotion(2))
             return true;
 
-        if (IsInTransition())
-            return true;
+        //if (IsInTransition())
+        //    return true;
 
         return false;
     }
 
-    public virtual void ControlWalk(CallbackContext value)
+    public virtual void RequestWalk(CallbackContext value)
     {
         m_isWalk = !m_isWalk;
         m_moveType = m_isWalk ? MoveType.WALK : MoveType.RUN;
     }
 
-    public virtual void ControlSprint(InputActionPhase value)
+    public virtual void RequestSprint(InputActionPhase value)
     {
         if (m_isWalk) return;
         m_isSprint = value == InputActionPhase.Performed;
         m_moveType = m_isSprint ? MoveType.SPRINT : MoveType.RUN;
     }
 
-    public virtual void ControlGazing(CallbackContext value)
+    public virtual void RequestGazing(CallbackContext value)
     {
         m_isGazing = !m_isGazing;
         CalculateLockon();
     }
 
-    public virtual void ControlEscape(CallbackContext value)
+    public virtual void RequestEscape(CallbackContext value)
     {
         if (m_input.Equals(Vector2.zero)) return;
         Escape();
     }
 
-    public virtual void ControlJump(CallbackContext value)
+    public virtual void RequestJump(CallbackContext value)
     {
-        if (++m_jumpCount >= m_jumpFrequency || m_isVault || IsInAnimationTag("BanJump") || IsInTransition()) return;
+        if (++m_jumpCount >= m_jumpFrequency || m_isVault || m_isClimbing || IsInAnimationTag("BanJump") || IsInTransition()) return;
         m_isAirbone = true;
         Jump();
 
     }
 
-    public virtual void ControlFall()
+    public virtual void RequestFall()
     {
         if (m_isAirbone || !isFall || m_isVault || m_isClimbing || IsInTransition()) return;
         Fall();
     }
 
-    public virtual void ControlVault()
+    public virtual void RequestVault()
     {
-        if(!m_isVault && !m_input.Equals(Vector2.zero) && !IsInTransition() && CalculateVault())
+        if(!m_isVault && m_relativityForward >= 0.5f && !IsInTransition() && CalculateVault())
         {
             m_isVault = true;
             Vault();
         }
     }
 
-    public virtual void ControlClimb()
+    public virtual void RequestClimb()
     {
-        if (!m_isClimbing && !m_input.Equals(Vector2.zero) && !IsInTransition() && CalculateClimb(out int climbType))
+        if (!m_isClimbing && m_relativityForward >= 0.5f && !IsInTransition() && CalculateClimb(out int climbType))
         {
             m_isClimbing = true;
             if (climbType == 1)
@@ -138,4 +141,23 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
         }
     }
 
+    public virtual void RequestClimbEnd(CallbackContext value)
+    {
+        if (m_isClimbing)
+        {
+            if (m_relativityForward <= -0.5f)
+            {
+                m_isClimbing = false;
+                PlayAnimation("Height Climb Exit", 0f);
+            }
+            else if (!IsInAnimationName("Height Climb Up") && !IsInAnimationName("Height Climb End"))
+            {
+                Vector3 point = rootTransform.position;
+                point.y = m_currentClimbPoint.y;
+                m_stateInfos.AddMatchTargetList(new List<Vector3>() { point });
+                PlayAnimation("Height Climb End", 0.05f);
+            }
+
+        }
+    }
 }

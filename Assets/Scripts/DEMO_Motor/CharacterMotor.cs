@@ -252,7 +252,6 @@ namespace Demo_MoveMotor
 
         public virtual void RotateToDirection(Vector3 direction)
         {
-            if (m_isClimbing) return;
             direction = m_isGazing ? m_camera.transform.forward : direction;
 
             RotateToDirection(direction, m_rotateSpeed);
@@ -280,7 +279,7 @@ namespace Demo_MoveMotor
             //这一帧的移动速度
             Vector3 targetVelocity = (targetPosition - rootTransform.position) / Time.deltaTime;
             targetVelocity.y = verticalSpeed * Time.deltaTime;
-
+            
             characterController.Move(targetVelocity);
             
         }
