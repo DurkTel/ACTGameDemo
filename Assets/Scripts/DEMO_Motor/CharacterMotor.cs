@@ -13,12 +13,13 @@ namespace Demo_MoveMotor
 
     public partial class CharacterMotor : MonoBehaviour, ICharacterControl
     {
-        protected DebugHelper m_debugHelper;
-
-
-        #region 移动参数
-        [SerializeField, Header("轨道相机")]
         protected OrbitCamera m_camera;
+
+        #region 辅助工具
+        protected DebugHelper m_debugHelper;
+        #endregion
+
+        #region 检测层级
         [SerializeField, Header("地面层级")]
         protected LayerMask m_groundLayer;
 
@@ -33,6 +34,11 @@ namespace Demo_MoveMotor
 
         [SerializeField, Header("可锁定层级")]
         protected LayerMask m_lockonLayer;
+        #endregion
+
+        #region 移动参数
+
+        [Space]
 
         [SerializeField, Header("锁定范围")]
         protected float m_lockonRadius = 10f;
@@ -57,9 +63,6 @@ namespace Demo_MoveMotor
 
         [SerializeField, Header("空气阻尼")]
         protected float m_airDamping = 2f;
-
-        [SerializeField, Header("最大攀爬高度")]
-        protected float m_maxClimbHeight = 3f;
         #endregion
         /// <summary>
         /// 根节点
@@ -132,6 +135,22 @@ namespace Demo_MoveMotor
         /// </summary>
         protected Vector3 m_targetDirection;
         /// <summary>
+        /// 相对玩家前边的输入
+        /// </summary>
+        protected float m_relativityForward;
+        /// <summary>
+        /// 相对玩家右边的输入
+        /// </summary>
+        protected float m_relativityRight;
+        /// <summary>
+        /// 目标位置
+        /// </summary>
+        protected List<Vector3> m_targetPositions;
+        /// <summary>
+        /// 目标位置
+        /// </summary>
+        protected int m_targetPositionIndex;
+        /// <summary>
         /// 是否在行走状态
         /// </summary>
         protected bool m_isWalk;
@@ -159,10 +178,15 @@ namespace Demo_MoveMotor
         /// 是否正在翻越
         /// </summary>
         protected bool m_isVault;
+        /// <summary>
+        /// 是否正在攀爬
+        /// </summary>
+        protected bool m_isClimbing;
 
         protected virtual void Awake()
         {
             m_debugHelper = GetComponent<DebugHelper>();
+            m_camera = Camera.main.GetComponent<OrbitCamera>();
         }
 
         protected virtual void Start()
@@ -209,6 +233,7 @@ namespace Demo_MoveMotor
         /// <param name="rotationSpeed">旋转速度</param>
         public virtual void RotateToDirection(Vector3 direction, float rotationSpeed)
         {
+            if (m_isClimbing) return;
             direction.y = 0f;
             if (direction.normalized.magnitude == 0)
                 direction = rootTransform.forward;
@@ -227,6 +252,7 @@ namespace Demo_MoveMotor
 
         public virtual void RotateToDirection(Vector3 direction)
         {
+            if (m_isClimbing) return;
             direction = m_isGazing ? m_camera.transform.forward : direction;
 
             RotateToDirection(direction, m_rotateSpeed);
@@ -272,7 +298,11 @@ namespace Demo_MoveMotor
         /// </summary>
         public virtual void CurveMove()
         {
-            
+
+            if (characterController.enabled)
+                characterController.enabled = false;
+
+            rootTransform.position = Vector3.MoveTowards(rootTransform.position, m_targetPositions[m_targetPositionIndex], 0.05f);
         }
 
 
@@ -299,6 +329,16 @@ namespace Demo_MoveMotor
         protected virtual void Vault()
         {
             PlayAnimation("Vault", 0f);
+        }
+
+        protected virtual void ShortClimb()
+        {
+            PlayAnimation("Short Climb", 0f);
+        }
+
+        protected virtual void HeightClimb()
+        {
+            PlayAnimation("Height Climb Up", 0.05f);
         }
 
         #endregion

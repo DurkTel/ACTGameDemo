@@ -1,14 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.Experimental.GraphView.GraphView;
 
 [System.Serializable]
 public class XAnimationStateInfos
 {
     public Animator animator;
+
     public AnimationControl[] controls;
-    public Vector3 matchTarget;
+
+    public List<Vector3> matchTarget = new List<Vector3>(0);
+
+    public List<Quaternion> matchQuaternion = new List<Quaternion>(0);  
+
+    public CharacterController characterController;
+
     public XStateInfo[] stateInfos = new XStateInfo[0];
     public XAnimationStateInfos(Animator animator)
     {
@@ -74,6 +80,22 @@ public class XAnimationStateInfos
             stateInfos[layer].fullPathHash = fullPathHash;
             stateInfos[layer].inTransition = inTransition;
         }
+    }
+
+    public void AddMatchQuaternionList(List<Quaternion> quaternionList)
+    {
+        matchQuaternion = quaternionList;
+    }
+
+    public void AddMatchTargetList(List<Vector3> targetList)
+    {
+        matchTarget = targetList;
+    }
+
+    public void AddMatchTarget(Vector3 target)
+    {
+        matchTarget ??= new List<Vector3>();
+        matchTarget?.Add(target);
     }
 
     public bool IsName(string name, int layer)
@@ -160,20 +182,23 @@ public class XAnimationStateInfos
 }
 
 [System.Serializable]
+public struct XMatchTarget
+{
+    public AvatarTarget avatar;
+    public float rotationWeight;
+    public Vector3 positionXYZWeight;
+    public float startNormalizedTime;
+    public float targetNormalizedTime;
+}
+
+[System.Serializable]
 public struct XStateInfo
 {
     public int layer;
-
     public int fullPathHash;
-
     public bool inTransition;
-
     public float normalizedTime;
-
     public bool enableRootMotionMove;
-
     public bool enableRootMotionRotation;
-
-
     public List<string> tags;
 }

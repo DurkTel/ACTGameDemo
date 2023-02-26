@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.ProBuilder;
 using UnityEngine.ProBuilder.Shapes;
 using static Demo_MoveMotor.ICharacterControl;
 
@@ -31,6 +32,47 @@ namespace Demo_MoveMotor
         /// 脚步前后关系
         /// </summary>
         protected float m_footstep = -1f;
+        /// <summary>
+        /// 翻越检测圆柱半径
+        /// </summary>
+        [SerializeField, Header("检测圆柱半径")] private float m_capsuleCastRadius = 0.2f;
+        /// <summary>
+        /// 翻越检测距离
+        /// </summary>
+        [SerializeField, Header("翻越检测距离")] private float m_capsuleCastDistance = 1.2f;
+        /// <summary>
+        /// 翻越检测最大高度
+        /// </summary>
+        [SerializeField, Header("翻越检测最大高度")] private float m_maxVaultHeight = 1.5f;
+        /// <summary>
+        /// 翻越后位置距离
+        /// </summary>
+        [SerializeField, Header("翻越后位置距离")] private float m_distanceAfterVault = 0.5f;
+        [Space]
+        /// <summary>
+        /// 检测半径
+        /// </summary>
+        [SerializeField, Header("检测半径")] private float m_overlapRadius = 0.75f;
+        /// <summary>
+        /// 检测高度
+        /// </summary>
+        [SerializeField, Header("检测高度")] private float m_capsuleCastHeight = 1f;
+        /// <summary>
+        /// 低位攀爬最小高度
+        /// </summary>
+        [SerializeField, Header("攀爬最小高度")] private float m_minClimbHeight = 0.5f;
+        /// <summary>
+        /// 低位攀爬最大高度
+        /// </summary>
+        [SerializeField, Header("低位攀爬最大高度")] private float m_maxClimbHeightShort = 1.5f;
+        /// <summary>
+        /// 高位位攀爬最大高度
+        /// </summary>
+        [SerializeField, Header("高位位攀爬最大高度")] private float m_maxClimbHeightHeight = 2.5f;
+        /// <summary>
+        /// 当前攀爬点位（手的位置）
+        /// </summary>
+        private Vector3 m_currentClimbPoint;
 
         protected override void Start()
         {
@@ -46,10 +88,33 @@ namespace Demo_MoveMotor
         protected override void FixedUpdate()
         {
             base.FixedUpdate();
+            CalculateRelativityTarget();
             CalculateAngularVelocity();
             CalculateFootStep();
             CalculateGravity();
             CalculateGround();
+        }
+
+        protected void CalculateRelativityTarget()
+        {
+            m_relativityForward = Vector3.Dot(m_targetDirection, rootTransform.forward);
+            m_relativityRight = Vector3.Dot(m_targetDirection, rootTransform.right);
+
+            if (m_isClimbing)
+            {
+                if (m_relativityRight >= 0.5f && !CalculateLege(1))
+                    m_relativityRight = 0f;
+
+                if (m_relativityRight <= -0.5f && !CalculateLege(-1))
+                    m_relativityRight = 0f;
+
+                if (m_relativityForward >= 0.5f)
+                {
+                    Vector3 point = rootTransform.position;
+                    point.y = m_currentClimbPoint.y;
+                    m_stateInfos.AddMatchTargetList(new List<Vector3>() { point });
+                }
+            }
         }
 
         /// <summary>
@@ -79,7 +144,7 @@ namespace Demo_MoveMotor
         /// </summary>
         public void CalculateGravity()
         {
-            if (!characterController.enabled)
+            if (!characterController.enabled || m_isClimbing)
             {
                 verticalSpeed = 0f;
                 return;
@@ -135,69 +200,127 @@ namespace Demo_MoveMotor
             m_camera.lockon = newLock;
         }
 
-        public bool ClimbCondition()
-        {
-            if (Physics.Raycast(rootTransform.position + Vector3.up + Vector3.up * 0.5f, rootTransform.forward, out RaycastHit obsHit, 1f, m_climbLayer))
-            {
-                //墙面的法线方向
-                m_wallHitNormal = obsHit.normal;
-                Vector3 target = obsHit.point;
-                //墙的最大高度
-                target.y = obsHit.collider.bounds.size.y;
-                if (Physics.Raycast(target + Vector3.up, Vector3.down, out RaycastHit wallHit, obsHit.collider.bounds.size.y + 1f, m_climbLayer))
-                {
-                    m_wallHitEdge = wallHit.point;
-                    if (m_wallHitEdge.y <= m_maxClimbHeight)
-                        return true;
-                }
-            }
-
-            return false;
-        }
-
-        [SerializeField] private float capsuleCastRadius = 0.2f;
-        [SerializeField] private float capsuleCastDistance = 1.2f;
-        [Space]
-        [SerializeField] private float maxVaultHeight = 1.5f;
-        [SerializeField] private float distanceAfterVault = 0.5f;
         /// <summary>
         /// 检测翻越物
         /// </summary>
         public bool CalculateVault()
         {
 
-            Vector3 p1 = rootTransform.position + rootTransform.forward * capsuleCastDistance + Vector3.up * capsuleCastRadius;
-            Vector3 p2 = rootTransform.position + rootTransform.forward * capsuleCastDistance + Vector3.up * (maxVaultHeight - capsuleCastRadius);
+            Vector3 p1 = rootTransform.position + rootTransform.forward * m_capsuleCastDistance + Vector3.up * m_capsuleCastRadius;
+            Vector3 p2 = rootTransform.position + rootTransform.forward * m_capsuleCastDistance + Vector3.up * (m_maxVaultHeight - m_capsuleCastRadius);
 
-            m_debugHelper.DrawCapsule(p1, p2, capsuleCastRadius, Color.white);
-            m_debugHelper.DrawLabel("翻越检测", p1 + Vector3.up, Color.white);
+            m_debugHelper.DrawCapsule(p1, p2, m_capsuleCastRadius, Color.white);
+            m_debugHelper.DrawLabel("翻越检测", p1 + Vector3.up, Color.blue);
 
             //检测长度
-            if (Physics.CapsuleCast(p1, p2, capsuleCastRadius, -rootTransform.forward, out RaycastHit capsuleHit, capsuleCastDistance, m_vaultLayer, QueryTriggerInteraction.Ignore))
+            if (Physics.CapsuleCast(p1, p2, m_capsuleCastRadius, -rootTransform.forward, out RaycastHit capsuleHit, m_capsuleCastDistance, m_vaultLayer, QueryTriggerInteraction.Ignore))
             {
                 Vector3 startTop = capsuleHit.point;
-                startTop.y = rootTransform.position.y + maxVaultHeight + capsuleCastRadius;
-                m_debugHelper.DrawSphere(capsuleHit.point, capsuleCastRadius, Color.yellow, 1f);
+                startTop.y = rootTransform.position.y + m_maxVaultHeight + m_capsuleCastRadius;
+                m_debugHelper.DrawSphere(capsuleHit.point, m_capsuleCastRadius, Color.yellow, 1f);
 
                 //检测高度
-                if (Physics.SphereCast(startTop, capsuleCastRadius, Vector3.down, out RaycastHit top, maxVaultHeight, m_vaultLayer, QueryTriggerInteraction.Ignore))
+                if (Physics.SphereCast(startTop, m_capsuleCastRadius, Vector3.down, out RaycastHit top, m_maxVaultHeight, m_vaultLayer, QueryTriggerInteraction.Ignore))
                 {
                     capsuleHit.normal = new Vector3(capsuleHit.normal.x, 0f, capsuleHit.normal.z);
                     capsuleHit.normal.Normalize();
 
-                    m_debugHelper.DrawSphere(top.point, capsuleCastRadius, Color.blue, 1f);
-                    if (Physics.Raycast(rootTransform.position, rootTransform.forward, out RaycastHit hit, capsuleCastDistance, m_vaultLayer, QueryTriggerInteraction.Ignore))
+                    //检测目标点的高度
+                    Vector3 targetPosition = capsuleHit.point + capsuleHit.normal * m_distanceAfterVault;
+                    if (Physics.Raycast(targetPosition, Vector3.down, out RaycastHit groundHit, 2f, Physics.AllLayers, QueryTriggerInteraction.Ignore))
+                        targetPosition.y = groundHit.point.y;
+                    else
+                        targetPosition.y = rootTransform.position.y;
+
+
+                    m_debugHelper.DrawSphere(top.point, m_capsuleCastRadius, Color.blue, 1f);
+                    if (Physics.Raycast(rootTransform.position, rootTransform.forward, out RaycastHit hit, m_capsuleCastDistance, m_vaultLayer, QueryTriggerInteraction.Ignore))
                     {
-                        m_stateInfos.matchTarget = new Vector3(hit.point.x, top.point.y - 0.8f, hit.point.z);
-                        m_debugHelper.DrawSphere(m_stateInfos.matchTarget, 0.1f, Color.red, 1f);
-                        characterController.enabled = false;
-                        //rootTransform.position = m_stateInfos.matchTarget;
+                        Vector3 hitPoint = new Vector3(hit.point.x, top.point.y, hit.point.z);
+                        m_stateInfos.AddMatchTargetList(new List<Vector3>() { hitPoint, targetPosition });
+
+                        m_debugHelper.DrawSphere(hitPoint, 0.1f, Color.red, 1f);
+                        m_debugHelper.DrawSphere(targetPosition, 0.1f, Color.red, 1f);
                         return true;
                     }
                 }
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// 检测攀爬
+        /// </summary>
+        /// <returns></returns>
+        public bool CalculateClimb(out int climbType)
+        {
+            Vector3 p1 = rootTransform.position + Vector3.up * (m_minClimbHeight + m_capsuleCastRadius);
+            Vector3 p2 = rootTransform.position + Vector3.up * (m_capsuleCastHeight - m_capsuleCastRadius);
+            m_debugHelper.DrawCapsule(p1, p2, m_overlapRadius, Color.white);
+            m_debugHelper.DrawLabel("攀爬检测", p1 + Vector3.up, Color.blue);
+            if(Physics.CapsuleCast(p1, p2, m_capsuleCastRadius, rootTransform.forward, out RaycastHit forwardHit, m_overlapRadius, m_climbLayer, QueryTriggerInteraction.Ignore))
+            {
+                RaycastHit topHit;
+                Vector3 sphereStart = forwardHit.point;
+                //先检测低位攀爬
+                sphereStart.y = transform.position.y + m_maxClimbHeightShort + m_capsuleCastRadius;
+                if (Physics.SphereCast(sphereStart, m_capsuleCastRadius, Vector3.down, out topHit, m_maxClimbHeightShort - m_minClimbHeight, m_climbLayer, QueryTriggerInteraction.Ignore))
+                {
+                    m_debugHelper.DrawSphere(topHit.point, 0.1f, Color.red, 3f);
+                    m_stateInfos.AddMatchTargetList(new List<Vector3>() { topHit.point });
+                    climbType = 1;
+                    return true;
+                }
+                //再检测高位攀爬
+                sphereStart.y = rootTransform.position.y + m_maxClimbHeightHeight + m_capsuleCastRadius;
+                if (Physics.SphereCast(sphereStart, m_capsuleCastRadius, Vector3.down, out topHit, m_maxClimbHeightHeight - m_maxClimbHeightShort, m_climbLayer, QueryTriggerInteraction.Ignore))
+                {
+                    m_debugHelper.DrawSphere(topHit.point, 0.1f, Color.red, 3f);
+                    m_stateInfos.AddMatchTargetList(new List<Vector3>() { topHit.point });
+                    //记录攀爬点
+                    m_currentClimbPoint = topHit.point;
+                    //面向墙壁
+                    Vector3 faceTo = -forwardHit.normal;
+                    faceTo.y = 0f;
+                    rootTransform.rotation = Quaternion.LookRotation(faceTo);
+                    climbType = 2;
+                    return true;
+                }
+            }
+
+            climbType = 0;
+            return false;
+        }
+
+        /// <summary>
+        /// 边缘点检测
+        /// </summary>
+        /// <returns></returns>
+        public bool CalculateLege(int direction)
+        {
+            int count = 3;
+            int missCount = 0;
+            Vector3 p = rootTransform.position;
+            p.y = m_currentClimbPoint.y;
+            Collider [] colls;
+            
+            for (int i = 1; i <= count; i++)
+            {
+                Vector3 center = p + rootTransform.right * i * direction * 0.35f * 2f;
+                Vector3 top = center + Vector3.up * 0.25f;
+                Vector3 down = center + Vector3.down * 0.25f;
+
+                colls = Physics.OverlapCapsule(top, down, 0.35f, m_climbLayer);
+                Color color = colls.Length > 0 ? Color.green : Color.red;
+
+                if (colls.Length == 0)
+                    missCount++;
+
+                m_debugHelper.DrawCapsule(top, down, 0.35f, color);
+            }
+
+            return count - missCount > 0;
         }
 
         /// <summary>

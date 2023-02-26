@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 动画标识
+/// 动画标识 可作用与子动画状态机
 /// </summary>
 public class AnimationControlTag : AnimationControl
 {

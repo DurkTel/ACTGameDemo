@@ -15,6 +15,7 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
 
         ControlFall();
         ControlVault();
+        ControlClimb();
     }
 
     protected override void FixedUpdate()
@@ -112,7 +113,7 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
 
     public virtual void ControlFall()
     {
-        if (m_isAirbone || !isFall || m_isVault || IsInTransition()) return;
+        if (m_isAirbone || !isFall || m_isVault || m_isClimbing || IsInTransition()) return;
         Fall();
     }
 
@@ -120,8 +121,20 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
     {
         if(!m_isVault && !m_input.Equals(Vector2.zero) && !IsInTransition() && CalculateVault())
         {
-            Vault();
             m_isVault = true;
+            Vault();
+        }
+    }
+
+    public virtual void ControlClimb()
+    {
+        if (!m_isClimbing && !m_input.Equals(Vector2.zero) && !IsInTransition() && CalculateClimb(out int climbType))
+        {
+            m_isClimbing = true;
+            if (climbType == 1)
+                ShortClimb();
+            else if (climbType == 2)
+                HeightClimb();
         }
     }
 

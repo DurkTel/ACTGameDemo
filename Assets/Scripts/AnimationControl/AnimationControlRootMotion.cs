@@ -19,10 +19,12 @@ public class AnimationControlRootMotion : AnimationControl
         base.OnStateUpdate(animator, stateInfo, layerIndex);
         if (animationStateInfos != null)
         {
-            bool inRange = stateInfo.normalizedTime >= normalizedTimeStartMove && stateInfo.normalizedTime <= normalizedTimeEndMove;
+            float curNormalizedTime = stateInfo.normalizedTime % 1;
+
+            bool inRange = curNormalizedTime >= normalizedTimeStartMove && curNormalizedTime <= normalizedTimeEndMove;
             animationStateInfos.stateInfos[layerIndex].enableRootMotionMove = inRange;
 
-            inRange = stateInfo.normalizedTime >= normalizedTimeStartRotation && stateInfo.normalizedTime <= normalizedTimeEndRotation;
+            inRange = curNormalizedTime >= normalizedTimeStartRotation && curNormalizedTime <= normalizedTimeEndRotation;
             animationStateInfos.stateInfos[layerIndex].enableRootMotionRotation = inRange;
         }
     }

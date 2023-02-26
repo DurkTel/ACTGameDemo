@@ -12,6 +12,7 @@ namespace Demo_MoveMotor
         {
             base.Start();
             m_stateInfos = new XAnimationStateInfos(animator);
+            m_stateInfos.characterController = characterController;
             m_stateInfos.RegisterListener();
             RegisterAnimationEventListener();
         }
@@ -55,8 +56,8 @@ namespace Demo_MoveMotor
             animator.SetFloat(Float_Movement_Hash, (float)m_moveType * m_targetDirection.magnitude, 0.2f, Time.fixedDeltaTime);
             animator.SetFloat(Float_InputMagnitude_Hash, m_targetDirection.magnitude, 0.2f, Time.fixedDeltaTime);
             animator.SetFloat(Float_Input_Hash, m_targetDirection.magnitude);
-            animator.SetFloat(Float_InputHorizontal_Hash, m_input.x, 0.2f, Time.fixedDeltaTime);
-            animator.SetFloat(Float_InputVertical_Hash, m_input.y, 0.2f, Time.fixedDeltaTime);
+            animator.SetFloat(Float_InputHorizontal_Hash, m_relativityRight, 0.2f, Time.fixedDeltaTime);
+            animator.SetFloat(Float_InputVertical_Hash, m_relativityForward, 0.2f, Time.fixedDeltaTime);
             //animator.SetFloat(Float_RotationMagnitude_Hash, m_targetRad, m_rotationSmooth, Time.deltaTime);
             animator.SetFloat(Float_AngularVelocity_Hash, m_angularVelocity, 0.2f, Time.fixedDeltaTime);
             animator.SetFloat(Float_Rotation_Hash, m_targetDeg);
@@ -78,6 +79,7 @@ namespace Demo_MoveMotor
             m_isAirbone = IsInAnimationTag("Air");
             m_isEscape = IsInAnimationTag("Escape");
             m_isVault = IsInAnimationTag("Vault");
+            m_isClimbing = IsInAnimationTag("Climb");
         }
 
         protected override void PlayAnimation(string name, float duration)
@@ -109,6 +111,17 @@ namespace Demo_MoveMotor
             }
         }
 
+        public bool IsInAnimationName(string name)
+        {
+            if (m_baseLayerInfo.IsName(name))
+                return true;
+
+            if (m_fullBodyLayerInfo.IsName(name))
+                return true;
+
+            return false;
+        }
+
         public bool IsInAnimationTag(string tag)
         {
             if (m_stateInfos.IsTag(tag))
@@ -130,6 +143,30 @@ namespace Demo_MoveMotor
 
         public bool IsEnableCurveMotion()
         {
+            //if (m_targetPositions == null)
+            //    return false;
+
+            //if (m_targetPositions.Count <= 0)
+            //{
+            //    if (!characterController.enabled)
+            //        characterController.enabled = true;
+
+            //    m_targetPositionIndex = -1;
+            //    return false;
+            //}
+
+            //if (Vector3.Distance(m_targetPositions[m_targetPositionIndex], rootTransform.position) <= 0.01f)
+            //{
+            //    if(m_targetPositions.Count <= ++m_targetPositionIndex)
+            //    {
+            //        if (!characterController.enabled)
+            //            characterController.enabled = true;
+            //        m_targetPositionIndex = -1;
+            //        m_targetPositions.Clear();
+            //        return false;
+            //    }
+            //}
+
             return false;
         }
 
@@ -157,17 +194,10 @@ namespace Demo_MoveMotor
                     animator.SetFloat(Float_TurnRotation_Hash, m_targetDeg);
                     animator.SetInteger(Int_Footstep_Hash, (int)m_footstep);
                 }
-                else if(IsInAnimationTag("Vault") || stateInfo.IsTag("Vault"))
-                {
-                    characterController.enabled = false;
-                }
             }
             else
             {
-                if (IsInAnimationTag("Vault"))
-                {
-                    characterController.enabled = true;
-                }
+
             }
         }
 

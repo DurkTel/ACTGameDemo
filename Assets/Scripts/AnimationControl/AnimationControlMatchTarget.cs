@@ -4,19 +4,50 @@ using UnityEngine;
 
 public class AnimationControlMatchTarget : AnimationControl
 {
-    public AvatarTarget avatar;
-    [Range(0f, 1f)]
-    public float startNormalizedTime;
-    [Range(0f, 1f)]
-    public float targetNormalizedTime;
+    public XMatchTarget[] matchTargets;
 
+    public bool exitClearInfo = true;
+
+    override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    {
+        base.OnStateEnter(animator, stateInfo, layerIndex);
+        animationStateInfos.characterController.enabled = false;
+    }
     override public void OnStateMove(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         base.OnStateMove(animator, stateInfo, layerIndex);
+        
+        //如果代码中赋值的匹配点和配置的数量对不上 取消匹配
+        int length = matchTargets.Length;
+        int count = animationStateInfos.matchTarget.Count;
+        int count2 = animationStateInfos.matchQuaternion.Count;
+        if (count == 0 || count != length)
+            return;
+
         if (!animator.IsInTransition(layerIndex))
         {
+            //位置匹配需要应用根位移
             animator.ApplyBuiltinRootMotion();
-            animator.MatchTarget(animationStateInfos.matchTarget, Quaternion.identity, avatar, new MatchTargetWeightMask(Vector3.one, 0f), startNormalizedTime, targetNormalizedTime);
+            XMatchTarget match;
+            Quaternion quaternion;
+            for (int i = 0; i < length; i++)
+            {
+                match = matchTargets[i];
+                quaternion = count2 <= i ? Quaternion.identity : animationStateInfos.matchQuaternion[i];
+                animator.MatchTarget(animationStateInfos.matchTarget[i], quaternion, match.avatar, 
+                    new MatchTargetWeightMask(match.positionXYZWeight, match.rotationWeight), match.startNormalizedTime, match.targetNormalizedTime);
+            }
+        }
+    }
+
+    override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    {
+        base.OnStateExit(animator, stateInfo, layerIndex);
+        animationStateInfos.characterController.enabled = true;
+        if (exitClearInfo)
+        {
+            animationStateInfos.matchTarget.Clear();
+            animationStateInfos.matchQuaternion.Clear();
         }
     }
 
