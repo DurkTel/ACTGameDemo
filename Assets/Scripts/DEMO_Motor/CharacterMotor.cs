@@ -143,6 +143,10 @@ namespace Demo_MoveMotor
         /// </summary>
         protected float m_relativityRight;
         /// <summary>
+        /// 墙跑的方向
+        /// </summary>
+        protected float m_wallRunDir; 
+        /// <summary>
         /// 目标位置
         /// </summary>
         protected List<Vector3> m_targetPositions;
@@ -182,6 +186,10 @@ namespace Demo_MoveMotor
         /// 是否正在攀爬
         /// </summary>
         protected bool m_isClimbing;
+        /// <summary>
+        /// 是否正在蹬墙跑
+        /// </summary>
+        protected bool m_isWallRunning;
 
         protected virtual void Awake()
         {

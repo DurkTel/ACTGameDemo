@@ -62,10 +62,11 @@ namespace Demo_MoveMotor
             animator.SetFloat(Float_AngularVelocity_Hash, m_angularVelocity, 0.2f, Time.fixedDeltaTime);
             animator.SetFloat(Float_Rotation_Hash, m_targetDeg);
             animator.SetFloat(Float_JumpCount_Hash, m_jumpCount);
+            animator.SetFloat(Float_WallRunDir_Hash, m_wallRunDir);
             animator.SetBool(Bool_MoveInput_Hash, m_targetDirection.sqrMagnitude != 0f);
             animator.SetBool(Bool_Gazing_Hash, m_isGazing);
             animator.SetBool(Bool_Ground_Hash, isGround);
-
+            animator.SetBool(Bool_WallRunning_Hash, m_isWallRunning);
         }
 
         private void UpdateAnimatorInfo()
@@ -230,6 +231,7 @@ namespace Demo_MoveMotor
         public static int Float_Footstep_Hash = Animator.StringToHash("Float_Footstep");
         public static int Float_TurnRotation_Hash = Animator.StringToHash("Float_TurnRotation");
         public static int Float_JumpCount_Hash = Animator.StringToHash("Float_JumpCount");
+        public static int Float_WallRunDir_Hash = Animator.StringToHash("Float_WallRunDir");
         public static int Int_Movement_Hash = Animator.StringToHash("Int_Movement");
         public static int Int_Footstep_Hash = Animator.StringToHash("Int_Footstep");
         public static int Int_EnterMachineType_Hash = Animator.StringToHash("Int_EnterMachineType");
@@ -239,6 +241,7 @@ namespace Demo_MoveMotor
         public static int Bool_MoveInput_Hash = Animator.StringToHash("Bool_MoveInput");
         public static int Bool_Gazing_Hash = Animator.StringToHash("Bool_Gazing");
         public static int Bool_Ground_Hash = Animator.StringToHash("Bool_Ground");
+        public static int Bool_WallRunning_Hash = Animator.StringToHash("Bool_WallRunning");
         #endregion
     }
 }

@@ -8,7 +8,6 @@ using static UnityEngine.InputSystem.InputAction;
 
 public class CharacterMotor_Controller : CharacterMotor_Animation
 {
-
     protected override void Update()
     {
         base.Update();
@@ -16,6 +15,7 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
         RequestFall();
         RequestVault();
         RequestClimb();
+        RequestWallRun();
     }
 
     protected override void FixedUpdate()
@@ -75,8 +75,8 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
         if (IsEnableRootMotion(2))
             return true;
 
-        //if (IsInTransition())
-        //    return true;
+        if (IsInAnimationTag("Free Movement") && IsInTransition())
+            return true;
 
         return false;
     }
@@ -116,7 +116,7 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
 
     public virtual void RequestFall()
     {
-        if (m_isAirbone || !isFall || m_isVault || m_isClimbing || IsInTransition()) return;
+        if (m_isAirbone || !isFall || m_isVault || m_isClimbing || m_isWallRunning || IsInTransition()) return;
         Fall();
     }
 
@@ -158,6 +158,21 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
                 PlayAnimation("Height Climb End", 0.05f);
             }
 
+        }
+    }
+
+    public virtual void RequestWallRun()
+    {
+        m_isWallRunning = false;
+        if (m_relativityForward >= 0.5f && CalculateWallRun(out Vector3 wallNormal, out m_wallRunDir))
+        {
+            m_isWallRunning = true;
+            //叉乘得出与墙面平行方向
+            m_targetDirection = Vector3.Cross(wallNormal, Vector3.up);
+            //点乘得出与角色面朝方向相同的
+            m_targetDirection = Vector3.Dot(rootTransform.forward, m_targetDirection) > 0 ? m_targetDirection : -m_targetDirection;
+
+            verticalSpeed = 0f;
         }
     }
 }

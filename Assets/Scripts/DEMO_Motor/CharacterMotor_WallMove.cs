@@ -8,11 +8,9 @@ namespace Demo_MoveMotor
 {
     public partial class CharacterMotor
     {
-        private int m_wallRunDir;
 
         private bool Request_WallMove(ref MovementType movement)
         {
-            m_wallRunDir = 0;
 
             //if (!isGround && isFall && m_holdDirection && Vector3.Angle(m_targetDirection, rootTransform.forward) < 45) //输入方向不能和角色前方超过45度
             //{

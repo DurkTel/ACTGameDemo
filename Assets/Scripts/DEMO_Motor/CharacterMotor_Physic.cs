@@ -2,6 +2,7 @@ using Demo_MoveMotor;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.ProBuilder;
@@ -33,7 +34,7 @@ namespace Demo_MoveMotor
         /// </summary>
         protected float m_footstep = -1f;
         /// <summary>
-        /// ∑≠‘ΩºÏ≤‚‘≤÷˘∞Îæ∂
+        /// ºÏ≤‚‘≤÷˘∞Îæ∂
         /// </summary>
         [SerializeField, Header("ºÏ≤‚‘≤÷˘∞Îæ∂")] private float m_capsuleCastRadius = 0.2f;
         /// <summary>
@@ -95,6 +96,9 @@ namespace Demo_MoveMotor
             CalculateGround();
         }
 
+        /// <summary>
+        /// º∆À„ ‰»Îœ‡∂‘Ω«…´µƒ∑ΩœÚ
+        /// </summary>
         protected void CalculateRelativityTarget()
         {
             m_relativityForward = Vector3.Dot(m_targetDirection, rootTransform.forward);
@@ -102,10 +106,10 @@ namespace Demo_MoveMotor
 
             if (m_isClimbing)
             {
-                if (m_relativityRight >= 0.5f && !CalculateLege(1))
+                if (m_relativityRight >= 0.5f && !CalculateEdge(1))
                     m_relativityRight = 0f;
 
-                if (m_relativityRight <= -0.5f && !CalculateLege(-1))
+                if (m_relativityRight <= -0.5f && !CalculateEdge(-1))
                     m_relativityRight = 0f;
 
             }
@@ -291,7 +295,7 @@ namespace Demo_MoveMotor
         /// ±ﬂ‘µµ„ºÏ≤‚
         /// </summary>
         /// <returns></returns>
-        public bool CalculateLege(int direction)
+        public bool CalculateEdge(int direction)
         {
             int count = 3;
             int missCount = 0;
@@ -315,6 +319,33 @@ namespace Demo_MoveMotor
             }
 
             return count - missCount > 0;
+        }
+
+        /// <summary>
+        /// ºÏ≤‚«Ω≈‹
+        /// </summary>
+        /// <returns></returns>
+        public bool CalculateWallRun(out Vector3 wallNormal, out float dir)
+        {
+            //◊Û”“ «∑Ò”–«Ω
+            bool right = Physics.SphereCast(rootTransform.position, m_capsuleCastRadius, rootTransform.right, out RaycastHit rightHit, 0.5f, m_wallRunLayer, QueryTriggerInteraction.Ignore);
+            bool left = Physics.SphereCast(rootTransform.position, m_capsuleCastRadius, -rootTransform.right, out RaycastHit leftHit, 0.5f, m_wallRunLayer, QueryTriggerInteraction.Ignore);
+
+
+            if(right || left)
+            {
+                //∏ﬂ∂» «∑Ò◊„πª
+                if (!Physics.Raycast(rootTransform.position, Vector3.down, 1f, m_groundLayer))
+                {
+                    wallNormal = right ? rightHit.normal : leftHit.normal;
+                    dir = right ? 1f : -1f;
+                    return true;
+                }
+            }
+
+            dir = 1f;
+            wallNormal = Vector3.zero;
+            return false;
         }
 
         /// <summary>
