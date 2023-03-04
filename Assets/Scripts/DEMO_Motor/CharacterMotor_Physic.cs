@@ -75,6 +75,8 @@ namespace Demo_MoveMotor
         /// </summary>
         protected Vector3 m_currentClimbPoint;
 
+        protected Vector3 m_wallRunForward;
+
         protected override void Start()
         {
             base.Start();
@@ -101,8 +103,10 @@ namespace Demo_MoveMotor
         /// </summary>
         protected void CalculateRelativityTarget()
         {
-            m_relativityForward = Vector3.Dot(m_targetDirection, rootTransform.forward);
-            m_relativityRight = Vector3.Dot(m_targetDirection, rootTransform.right);
+            m_relativityForward = Vector3.Dot(m_targetDirection.normalized, rootTransform.forward);
+            m_relativityRight = Vector3.Dot(m_targetDirection.normalized, rootTransform.right);
+            m_relativityForward = m_relativityForward.NormalizeFloat();
+            m_relativityRight = m_relativityRight.NormalizeFloat();
 
             if (m_isClimbing)
             {
@@ -207,8 +211,8 @@ namespace Demo_MoveMotor
             Vector3 p1 = rootTransform.position + rootTransform.forward * m_capsuleCastDistance + Vector3.up * m_capsuleCastRadius;
             Vector3 p2 = rootTransform.position + rootTransform.forward * m_capsuleCastDistance + Vector3.up * (m_maxVaultHeight - m_capsuleCastRadius);
 
-            m_debugHelper.DrawCapsule(p1, p2, m_capsuleCastRadius, Color.white);
-            m_debugHelper.DrawLabel("∑≠‘ΩºÏ≤‚", p1 + Vector3.up, Color.blue);
+            //m_debugHelper.DrawCapsule(p1, p2, m_capsuleCastRadius, Color.white);
+            //m_debugHelper.DrawLabel("∑≠‘ΩºÏ≤‚", p1 + Vector3.up, Color.blue);
 
             //ºÏ≤‚≥§∂»
             if (Physics.CapsuleCast(p1, p2, m_capsuleCastRadius, -rootTransform.forward, out RaycastHit capsuleHit, m_capsuleCastDistance, m_vaultLayer, QueryTriggerInteraction.Ignore))
@@ -255,8 +259,8 @@ namespace Demo_MoveMotor
         {
             Vector3 p1 = rootTransform.position + Vector3.up * (m_minClimbHeight + m_capsuleCastRadius);
             Vector3 p2 = rootTransform.position + Vector3.up * (m_capsuleCastHeight - m_capsuleCastRadius);
-            m_debugHelper.DrawCapsule(p1, p2, m_overlapRadius, Color.white);
-            m_debugHelper.DrawLabel("≈ ≈¿ºÏ≤‚", p1 + Vector3.up, Color.blue);
+            //m_debugHelper.DrawCapsule(p1, p2, m_overlapRadius, Color.white);
+            //m_debugHelper.DrawLabel("≈ ≈¿ºÏ≤‚", p1 + Vector3.up, Color.blue);
             if(Physics.CapsuleCast(p1, p2, m_capsuleCastRadius, rootTransform.forward, out RaycastHit forwardHit, m_overlapRadius, m_climbLayer, QueryTriggerInteraction.Ignore))
             {
                 RaycastHit topHit;
@@ -325,26 +329,27 @@ namespace Demo_MoveMotor
         /// ºÏ≤‚«Ω≈‹
         /// </summary>
         /// <returns></returns>
-        public bool CalculateWallRun(out Vector3 wallNormal, out float dir)
+        public bool CalculateWallRun(out RaycastHit wallHit, out float dir)
         {
             //◊Û”“ «∑Ò”–«Ω
-            bool right = Physics.SphereCast(rootTransform.position, m_capsuleCastRadius, rootTransform.right, out RaycastHit rightHit, 0.5f, m_wallRunLayer, QueryTriggerInteraction.Ignore);
-            bool left = Physics.SphereCast(rootTransform.position, m_capsuleCastRadius, -rootTransform.right, out RaycastHit leftHit, 0.5f, m_wallRunLayer, QueryTriggerInteraction.Ignore);
+            bool right = Physics.SphereCast(rootTransform.position + Vector3.up, m_capsuleCastRadius, rootTransform.right, out RaycastHit rightHit, 0.5f, m_wallRunLayer, QueryTriggerInteraction.Ignore);
+            bool left = Physics.SphereCast(rootTransform.position + Vector3.up, m_capsuleCastRadius, -rootTransform.right, out RaycastHit leftHit, 0.5f, m_wallRunLayer, QueryTriggerInteraction.Ignore);
 
-
-            if(right || left)
+            m_debugHelper.DrawLine(rootTransform.position + Vector3.up, rootTransform.position + Vector3.up + rootTransform.right * 0.5f, Color.blue);
+            m_debugHelper.DrawLine(rootTransform.position + Vector3.up, rootTransform.position + Vector3.up - rootTransform.right * 0.5f, Color.blue);
+            if (right || left)
             {
                 //∏ﬂ∂» «∑Ò◊„πª
-                if (!Physics.Raycast(rootTransform.position, Vector3.down, 1f, m_groundLayer))
-                {
-                    wallNormal = right ? rightHit.normal : leftHit.normal;
+                //if (!Physics.Raycast(rootTransform.position, Vector3.down, 1f, m_groundLayer))
+                //{
+                    wallHit = right ? rightHit : leftHit;
                     dir = right ? 1f : -1f;
                     return true;
-                }
+                //}
             }
 
-            dir = 1f;
-            wallNormal = Vector3.zero;
+            dir = 0f;
+            wallHit = default(RaycastHit);
             return false;
         }
 

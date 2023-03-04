@@ -43,12 +43,17 @@ public static class UnityExtension
         return new Vector3(delta.x, delta.y, delta.z);
     }
 
-    public static Vector3 BezierLerp(this Vector3 start, Vector3 end, Vector3 bezier, float t)
+    public static float NormalizeFloat(this float value)
     {
-        Vector3 point = Mathf.Pow(1 - t, 2) * start;
-        point += 2 * (1 - t) * t * bezier;
-        point += t * t * end;
+        if (value <= 0.1f && value >= -0.1f)
+            value = 0f;
 
-        return point;
+        if (value < 0f)
+            value = -1f;
+
+        if (value > 0f)
+            value = 1f;
+
+        return value;
     }
 }

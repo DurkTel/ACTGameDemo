@@ -6,6 +6,7 @@ using static Demo_MoveMotor.ICharacterControl;
 using UnityEditor;
 using UnityEngine.InputSystem.XR;
 using static UnityEditor.Experimental.GraphView.GraphView;
+using System.Net;
 
 
 namespace Demo_MoveMotor
@@ -100,7 +101,9 @@ namespace Demo_MoveMotor
         /// 动画状态
         /// </summary>
         protected AnimatorStateInfo m_baseLayerInfo, m_fullBodyLayerInfo;
-
+        /// <summary>
+        /// 动画状态
+        /// </summary>
         protected XAnimationStateInfos m_stateInfos;
         /// <summary>
         /// 输入方向
@@ -147,9 +150,9 @@ namespace Demo_MoveMotor
         /// </summary>
         protected float m_wallRunDir; 
         /// <summary>
-        /// 目标位置
+        /// 目标位置列表
         /// </summary>
-        protected List<Vector3> m_targetPositions;
+        protected List<Vector3> m_targetPositionList;
         /// <summary>
         /// 目标位置
         /// </summary>
@@ -253,8 +256,8 @@ namespace Demo_MoveMotor
             rootTransform.rotation = newRotation;
             //rootTransform.rotation = Quaternion.RotateTowards(rootTransform.rotation, Quaternion.LookRotation(direction), rotationSpeed * Time.fixedDeltaTime);
 
-            m_debugHelper.DrawLine(rootTransform.position, rootTransform.position + direction, Color.green); //期望旋转
-            m_debugHelper.DrawLine(rootTransform.position, rootTransform.position + rootTransform.forward, Color.red, 0.05f); //当前旋转
+            //m_debugHelper.DrawLine(rootTransform.position, rootTransform.position + direction, Color.green); //期望旋转
+            //m_debugHelper.DrawLine(rootTransform.position, rootTransform.position + rootTransform.forward, Color.red, 0.05f); //当前旋转
 
         }
 
@@ -305,13 +308,29 @@ namespace Demo_MoveMotor
         /// </summary>
         public virtual void CurveMove()
         {
-
-            if (characterController.enabled)
-                characterController.enabled = false;
-
-            rootTransform.position = Vector3.MoveTowards(rootTransform.position, m_targetPositions[m_targetPositionIndex], 0.05f);
+            characterController.enabled = false;
+            rootTransform.position = Vector3.MoveTowards(rootTransform.position, m_targetPositionList[0], 0.05f);
         }
 
+
+        public bool IsEnableCurveMotion()
+        {
+            if (m_targetPositionList == null || m_targetPositionList.Count <= 0)
+            { 
+                characterController.enabled = true;
+                return false;
+            }
+
+            Vector3 ePos = m_targetPositionList[0];
+            if (Vector3.Distance(ePos, rootTransform.position) <= 0.01f)
+            {
+                m_targetPositionList.RemoveAt(0);
+                characterController.enabled = true;
+                return false;
+            }
+
+            return true;
+        }
 
         #endregion
 

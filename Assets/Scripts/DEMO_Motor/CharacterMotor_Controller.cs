@@ -15,15 +15,18 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
         RequestFall();
         RequestVault();
         RequestClimb();
-        RequestWallRun();
     }
 
     protected override void FixedUpdate()
     {
+
         base.FixedUpdate();
 
         ControlLocomotion();
         ControlRotationType();
+
+        ControllWallRun();
+
     }
 
     protected override void OnAnimatorMove()
@@ -48,7 +51,7 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
         else if (ControlMoveRootMotor())
             MoveByMotor();
         else
-            MoveToDirection(m_targetDirection);
+            MoveToDirection(m_isWallRunning ? m_wallRunForward : m_targetDirection);
     }
 
     public virtual void ControlRotationType()
@@ -58,7 +61,7 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
         else
         {
             if (!m_isClimbing && !IsInAnimationName("Height Climb Exit"))
-                RotateToDirection(m_targetDirection);
+                RotateToDirection(m_isWallRunning ? m_wallRunForward : m_targetDirection);
         }
     }
 
@@ -161,18 +164,70 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
         }
     }
 
-    public virtual void RequestWallRun()
+    protected bool m_wallRunHolding;
+    public virtual void ControllWallRun()
     {
-        m_isWallRunning = false;
-        if (m_relativityForward >= 0.5f && CalculateWallRun(out Vector3 wallNormal, out m_wallRunDir))
+        if(CalculateWallRun(out RaycastHit wallHit, out m_wallRunDir) && !isGround)
         {
-            m_isWallRunning = true;
-            //叉乘得出与墙面平行方向
-            m_targetDirection = Vector3.Cross(wallNormal, Vector3.up);
-            //点乘得出与角色面朝方向相同的
-            m_targetDirection = Vector3.Dot(rootTransform.forward, m_targetDirection) > 0 ? m_targetDirection : -m_targetDirection;
+            if (!m_isWallRunning)
+            { 
+                m_isWallRunning = true;
+                string animation = verticalSpeed <= -2f ? "Wall Run Jump Start" : "Wall Run Start";
+                rootTransform.position = CalculateOffset(0.4f);
+                PlayAnimation(animation, 0.05f);
+                print("开启蹬墙跑");
+            }
+        }
+        else
+        {
+            if (m_isWallRunning)
+            {
+                m_isWallRunning = false;
+                print("结束蹬墙跑");
+            }
+        }
 
+        if (m_isWallRunning)
+        {
+            //叉乘得出与墙面平行方向
+            m_wallRunForward = Vector3.Cross(wallHit.normal, Vector3.up);
+            //点乘得出与角色面朝方向相同的
+            m_wallRunForward = Vector3.Dot(rootTransform.forward, m_wallRunForward) > 0 ? m_wallRunForward : -m_wallRunForward;
+            m_wallRunForward = m_wallRunForward * Mathf.Abs(m_relativityForward);
             verticalSpeed = 0f;
+
+            if (m_relativityForward < 0f)
+            {
+                rootTransform.rotation = Quaternion.LookRotation(-rootTransform.forward);
+                m_wallRunDir = -m_wallRunDir;
+            }
+
+            if (m_wallRunDir == 0f) return;
+
+            if (Mathf.Abs(m_relativityForward) == 0f)
+            {
+                if (!m_wallRunHolding)
+                {
+                    print("开始蹬墙跑悬挂");
+                    m_wallRunHolding = true;
+                    rootTransform.position = CalculateOffset(0.25f);
+                }
+            }
+            else
+            {
+                if (m_wallRunHolding)
+                {
+                    print("结束蹬墙跑悬挂");
+                    m_wallRunHolding = false;
+                    rootTransform.position = CalculateOffset(0.4f);
+                }
+            }
+        }
+
+        Vector3 CalculateOffset(float offset)
+        { 
+            return wallHit.point + Vector3.down + wallHit.normal.normalized * offset;
         }
     }
+
 }

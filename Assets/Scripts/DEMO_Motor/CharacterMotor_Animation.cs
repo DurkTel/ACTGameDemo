@@ -56,8 +56,8 @@ namespace Demo_MoveMotor
             animator.SetFloat(Float_Movement_Hash, (float)m_moveType * m_targetDirection.magnitude, 0.2f, Time.fixedDeltaTime);
             animator.SetFloat(Float_InputMagnitude_Hash, m_targetDirection.magnitude, 0.2f, Time.fixedDeltaTime);
             animator.SetFloat(Float_Input_Hash, m_targetDirection.magnitude);
-            animator.SetFloat(Float_InputHorizontal_Hash, m_relativityRight, 0.2f, Time.fixedDeltaTime);
-            animator.SetFloat(Float_InputVertical_Hash, m_relativityForward, 0.2f, Time.fixedDeltaTime);
+            animator.SetFloat(Float_InputHorizontal_Hash, m_relativityRight);
+            animator.SetFloat(Float_InputVertical_Hash, m_relativityForward);
             //animator.SetFloat(Float_RotationMagnitude_Hash, m_targetRad, m_rotationSmooth, Time.deltaTime);
             animator.SetFloat(Float_AngularVelocity_Hash, m_angularVelocity, 0.2f, Time.fixedDeltaTime);
             animator.SetFloat(Float_Rotation_Hash, m_targetDeg);
@@ -142,34 +142,6 @@ namespace Demo_MoveMotor
             return m_stateInfos.IsEnableRootMotion(type);
         }
 
-        public bool IsEnableCurveMotion()
-        {
-            //if (m_targetPositions == null)
-            //    return false;
-
-            //if (m_targetPositions.Count <= 0)
-            //{
-            //    if (!characterController.enabled)
-            //        characterController.enabled = true;
-
-            //    m_targetPositionIndex = -1;
-            //    return false;
-            //}
-
-            //if (Vector3.Distance(m_targetPositions[m_targetPositionIndex], rootTransform.position) <= 0.01f)
-            //{
-            //    if(m_targetPositions.Count <= ++m_targetPositionIndex)
-            //    {
-            //        if (!characterController.enabled)
-            //            characterController.enabled = true;
-            //        m_targetPositionIndex = -1;
-            //        m_targetPositions.Clear();
-            //        return false;
-            //    }
-            //}
-
-            return false;
-        }
 
         public bool IsInTransition()
         {
