@@ -74,7 +74,7 @@ namespace Demo_MoveMotor
 
             Vector3 moveDirection = m_camera.transform.TransformDirection(m_currentDirection);
             m_controller.SetTargetDirection(moveDirection);
-            m_controller.SetInputDirection(m_inputDirection);
+            m_controller.SetInputDirection(moveDirection);
 
             m_controller.RequestSprint(inputActions.GamePlay.Run.phase);
         }

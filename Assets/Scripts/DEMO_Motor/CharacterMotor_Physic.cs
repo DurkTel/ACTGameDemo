@@ -2,17 +2,21 @@ using Demo_MoveMotor;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.ProBuilder;
-using UnityEngine.ProBuilder.Shapes;
-using static Demo_MoveMotor.ICharacterControl;
 
 namespace Demo_MoveMotor
 {
     public class CharacterMotor_Physic : CharacterMotor
     {
+        public enum DirectionCast
+        {
+            Left = -1,
+            Right = 1,
+            Forward = 2,
+            Backward = -2,
+            Up = 3,
+            Down = -3,
+        }
         /// <summary>
         /// 前方接触墙的法线方向
         /// </summary>
@@ -91,7 +95,6 @@ namespace Demo_MoveMotor
         protected override void FixedUpdate()
         {
             base.FixedUpdate();
-            CalculateRelativityTarget();
             CalculateAngularVelocity();
             CalculateFootStep();
             CalculateGravity();
@@ -101,10 +104,10 @@ namespace Demo_MoveMotor
         /// <summary>
         /// 计算输入相对角色的方向
         /// </summary>
-        protected void CalculateRelativityTarget()
+        protected void CalculateRelativityTarget(Vector3 input)
         {
-            m_relativityForward = Vector3.Dot(m_targetDirection.normalized, rootTransform.forward);
-            m_relativityRight = Vector3.Dot(m_targetDirection.normalized, rootTransform.right);
+            m_relativityForward = Vector3.Dot(input.normalized, rootTransform.forward);
+            m_relativityRight = Vector3.Dot(input.normalized, rootTransform.right);
             m_relativityForward = m_relativityForward.NormalizeFloat();
             m_relativityRight = m_relativityRight.NormalizeFloat();
 
@@ -326,6 +329,34 @@ namespace Demo_MoveMotor
         }
 
         /// <summary>
+        /// 检测跳跃攀爬点
+        /// </summary>
+        /// <param name="direction">检测方向：上下左右后 2 -2 -1 1 0</param>
+        /// <returns></returns>
+        public bool CalculateJumpClimb(DirectionCast direction)
+        {
+            Vector3 p1 = rootTransform.position + Vector3.up;
+            Vector3 p2 = rootTransform.position + Vector3.up;
+            if (direction == DirectionCast.Backward)
+            {
+                if (Physics.Raycast(rootTransform.position + Vector3.up * 1.6f - rootTransform.right * 0.2f, -rootTransform.right - rootTransform.forward * 0.2f, out RaycastHit horizontal, 10f, m_climbLayer, QueryTriggerInteraction.Ignore))
+                {
+                    m_debugHelper.DrawCapsule(horizontal.point + Vector3.up * m_capsuleCastRadius, horizontal.point + Vector3.up * m_capsuleCastRadius + Vector3.down * 10f, 0.2f, Color.red, 2f);
+                    if (Physics.SphereCast(horizontal.point + Vector3.up, m_capsuleCastRadius, Vector3.down, out RaycastHit topHit, 2f, m_climbLayer, QueryTriggerInteraction.Ignore))
+                    {
+                        m_debugHelper.DrawSphere(topHit.point, 0.1f, Color.red, 3f);
+                        m_stateInfos.AddMatchTargetList(new List<Vector3>() { topHit.point + Vector3.down * 1.6f + horizontal.normal * 0.23f });
+                        m_stateInfos.AddMatchQuaternionList(new List<Quaternion>() {Quaternion.LookRotation(-Vector3.Cross(horizontal.normal, Vector3.up).normalized)  });
+                        print("检测到");
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// 检测墙跑
         /// </summary>
         /// <returns></returns>
@@ -335,8 +366,8 @@ namespace Demo_MoveMotor
             bool right = Physics.SphereCast(rootTransform.position + Vector3.up, m_capsuleCastRadius, rootTransform.right, out RaycastHit rightHit, 0.5f, m_wallRunLayer, QueryTriggerInteraction.Ignore);
             bool left = Physics.SphereCast(rootTransform.position + Vector3.up, m_capsuleCastRadius, -rootTransform.right, out RaycastHit leftHit, 0.5f, m_wallRunLayer, QueryTriggerInteraction.Ignore);
 
-            m_debugHelper.DrawLine(rootTransform.position + Vector3.up, rootTransform.position + Vector3.up + rootTransform.right * 0.5f, Color.blue);
-            m_debugHelper.DrawLine(rootTransform.position + Vector3.up, rootTransform.position + Vector3.up - rootTransform.right * 0.5f, Color.blue);
+            //m_debugHelper.DrawLine(rootTransform.position + Vector3.up, rootTransform.position + Vector3.up + rootTransform.right * 0.5f, Color.blue);
+            //m_debugHelper.DrawLine(rootTransform.position + Vector3.up, rootTransform.position + Vector3.up - rootTransform.right * 0.5f, Color.blue);
             if (right || left)
             {
                 //高度是否足够

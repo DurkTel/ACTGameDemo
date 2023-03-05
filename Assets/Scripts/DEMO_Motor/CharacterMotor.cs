@@ -106,10 +106,6 @@ namespace Demo_MoveMotor
         /// </summary>
         protected XAnimationStateInfos m_stateInfos;
         /// <summary>
-        /// 输入方向
-        /// </summary>
-        protected Vector2 m_input;
-        /// <summary>
         /// 移动模式
         /// </summary>
         protected MoveType m_moveType = MoveType.RUN;
@@ -315,21 +311,21 @@ namespace Demo_MoveMotor
 
         public bool IsEnableCurveMotion()
         {
-            if (m_targetPositionList == null || m_targetPositionList.Count <= 0)
-            { 
-                characterController.enabled = true;
-                return false;
-            }
+            //if (m_targetPositionList == null || m_targetPositionList.Count <= 0)
+            //{ 
+            //    characterController.enabled = true;
+            //    return false;
+            //}
 
-            Vector3 ePos = m_targetPositionList[0];
-            if (Vector3.Distance(ePos, rootTransform.position) <= 0.01f)
-            {
-                m_targetPositionList.RemoveAt(0);
-                characterController.enabled = true;
-                return false;
-            }
+            //Vector3 ePos = m_targetPositionList[0];
+            //if (Vector3.Distance(ePos, rootTransform.position) <= 0.01f)
+            //{
+            //    m_targetPositionList.RemoveAt(0);
+            //    characterController.enabled = true;
+            //    return false;
+            //}
 
-            return true;
+            return false;
         }
 
         #endregion

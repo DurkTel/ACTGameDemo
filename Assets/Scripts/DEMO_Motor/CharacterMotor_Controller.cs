@@ -12,9 +12,6 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
     {
         base.Update();
 
-        RequestFall();
-        RequestVault();
-        RequestClimb();
     }
 
     protected override void FixedUpdate()
@@ -22,10 +19,15 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
 
         base.FixedUpdate();
 
+        RequestClimb();
+        RequestFall();
+        RequestVault();
+
         ControlLocomotion();
         ControlRotationType();
 
         ControllWallRun();
+
 
     }
 
@@ -39,9 +41,9 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
         m_targetDirection = direction;
     }
 
-    public void SetInputDirection(Vector2 input)
+    public void SetInputDirection(Vector3 input)
     {
-        m_input = input;
+        CalculateRelativityTarget(input);
     }
 
     public virtual void ControlLocomotion()
@@ -105,7 +107,7 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
 
     public virtual void RequestEscape(CallbackContext value)
     {
-        if (m_input.Equals(Vector2.zero)) return;
+        if (m_relativityForward == 0f && m_relativityRight == 0f) return;
         Escape();
     }
 
@@ -142,16 +144,33 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
             else if (climbType == 2)
                 HeightClimb();
         }
+
+        if(m_isClimbing)
+        {
+            Vector3 p1 = rootTransform.position + Vector3.up * 1.75f;
+            m_debugHelper.DrawLine(p1, p1 - rootTransform.right - rootTransform.forward * 0.2f, Color.blue);
+            m_debugHelper.DrawLine(p1, p1 - rootTransform.right, Color.red);
+            m_debugHelper.DrawLine(p1, p1 - rootTransform.forward, Color.red);
+
+            m_targetDirection = Vector3.zero;
+        }
     }
 
     public virtual void RequestClimbEnd(CallbackContext value)
     {
         if (m_isClimbing)
         {
-            if (m_relativityForward <= -0.5f)
+            if (IsInAnimationName("Climb Jump Hold"))
+            { 
+                if(CalculateJumpClimb(DirectionCast.Backward))
+                {
+                    PlayAnimation("Climb Jump Mid", 0f);
+                }
+            }
+            else if (m_relativityForward <= -0.5f)
             {
                 m_isClimbing = false;
-                PlayAnimation("Height Climb Exit", 0f);
+                PlayAnimation("Climb Jump Exit", 0f);
             }
             else if (!IsInAnimationName("Height Climb Up") && !IsInAnimationName("Height Climb End"))
             {
