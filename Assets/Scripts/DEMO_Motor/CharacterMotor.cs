@@ -146,10 +146,6 @@ namespace Demo_MoveMotor
         /// </summary>
         protected float m_wallRunDir; 
         /// <summary>
-        /// 目标位置列表
-        /// </summary>
-        protected List<Vector3> m_targetPositionList;
-        /// <summary>
         /// 目标位置
         /// </summary>
         protected int m_targetPositionIndex;
@@ -189,6 +185,42 @@ namespace Demo_MoveMotor
         /// 是否正在蹬墙跑
         /// </summary>
         protected bool m_isWallRunning;
+
+        #region 曲线运动
+        /// <summary>
+        /// 曲线运动目标位置
+        /// </summary>
+        private Vector3 m_curveMoveTarget;
+        /// <summary>
+        /// 曲线运动中
+        /// </summary>
+        private bool m_isCurveMoving;
+        /// <summary>
+        /// 曲线运动开始时间
+        /// </summary>
+        private float m_curveMoveBeginTime;
+        /// <summary>
+        /// 曲线运动间隔
+        /// </summary>
+        private float m_curveMoveDelta;
+
+        /// <summary>
+        /// 曲线旋转目标位置
+        /// </summary>
+        private Quaternion m_curveRotationTarget;
+        /// <summary>
+        /// 曲线旋转中
+        /// </summary>
+        private bool m_isCurveRotating;
+        /// <summary>
+        /// 曲线旋转开始时间
+        /// </summary>
+        private float m_curveRotationBeginTime;
+        /// <summary>
+        /// 曲线旋转间隔
+        /// </summary>
+        private float m_curveRotationDelta;
+        #endregion
 
         protected virtual void Awake()
         {
@@ -299,33 +331,68 @@ namespace Demo_MoveMotor
             characterController.Move(animator.deltaPosition);
         }
 
+        public void DOCurveMove(Vector3 target, float time, float delay = 0f)
+        {
+            m_isCurveMoving = true;
+            characterController.enabled = false;
+            m_curveMoveTarget = target;
+            m_curveMoveBeginTime = Time.realtimeSinceStartup + delay;
+            m_curveMoveDelta = Vector3.Distance(rootTransform.position, target) / time;
+        }
+
         /// <summary>
         /// 曲线移动 直接修改位置
         /// </summary>
-        public virtual void CurveMove()
+        public virtual void MoveByCurve()
         {
-            characterController.enabled = false;
-            rootTransform.position = Vector3.MoveTowards(rootTransform.position, m_targetPositionList[0], 0.05f);
+            rootTransform.position = Vector3.MoveTowards(rootTransform.position, m_curveMoveTarget, m_curveMoveDelta * Time.fixedDeltaTime);
         }
 
 
         public bool IsEnableCurveMotion()
         {
-            //if (m_targetPositionList == null || m_targetPositionList.Count <= 0)
-            //{ 
-            //    characterController.enabled = true;
-            //    return false;
-            //}
+            if (!m_isCurveMoving || Time.realtimeSinceStartup < m_curveMoveBeginTime)
+                return false;
 
-            //Vector3 ePos = m_targetPositionList[0];
-            //if (Vector3.Distance(ePos, rootTransform.position) <= 0.01f)
-            //{
-            //    m_targetPositionList.RemoveAt(0);
-            //    characterController.enabled = true;
-            //    return false;
-            //}
+            if (Vector3.Distance(m_curveMoveTarget, rootTransform.position) <= 0.01f)
+            {
+                m_isCurveMoving = false;
+                characterController.enabled = true;
+                return false;
+            }
 
-            return false;
+            return true;
+        }
+
+        public void DOCurveRotate(Quaternion target, float time, float delay = 0f)
+        {
+            m_isCurveRotating = true;
+            m_curveRotationTarget = target;
+            m_curveRotationBeginTime = Time.realtimeSinceStartup + delay;
+            m_curveRotationDelta = Quaternion.Angle(target, rootTransform.rotation) / time;
+        }
+
+        /// <summary>
+        /// 曲线移动 直接修改位置
+        /// </summary>
+        public virtual void RotateByCurve()
+        {
+            rootTransform.rotation = Quaternion.Lerp(rootTransform.rotation, m_curveRotationTarget, m_curveRotationDelta * Time.fixedDeltaTime);
+        }
+
+
+        public bool IsEnableCurveRotate()
+        {
+            if (!m_isCurveRotating || Time.realtimeSinceStartup < m_curveRotationBeginTime)
+                return false;
+            
+            if (Quaternion.Angle(m_curveRotationTarget, rootTransform.rotation) <= 0.01f)
+            {
+                m_isCurveRotating = false;
+                return false;
+            }
+
+            return true;
         }
 
         #endregion

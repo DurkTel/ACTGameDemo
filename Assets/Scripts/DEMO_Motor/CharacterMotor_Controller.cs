@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static Demo_MoveMotor.ICharacterControl;
+using static UnityEditor.Searcher.SearcherWindow.Alignment;
 using static UnityEngine.InputSystem.InputAction;
 
 public class CharacterMotor_Controller : CharacterMotor_Animation
@@ -49,7 +50,7 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
     public virtual void ControlLocomotion()
     {
         if (IsEnableCurveMotion())
-            CurveMove();
+            MoveByCurve();
         else if (ControlMoveRootMotor())
             MoveByMotor();
         else
@@ -58,7 +59,9 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
 
     public virtual void ControlRotationType()
     {
-        if (ControlRotatioRootMotor())
+        if(IsEnableCurveRotate())
+            RotateByCurve();    
+        else if (ControlRotatioRootMotor())
             RotateByRootMotor();
         else
         {
@@ -148,7 +151,6 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
         if(m_isClimbing)
         {
             Vector3 p1 = rootTransform.position + Vector3.up * 1.75f;
-            m_debugHelper.DrawLine(p1, p1 - rootTransform.right - rootTransform.forward * 0.2f, Color.blue);
             m_debugHelper.DrawLine(p1, p1 - rootTransform.right, Color.red);
             m_debugHelper.DrawLine(p1, p1 - rootTransform.forward, Color.red);
 
@@ -162,9 +164,11 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
         {
             if (IsInAnimationName("Climb Jump Hold"))
             { 
-                if(CalculateJumpClimb(DirectionCast.Backward))
+                if(CalculateJumpClimb(DirectionCast.Backward, out Vector3 targetPosition, out Quaternion targetQuaternion))
                 {
                     PlayAnimation("Climb Jump Mid", 0f);
+                    DOCurveMove(targetPosition, 0.35f);
+                    DOCurveRotate(targetQuaternion, 0.15f, 0.08f);
                 }
             }
             else if (m_relativityForward <= -0.5f)
