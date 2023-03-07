@@ -335,17 +335,22 @@ namespace Demo_MoveMotor
         /// <returns></returns>
         public bool CalculateJumpClimb(DirectionCast direction, out Vector3 targetPosition, out Quaternion targetQuaternion)
         {
-            Vector3 p1 = rootTransform.position + Vector3.up;
-            Vector3 p2 = rootTransform.position + Vector3.up;
-            
+            //–¸π“ ± ÷µƒŒª÷√
+            Vector3 handPos = rootTransform.position + Vector3.up * 1.5f;
+
+            //Ã¯‘æ≈ ≈¿µ„µƒºÏ≤‚∑∂Œß
+            Vector3 p1 = handPos + Vector3.up * m_maxClimbHeightHeight;
+            Vector3 p2 = handPos + Vector3.down * m_maxClimbHeightHeight;
+            m_debugHelper.DrawCapsule(p1 - rootTransform.forward * 4.5f, p2 - rootTransform.forward * 4.5f, m_capsuleCastRadius, Color.blue);
             if (direction == DirectionCast.Backward)
             {
-                if (Physics.Raycast(rootTransform.position + Vector3.up * 1.5f - rootTransform.forward * 0.2f, -rootTransform.forward, out RaycastHit horizontal, 10f, m_climbLayer, QueryTriggerInteraction.Ignore))
+                if (Physics.CapsuleCast(p1, p2, m_capsuleCastRadius, -rootTransform.forward, out RaycastHit horizontal, 4.5f, m_climbLayer, QueryTriggerInteraction.Ignore))
                 {
-                    if (Physics.SphereCast(horizontal.point + Vector3.up, m_capsuleCastRadius, Vector3.down, out RaycastHit topHit, 2f, m_climbLayer, QueryTriggerInteraction.Ignore))
+                    float height = horizontal.collider.bounds.size.y;
+                     if (Physics.SphereCast(horizontal.point + Vector3.up * height, m_capsuleCastRadius, Vector3.down, out RaycastHit topHit, height, m_climbLayer, QueryTriggerInteraction.Ignore))
                     {
-                        m_debugHelper.DrawSphere(topHit.point + Vector3.down * 1.6f + horizontal.normal * 0.23f, 0.1f, Color.red, 3f);
-                        targetPosition = topHit.point + Vector3.down * 1.7f + horizontal.normal * 0.23f;
+                        m_debugHelper.DrawSphere(topHit.point + Vector3.down * 1.77f + horizontal.normal * 0.1f, 0.1f, Color.red, 3f);
+                        targetPosition = topHit.point + Vector3.down * 1.77f + horizontal.normal * 0.1f;
                         targetQuaternion = Quaternion.LookRotation(-horizontal.normal.normalized);
                         return true;
                     }

@@ -124,7 +124,7 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
 
     public virtual void RequestFall()
     {
-        if (m_isAirbone || !isFall || m_isVault || m_isClimbing || m_isWallRunning || IsInTransition()) return;
+        if (m_isAirbone || !isFall || m_isVault || m_isClimbing || m_isWallRunning || IsInAnimationName("Height Climb Fall") || IsInTransition()) return;
         Fall();
     }
 
@@ -157,37 +157,40 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
             m_targetDirection = Vector3.zero;
         }
     }
-
+    
     public virtual void RequestClimbEnd(CallbackContext value)
     {
         if (m_isClimbing)
         {
-            if (IsInAnimationName("Climb Jump Hold"))
-            { 
-                if(CalculateJumpClimb(DirectionCast.Backward, out Vector3 targetPosition, out Quaternion targetQuaternion))
+            if (value.action.name == "Jump")
+            {
+                if (IsInAnimationName("Climb Jump Hold"))
                 {
-                    PlayAnimation("Climb Jump Mid", 0f);
-                    DOCurveMove(targetPosition, 0.35f);
-                    DOCurveRotate(targetQuaternion, 0.15f, 0.08f);
+                    if (CalculateJumpClimb(DirectionCast.Backward, out Vector3 targetPosition, out Quaternion targetQuaternion))
+                    {
+                        PlayAnimation("Climb Jump Mid", 0f);
+                        DOCurveMove(targetPosition, 0.6f);
+                        DOCurveRotate(targetQuaternion, 0.15f, 0.08f);
+                    }
+                }
+                else if (IsInAnimationName("Height Climb Hold"))
+                {
+                    Vector3 point = rootTransform.position;
+                    point.y = m_currentClimbPoint.y;
+                    m_stateInfos.AddMatchTargetList(new List<Vector3>() { point });
+                    PlayAnimation("Height Climb End", 0.05f);
                 }
             }
-            else if (m_relativityForward <= -0.5f)
-            {
+            else if (value.action.name == "Escape")
+            { 
                 m_isClimbing = false;
-                PlayAnimation("Climb Jump Exit", 0f);
-            }
-            else if (!IsInAnimationName("Height Climb Up") && !IsInAnimationName("Height Climb End"))
-            {
-                Vector3 point = rootTransform.position;
-                point.y = m_currentClimbPoint.y;
-                m_stateInfos.AddMatchTargetList(new List<Vector3>() { point });
-                PlayAnimation("Height Climb End", 0.05f);
+                PlayAnimation("Height Climb Fall", 0f);
             }
 
         }
     }
 
-    protected bool m_wallRunHolding;
+    private bool m_wallRunHolding;
     public virtual void ControllWallRun()
     {
         if(CalculateWallRun(out RaycastHit wallHit, out m_wallRunDir) && !isGround)

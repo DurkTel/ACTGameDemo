@@ -262,7 +262,6 @@ namespace Demo_MoveMotor
         }
 
         protected virtual void PlayAnimation(string name, float duration) { }
-        protected virtual void PlayMachine(int type) { }
 
         #region 平面移动
         /// <summary>
@@ -401,18 +400,25 @@ namespace Demo_MoveMotor
         #region 行为
         protected virtual void Escape()
         {
-            PlayMachine(1);
+            string animationName = "Escape";
+
+            if (m_isAirbone)
+                animationName = "Air Escape";
+            else if (m_isGazing)
+                animationName = "Gaze Escape";
+
+            PlayAnimation(animationName, 0.05f);
         }
 
         protected virtual void Jump()
         {
             verticalSpeed = Mathf.Sqrt(-2 * m_gravity * m_jumpHeight);
-            PlayMachine(2);
+            PlayAnimation("Jump Up", 0f);
         }
 
         protected virtual void Fall()
         {
-            PlayMachine(3);
+            PlayAnimation("Fall Keep", 0.25f);
         }
 
         protected virtual void Vault()

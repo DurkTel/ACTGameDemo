@@ -42,12 +42,6 @@ namespace Demo_MoveMotor
             m_stateInfos.RemoveListener();
         }
 
-        protected override void PlayMachine(int type)
-        {
-            base.PlayMachine(type);
-            animator.SetInteger(Int_EnterMachineType_Hash, type);
-            animator.SetTrigger(Trigger_EnterMachine_Hash);
-        }
 
         private void UpdateAnimatorParameter()
         {
@@ -206,10 +200,8 @@ namespace Demo_MoveMotor
         public static int Float_WallRunDir_Hash = Animator.StringToHash("Float_WallRunDir");
         public static int Int_Movement_Hash = Animator.StringToHash("Int_Movement");
         public static int Int_Footstep_Hash = Animator.StringToHash("Int_Footstep");
-        public static int Int_EnterMachineType_Hash = Animator.StringToHash("Int_EnterMachineType");
         public static int Trigger_SharpTurn_Hash = Animator.StringToHash("Trigger_SharpTurn");
         public static int Trigger_TurnInPlace_Hash = Animator.StringToHash("Trigger_TurnInPlace");
-        public static int Trigger_EnterMachine_Hash = Animator.StringToHash("Trigger_EnterMachine");
         public static int Bool_MoveInput_Hash = Animator.StringToHash("Bool_MoveInput");
         public static int Bool_Gazing_Hash = Animator.StringToHash("Bool_Gazing");
         public static int Bool_Ground_Hash = Animator.StringToHash("Bool_Ground");

@@ -8,13 +8,19 @@ using UnityEngine;
 public class AnimationControlTag : AnimationControl
 {
     public string[] tags = new string[] { "CustomAction" };
-
+    public string[] ignore = new string[0];
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         base.OnStateEnter(animator, stateInfo, layerIndex);
         animationStateInfos.stateInfos[layerIndex].tags ??= new List<string>();
         //进入新动画再清掉 避免处于过渡时是空tags
         animationStateInfos.stateInfos[layerIndex].tags.Clear();
+        foreach (string name in ignore)
+        {
+            if (stateInfo.IsName(name))
+                return;
+        }
+
         foreach (string tag in tags)
             animationStateInfos.stateInfos[layerIndex].tags.Add(tag);
     }
