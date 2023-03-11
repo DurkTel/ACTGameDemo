@@ -2,7 +2,10 @@ using Demo_MoveMotor;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using UnityEditor.Rendering.LookDev;
 using UnityEngine;
+using static Cinemachine.CinemachineFreeLook;
+using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
 namespace Demo_MoveMotor
 {
@@ -75,9 +78,19 @@ namespace Demo_MoveMotor
         /// </summary>
         [SerializeField, Header("高位位攀爬最大高度")] private float m_maxClimbHeightHeight = 2.5f;
         /// <summary>
+        /// 记录攀爬点
+        /// </summary>
+        protected float m_climbHeightMark;
+        /// <summary>
         /// 当前攀爬点位（手的位置）
         /// </summary>
-        protected Vector3 m_currentClimbPoint;
+        [HideInInspector]public Vector3 currentClimbPoint 
+        { 
+            get 
+            { 
+                return new Vector3(rootTransform.position.x, m_climbHeightMark, rootTransform.position.z); 
+            }
+        }
 
         protected Vector3 m_wallRunForward;
 
@@ -110,16 +123,6 @@ namespace Demo_MoveMotor
             m_relativityRight = Vector3.Dot(input.normalized, rootTransform.right);
             m_relativityForward = m_relativityForward.NormalizeFloat();
             m_relativityRight = m_relativityRight.NormalizeFloat();
-
-            if (m_isClimbing)
-            {
-                if (m_relativityRight >= 0.5f && !CalculateEdge(1))
-                    m_relativityRight = 0f;
-
-                if (m_relativityRight <= -0.5f && !CalculateEdge(-1))
-                    m_relativityRight = 0f;
-
-            }
         }
 
         /// <summary>
@@ -284,7 +287,7 @@ namespace Demo_MoveMotor
                     m_debugHelper.DrawSphere(topHit.point, 0.1f, Color.red, 3f);
                     m_stateInfos.AddMatchTargetList(new List<Vector3>() { topHit.point });
                     //记录攀爬点
-                    m_currentClimbPoint = topHit.point;
+                    m_climbHeightMark = topHit.point.y;
                     //面向墙壁
                     Vector3 faceTo = -forwardHit.normal;
                     faceTo.y = 0f;
@@ -302,17 +305,15 @@ namespace Demo_MoveMotor
         /// 边缘点检测
         /// </summary>
         /// <returns></returns>
-        public bool CalculateEdge(int direction)
+        public bool CalculateEdge(DirectionCast direction)
         {
-            int count = 3;
+            int count = 1;
             int missCount = 0;
-            Vector3 p = rootTransform.position;
-            p.y = m_currentClimbPoint.y;
             Collider [] colls;
             
             for (int i = 1; i <= count; i++)
             {
-                Vector3 center = p + rootTransform.right * i * direction * 0.35f * 2f;
+                Vector3 center = currentClimbPoint + rootTransform.right * i * (int)direction * 0.35f * 2f;
                 Vector3 top = center + Vector3.up * 0.25f;
                 Vector3 down = center + Vector3.down * 0.25f;
 
@@ -329,26 +330,105 @@ namespace Demo_MoveMotor
         }
 
         /// <summary>
+        /// 计算转角
+        /// </summary>
+        /// <param name="direction"></param>
+        /// <returns></returns>
+        public bool CalculateCorner(DirectionCast direction, out Vector3 targetPosition, out Quaternion targetQuaternion)
+        {
+            int dir = (int)direction;
+
+            //左/右 前方开始检测
+            Vector3 center = currentClimbPoint + rootTransform.right * dir + rootTransform.forward * 0.75f;
+            Vector3 p1 = center + Vector3.up * m_capsuleCastRadius;
+            Vector3 p2 = center + Vector3.down * m_capsuleCastRadius;
+            m_debugHelper.DrawCapsule(p1, p2, m_capsuleCastRadius, Color.yellow);
+            m_debugHelper.DrawCapsule(p2 - rootTransform.right * dir, p1 - rootTransform.right * dir, m_capsuleCastRadius, Color.yellow);
+
+            RaycastHit[] castAll = Physics.CapsuleCastAll(p1, p2, m_capsuleCastRadius, -rootTransform.right * dir, 1.2f, m_climbLayer, QueryTriggerInteraction.Ignore);
+            if (castAll.Length > 0)
+            {
+                //左/右边有墙壁
+                foreach (RaycastHit hit in castAll)
+                {
+                    if (hit.distance == 0)
+                        continue;
+                    float height = hit.collider.bounds.size.y;
+                    if (Physics.SphereCast(hit.point + Vector3.up * height, m_capsuleCastRadius, Vector3.down, out RaycastHit topHit, height, m_climbLayer, QueryTriggerInteraction.Ignore))
+                    {
+                        //刷新手的位置
+                        m_climbHeightMark = topHit.point.y;
+                        m_debugHelper.DrawSphere(topHit.point + Vector3.down * 1.77f + hit.normal * 0.1f, 0.1f, Color.red, 3f);
+                        targetPosition = topHit.point + Vector3.down * 1.77f + hit.normal * 0.1f;
+                        targetQuaternion = Quaternion.LookRotation(-hit.normal.normalized);
+                        return true;
+                    }
+                }
+            }
+
+            targetPosition = rootTransform.position;
+            targetQuaternion = rootTransform.rotation;
+            return false;
+        }
+
+        /// <summary>
         /// 检测跳跃攀爬点
         /// </summary>
         /// <param name="direction">检测方向：上下左右后 2 -2 -1 1 0</param>
         /// <returns></returns>
         public bool CalculateJumpClimb(DirectionCast direction, out Vector3 targetPosition, out Quaternion targetQuaternion)
         {
-            //悬挂时手的位置
-            Vector3 handPos = rootTransform.position + Vector3.up * 1.5f;
-
-            //跳跃攀爬点的检测范围
-            Vector3 p1 = handPos + Vector3.up * m_maxClimbHeightHeight;
-            Vector3 p2 = handPos + Vector3.down * m_maxClimbHeightHeight;
-            m_debugHelper.DrawCapsule(p1 - rootTransform.forward * 4.5f, p2 - rootTransform.forward * 4.5f, m_capsuleCastRadius, Color.blue);
-            if (direction == DirectionCast.Backward)
+            if (direction == DirectionCast.Backward) //后跳
             {
+                //跳跃攀爬点的检测范围
+                Vector3 p1 = currentClimbPoint + Vector3.up * m_maxClimbHeightHeight;
+                Vector3 p2 = currentClimbPoint + Vector3.down * m_maxClimbHeightHeight;
+                m_debugHelper.DrawCapsule(p1 - rootTransform.forward * 4.5f, p2 - rootTransform.forward * 4.5f, m_capsuleCastRadius, Color.blue);
                 if (Physics.CapsuleCast(p1, p2, m_capsuleCastRadius, -rootTransform.forward, out RaycastHit horizontal, 4.5f, m_climbLayer, QueryTriggerInteraction.Ignore))
                 {
                     float height = horizontal.collider.bounds.size.y;
-                     if (Physics.SphereCast(horizontal.point + Vector3.up * height, m_capsuleCastRadius, Vector3.down, out RaycastHit topHit, height, m_climbLayer, QueryTriggerInteraction.Ignore))
+                    m_debugHelper.DrawCapsule(horizontal.point + Vector3.up * height, horizontal.point + Vector3.up * height + Vector3.down * height, 0.1f, Color.red, 3f);
+
+                    if (Physics.SphereCast(horizontal.point + Vector3.up * (height + m_capsuleCastRadius), m_capsuleCastRadius, Vector3.down, out RaycastHit topHit, height + m_capsuleCastRadius, m_climbLayer, QueryTriggerInteraction.Ignore))
                     {
+                        //刷新手的位置
+                        m_climbHeightMark = topHit.point.y;
+                        m_debugHelper.DrawSphere(topHit.point + Vector3.down * 1.77f + horizontal.normal * 0.1f, 0.1f, Color.red, 3f);
+                        targetPosition = topHit.point + Vector3.down * 1.77f + horizontal.normal * 0.1f;
+                        targetQuaternion = Quaternion.LookRotation(-horizontal.normal.normalized);
+                        return true;
+                    }
+                }
+            }
+            else if (direction == DirectionCast.Left || direction == DirectionCast.Right) //左右跳
+            {
+                int dir = (int)direction;
+                Vector3 center = currentClimbPoint + rootTransform.right * dir * 1.5f - rootTransform.forward;
+                if (Physics.SphereCast(center, m_capsuleCastRadius, rootTransform.forward, out RaycastHit horizontal, m_capsuleCastRadius + 1f, m_climbLayer, QueryTriggerInteraction.Ignore))
+                {
+                    if (Physics.SphereCast(horizontal.point + Vector3.up * 0.5f, m_capsuleCastRadius, Vector3.down, out RaycastHit topHit, 0.5f, m_climbLayer, QueryTriggerInteraction.Ignore))
+                    {
+                        //刷新手的位置
+                        m_climbHeightMark = topHit.point.y;
+                        m_debugHelper.DrawSphere(topHit.point + Vector3.down * 1.77f + horizontal.normal * 0.1f, 0.1f, Color.red, 3f);
+                        targetPosition = topHit.point + Vector3.down * 1.77f + horizontal.normal * 0.1f;
+                        targetQuaternion = Quaternion.LookRotation(-horizontal.normal.normalized);
+                        return true;
+                    }
+                }
+
+            }
+            else if (direction == DirectionCast.Up) //向上跳
+            {
+                Vector3 center = currentClimbPoint + rootTransform.up - rootTransform.forward;
+                Vector3 p1 = center + Vector3.up * 0.5f;
+                Vector3 p2 = center + Vector3.down * 0.5f;
+                if (Physics.CapsuleCast(p1, p2, m_capsuleCastRadius, rootTransform.forward, out RaycastHit horizontal, m_capsuleCastRadius + 1f, m_climbLayer, QueryTriggerInteraction.Ignore))
+                {
+                    if (Physics.SphereCast(horizontal.point + Vector3.up * 0.5f, m_capsuleCastRadius, Vector3.down, out RaycastHit topHit, 0.5f, m_climbLayer, QueryTriggerInteraction.Ignore))
+                    {
+                        //刷新手的位置
+                        m_climbHeightMark = topHit.point.y;
                         m_debugHelper.DrawSphere(topHit.point + Vector3.down * 1.77f + horizontal.normal * 0.1f, 0.1f, Color.red, 3f);
                         targetPosition = topHit.point + Vector3.down * 1.77f + horizontal.normal * 0.1f;
                         targetQuaternion = Quaternion.LookRotation(-horizontal.normal.normalized);

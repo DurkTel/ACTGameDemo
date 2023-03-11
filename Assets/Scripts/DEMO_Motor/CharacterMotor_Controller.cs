@@ -17,16 +17,14 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
 
     protected override void FixedUpdate()
     {
+        RequestClimb();
 
         base.FixedUpdate();
-
-        RequestClimb();
         RequestFall();
         RequestVault();
 
         ControlLocomotion();
         ControlRotationType();
-
         ControllWallRun();
 
 
@@ -155,6 +153,21 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
             m_debugHelper.DrawLine(p1, p1 - rootTransform.forward, Color.red);
 
             m_targetDirection = Vector3.zero;
+
+            if(Mathf.Abs(m_relativityRight) > 0f)
+            {
+                if (!CalculateEdge((DirectionCast)m_relativityRight))
+                {
+                    if (CalculateCorner((DirectionCast)m_relativityRight, out Vector3 targetPosition, out Quaternion targetQuaternion))
+                    {
+                        PlayAnimation(m_relativityRight > 0 ? "Climb Hop Right" : "Climb Hop Left", 0.1f);
+                        DOCurveMove(targetPosition, 0.2f);
+                        DOCurveRotate(targetQuaternion, 0.1f);
+                    }
+                    m_relativityRight = 0f;
+                }
+            }
+
         }
     }
     
@@ -175,10 +188,29 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
                 }
                 else if (IsInAnimationName("Height Climb Hold"))
                 {
-                    Vector3 point = rootTransform.position;
-                    point.y = m_currentClimbPoint.y;
-                    m_stateInfos.AddMatchTargetList(new List<Vector3>() { point });
-                    PlayAnimation("Height Climb End", 0.05f);
+                    if (m_relativityForward > 0f)
+                    {
+                        if (CalculateJumpClimb(DirectionCast.Up, out Vector3 targetPosition, out Quaternion targetQuaternion))
+                        {
+                            PlayAnimation("Climb Hop Up", 0.1f);
+                            DOCurveMove(targetPosition, 0.2f);
+                            DOCurveRotate(targetQuaternion, 0.1f);
+                        }
+                        else
+                        {
+                            m_stateInfos.AddMatchTargetList(new List<Vector3>() { currentClimbPoint });
+                            PlayAnimation("Height Climb End", 0.05f);
+                        }
+                    }
+                    else if (Mathf.Abs(m_relativityRight) > 0f)
+                    { 
+                        if(CalculateJumpClimb((DirectionCast)m_relativityRight, out Vector3 targetPosition, out Quaternion targetQuaternion))
+                        {
+                            PlayAnimation(m_relativityRight > 0 ? "Climb Hop Right" : "Climb Hop Left", 0.1f);
+                            DOCurveMove(targetPosition, 0.2f);
+                            DOCurveRotate(targetQuaternion, 0.1f);
+                        }
+                    }
                 }
             }
             else if (value.action.name == "Escape")
@@ -201,7 +233,6 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
                 string animation = verticalSpeed <= -2f ? "Wall Run Jump Start" : "Wall Run Start";
                 rootTransform.position = CalculateOffset(0.4f);
                 PlayAnimation(animation, 0.05f);
-                print("¿ªÆôµÅÇ½ÅÜ");
             }
         }
         else
@@ -209,7 +240,6 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
             if (m_isWallRunning)
             {
                 m_isWallRunning = false;
-                print("½áÊøµÅÇ½ÅÜ");
             }
         }
 
@@ -234,7 +264,6 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
             {
                 if (!m_wallRunHolding)
                 {
-                    print("¿ªÊ¼µÅÇ½ÅÜÐü¹Ò");
                     m_wallRunHolding = true;
                     rootTransform.position = CalculateOffset(0.25f);
                 }
@@ -243,7 +272,6 @@ public class CharacterMotor_Controller : CharacterMotor_Animation
             {
                 if (m_wallRunHolding)
                 {
-                    print("½áÊøµÅÇ½ÅÜÐü¹Ò");
                     m_wallRunHolding = false;
                     rootTransform.position = CalculateOffset(0.4f);
                 }
