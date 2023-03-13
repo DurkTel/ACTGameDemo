@@ -45,16 +45,12 @@ namespace Demo_MoveMotor
 
         private void UpdateAnimatorParameter()
         {
-
-            animator.SetInteger(Int_Movement_Hash, (int)m_moveType);
             animator.SetFloat(Float_Movement_Hash, (float)m_moveType * m_targetDirection.magnitude, 0.2f, Time.fixedDeltaTime);
-            animator.SetFloat(Float_InputMagnitude_Hash, m_targetDirection.magnitude, 0.2f, Time.fixedDeltaTime);
             animator.SetFloat(Float_Input_Hash, m_targetDirection.magnitude);
             animator.SetFloat(Float_InputHorizontal_Hash, m_relativityRight);
             animator.SetFloat(Float_InputVertical_Hash, m_relativityForward);
             animator.SetFloat(Float_InputHorizontalLerp_Hash, m_relativityRight, 0.2f, Time.fixedDeltaTime);
             animator.SetFloat(Float_InputVerticalLerp_Hash, m_relativityForward, 0.2f, Time.fixedDeltaTime);
-            //animator.SetFloat(Float_RotationMagnitude_Hash, m_targetRad, m_rotationSmooth, Time.deltaTime);
             animator.SetFloat(Float_AngularVelocity_Hash, m_angularVelocity, 0.2f, Time.fixedDeltaTime);
             animator.SetFloat(Float_Rotation_Hash, m_targetDeg);
             animator.SetFloat(Float_JumpCount_Hash, m_jumpCount);
@@ -161,7 +157,6 @@ namespace Demo_MoveMotor
                 {
                     animator.SetFloat(Float_Footstep_Hash, m_footstep);
                     animator.SetFloat(Float_TurnRotation_Hash, m_targetDeg);
-                    animator.SetInteger(Int_Footstep_Hash, (int)m_footstep);
                 }
             }
             else
@@ -189,21 +184,17 @@ namespace Demo_MoveMotor
 
         #region ¶¯»­²ÎÊý
         public static int Float_Movement_Hash = Animator.StringToHash("Float_Movement");
-        public static int Float_InputMagnitude_Hash = Animator.StringToHash("Float_InputMagnitude");
         public static int Float_Input_Hash = Animator.StringToHash("Float_Input");
         public static int Float_InputHorizontal_Hash = Animator.StringToHash("Float_InputHorizontal");
         public static int Float_InputVertical_Hash = Animator.StringToHash("Float_InputVertical");
         public static int Float_InputHorizontalLerp_Hash = Animator.StringToHash("Float_InputHorizontalLerp");
         public static int Float_InputVerticalLerp_Hash = Animator.StringToHash("Float_InputVerticalLerp");
-        public static int Float_RotationMagnitude_Hash = Animator.StringToHash("Float_RotationMagnitude");
         public static int Float_AngularVelocity_Hash = Animator.StringToHash("Float_AngularVelocity");
         public static int Float_Rotation_Hash = Animator.StringToHash("Float_Rotation");
         public static int Float_Footstep_Hash = Animator.StringToHash("Float_Footstep");
         public static int Float_TurnRotation_Hash = Animator.StringToHash("Float_TurnRotation");
         public static int Float_JumpCount_Hash = Animator.StringToHash("Float_JumpCount");
         public static int Float_WallRunDir_Hash = Animator.StringToHash("Float_WallRunDir");
-        public static int Int_Movement_Hash = Animator.StringToHash("Int_Movement");
-        public static int Int_Footstep_Hash = Animator.StringToHash("Int_Footstep");
         public static int Trigger_SharpTurn_Hash = Animator.StringToHash("Trigger_SharpTurn");
         public static int Trigger_TurnInPlace_Hash = Animator.StringToHash("Trigger_TurnInPlace");
         public static int Bool_MoveInput_Hash = Animator.StringToHash("Bool_MoveInput");

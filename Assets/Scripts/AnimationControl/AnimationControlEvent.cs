@@ -2,19 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Rendering.Universal;
 
 /// <summary>
 /// ¶¯»­ÊÂ¼þ
 /// </summary>
 public class AnimationControlEvent : AnimationControl
 {
-    public event UnityAction<AnimatorStateInfo, int, bool> OnStateChangeEvent;
+    public AnimationEvent eventName;
 
-    public event UnityAction<AnimatorStateInfo, int> OnStateUpdateEvent;
+    public event UnityAction<AnimationEvent> OnAnimationEvent;
+
+    public event UnityAction<AnimatorStateInfo, int, bool> OnStateChangeEvent;
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         base.OnStateEnter(animator, stateInfo, layerIndex);
         OnStateChangeEvent?.Invoke(stateInfo, layerIndex, true);
+        OnAnimationEvent?.Invoke(eventName);
     }
 
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
@@ -23,9 +27,4 @@ public class AnimationControlEvent : AnimationControl
         OnStateChangeEvent?.Invoke(stateInfo, layerIndex, false);
     }
 
-    override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-    {
-        base.OnStateUpdate(animator, stateInfo, layerIndex);
-        OnStateUpdateEvent?.Invoke(stateInfo, layerIndex);
-    }
 }

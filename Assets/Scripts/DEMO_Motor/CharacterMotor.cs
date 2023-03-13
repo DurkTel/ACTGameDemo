@@ -144,7 +144,11 @@ namespace Demo_MoveMotor
         /// <summary>
         /// 墙跑的方向
         /// </summary>
-        protected float m_wallRunDir; 
+        protected float m_wallRunDir;
+        /// <summary>
+        /// 角速度
+        /// </summary>
+        protected float m_angularVelocity;
         /// <summary>
         /// 目标位置
         /// </summary>
