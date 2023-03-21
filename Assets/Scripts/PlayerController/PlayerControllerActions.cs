@@ -8,6 +8,7 @@ public class PlayerControllerActions
     public bool sprint = false;
     public bool walk = false;
     public bool jump = false;
+    public bool escape = false;
 
 
     public void ResetActions()

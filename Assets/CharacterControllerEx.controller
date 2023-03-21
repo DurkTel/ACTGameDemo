@@ -1270,11 +1270,11 @@ AnimatorStateMachine:
   m_AnyStateTransitions: []
   m_EntryTransitions: []
   m_StateMachineTransitions:
+  - first: {fileID: 1196922588577640820}
+    second: []
   - first: {fileID: -2139426544278581946}
     second:
     - {fileID: -3454652064995695005}
-  - first: {fileID: 1196922588577640820}
-    second: []
   m_StateMachineBehaviours:
   - {fileID: -3931883122855497184}
   m_AnyStatePosition: {x: 50, y: 20, z: 0}
@@ -1842,7 +1842,7 @@ BlendTree:
     m_CycleOffset: 0
     m_DirectBlendParameter: Float_Movement
     m_Mirror: 0
-  m_BlendParameter: Float_InputVerticalLerp
+  m_BlendParameter: Float_Movement
   m_BlendParameterY: Float_Movement
   m_MinThreshold: 0
   m_MaxThreshold: 0.8
@@ -5094,7 +5094,7 @@ BlendTree:
     m_CycleOffset: 0
     m_DirectBlendParameter: Float_Movement
     m_Mirror: 0
-  m_BlendParameter: Float_InputVerticalLerp
+  m_BlendParameter: Float_Movement
   m_BlendParameterY: Float_Movement
   m_MinThreshold: 0
   m_MaxThreshold: 0.8

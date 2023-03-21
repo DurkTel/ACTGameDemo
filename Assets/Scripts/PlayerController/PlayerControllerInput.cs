@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Windows;
@@ -9,7 +10,6 @@ public class PlayerControllerInput : MonoBehaviour
 {
     public CrossPlatformInput inputActions;
 
-    [SerializeField, Header("轨道相机")]
     protected OrbitCamera m_camera;
     /// <summary>
     /// 控制脚本
@@ -34,6 +34,7 @@ public class PlayerControllerInput : MonoBehaviour
     {
         inputActions = new CrossPlatformInput();
         m_controller = GetComponent<PlayerController>();
+        m_camera = Camera.main.GetComponent<OrbitCamera>();
     }
 
     public void OnEnable()
@@ -41,7 +42,7 @@ public class PlayerControllerInput : MonoBehaviour
         inputActions.Enable();
         inputActions.GamePlay.Walk.performed += RequestWalk;
         //inputActions.GamePlay.Lock.performed += m_controller.RequestGazing;
-        //inputActions.GamePlay.Escape.performed += m_controller.RequestEscape;
+        inputActions.GamePlay.Escape.performed += RequestEscape;
         //inputActions.GamePlay.Escape.performed += m_controller.RequestClimbEnd;
         inputActions.GamePlay.Jump.performed += RequestJump;
         //inputActions.GamePlay.Jump.performed += m_controller.RequestClimbEnd;
@@ -53,7 +54,7 @@ public class PlayerControllerInput : MonoBehaviour
         inputActions.Disable();
         inputActions.GamePlay.Walk.performed -= RequestWalk;
         //inputActions.GamePlay.Lock.performed -= m_controller.RequestGazing;
-        //inputActions.GamePlay.Escape.performed -= m_controller.RequestEscape;
+        inputActions.GamePlay.Escape.performed -= RequestEscape;
         //inputActions.GamePlay.Escape.performed -= m_controller.RequestClimbEnd;
         inputActions.GamePlay.Jump.performed -= RequestJump;
         //inputActions.GamePlay.Jump.performed -= m_controller.RequestClimbEnd;
@@ -97,5 +98,10 @@ public class PlayerControllerInput : MonoBehaviour
     private void RequestJump(CallbackContext value)
     {
         m_controller.actions.jump = value.performed;
+    }
+
+    private void RequestEscape(CallbackContext value)
+    {
+        m_controller.actions.escape = value.performed;
     }
 }

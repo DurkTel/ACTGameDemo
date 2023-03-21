@@ -8,6 +8,8 @@ public class AirboneAbility : PlayerAbility
     public float jumpHeight;
 
     public int jumpFrequency;
+    [Header("空中移动速度")]
+    public float airSpeed;
 
     [SerializeField]
     private float m_rotateSpeed = 10f;
@@ -17,8 +19,6 @@ public class AirboneAbility : PlayerAbility
     private bool m_isAiring;
 
     private int m_jumpCount;
-
-    private Vector3 m_direction;
 
     private float m_speed;
 
@@ -41,8 +41,7 @@ public class AirboneAbility : PlayerAbility
 
     public override void OnEnableAbility()
     {
-        m_direction = m_actions.move;
-        m_speed = playerController.animator.GetFloat("Float_Movement") / 2f * 0.1f;
+        m_speed = playerController.animator.GetFloat(PlayerAnimation.Float_Movement_Hash) / 2f * 0.1f;
         playerController.SetAnimationState(m_actions.jump ? "Jump First" : "Fall Keep", m_actions.jump ? 0f : 0.1f);
         
         if (m_actions.jump)
@@ -58,9 +57,8 @@ public class AirboneAbility : PlayerAbility
 
         if (m_actions.jump)
             JumpUpSecond();
-
-        m_direction += m_actions.move * m_speed;
-        m_moveController.Move(m_direction, m_speed);
+        
+        m_moveController.Move(m_moveController.rootTransform.forward, m_speed);
         m_moveController.Rotate(m_actions.move, m_rotateSpeed);
 
         m_isAiring = playerController.IsInAnimationTag("Air");
@@ -70,7 +68,6 @@ public class AirboneAbility : PlayerAbility
     public override void OnUpdateAnimatorParameter()
     {
         playerController.animator.SetBool(PlayerAnimation.Bool_Ground_Hash, m_moveController.IsGrounded());
-        playerController.animator.SetFloat(PlayerAnimation.Float_InputVerticalLerp_Hash, m_direction.normalized.magnitude);
     }
 
     private void JumpUpSecond()

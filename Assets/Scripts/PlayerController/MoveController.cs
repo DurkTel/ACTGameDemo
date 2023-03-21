@@ -191,7 +191,16 @@ public class MoveController : MonoBehaviour, IMove
 
     private void CalculateGravity()
     {
-        m_gravityVertical = IsGrounded() && m_gravityVertical <= 0f ? 0f : m_gravityVertical + gravity * Time.fixedDeltaTime;
+        if (IsGrounded() && m_gravityVertical <= 0f)
+        {
+            m_gravityVertical = 0f;
+            return;
+        }
+
+        if (m_gravityVertical >= 0f)
+            m_gravityVertical += gravity * 0.75f * Time.fixedDeltaTime;
+        else
+            m_gravityVertical += gravity * Time.fixedDeltaTime;
     }
 
     public Vector2 GetRelativeMove(Vector3 move)

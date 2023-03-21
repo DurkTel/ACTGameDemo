@@ -27,7 +27,6 @@ public class PlayerController : PlayerAnimation
     protected override void Update()
     {
         base.Update();
-        UpdateAbilities();
 
         if (m_currentAbilitiy != null && m_currentAbilitiy.updateMode == AbilityUpdateMode.Update)
             m_currentAbilitiy.OnUpdateAbility();
@@ -37,6 +36,17 @@ public class PlayerController : PlayerAnimation
     {
         if (m_currentAbilitiy != null && m_currentAbilitiy.updateMode == AbilityUpdateMode.FixedUpdate)
             m_currentAbilitiy.OnUpdateAbility();
+    }
+
+    public void OnAnimatorMove()
+    {
+        if (m_currentAbilitiy != null && m_currentAbilitiy.updateMode == AbilityUpdateMode.AnimatorMove)
+            m_currentAbilitiy.OnUpdateAbility();
+    }
+
+    public void LateUpdate()
+    {
+        UpdateAbilities();
     }
 
     public void UpdateAbilities()

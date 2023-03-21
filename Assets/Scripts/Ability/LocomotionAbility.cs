@@ -26,7 +26,9 @@ public class LocomotionAbility : PlayerAbility
     private float m_rotateSpeed = 10f;
 
     [SerializeField, Header("Ω≈º‚“˝”√")] 
-    protected Transform m_leftFootTran, m_rightFootTran;
+    protected Transform m_leftFootTran;
+    [SerializeField]
+    protected Transform m_rightFootTran;    
 
     private IMove m_moveController;
 
@@ -56,7 +58,7 @@ public class LocomotionAbility : PlayerAbility
 
     public override void OnDisEnableAbility()
     {
-        
+        OnResetAnimatorParameter();
     }
 
     public override void OnEnableAbility()
@@ -103,6 +105,14 @@ public class LocomotionAbility : PlayerAbility
         playerController.animator.SetFloat(PlayerAnimation.Float_Movement_Hash, m_actions.move.normalized.magnitude * (int)m_moveType, 0.2f, Time.fixedDeltaTime);
         playerController.animator.SetFloat(PlayerAnimation.Float_AngularVelocity_Hash, m_angularVelocity, 0.2f, Time.fixedDeltaTime);
         playerController.animator.SetFloat(PlayerAnimation.Float_Rotation_Hash, m_targetDeg);
+    }
+
+    public override void OnResetAnimatorParameter()
+    {
+        playerController.animator.SetFloat(PlayerAnimation.Float_InputHorizontalLerp_Hash, 0f);
+        playerController.animator.SetFloat(PlayerAnimation.Float_InputVerticalLerp_Hash, 0f);
+        playerController.animator.SetFloat(PlayerAnimation.Float_AngularVelocity_Hash, 0f);
+        playerController.animator.SetFloat(PlayerAnimation.Float_Rotation_Hash, 0f);
     }
 
     private void OnUpdateMove()

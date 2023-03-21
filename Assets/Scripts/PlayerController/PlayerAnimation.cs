@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerAnimation : MonoBehaviour
 {
+    [HideInInspector]
     public Animator animator;
 
     protected AnimatorStateInfo m_baseLayerInfo, m_fullBodyLayerInfo;
@@ -64,10 +65,10 @@ public class PlayerAnimation : MonoBehaviour
         if (m_stateInfos.IsInTransition())
             return true;
 
-        if (animator.IsInTransition(0))
+        if (animator.IsInTransition(BaseLayerIndex))
             return true;
 
-        if (animator.IsInTransition(1))
+        if (animator.IsInTransition(FullBodyLayerIndex))
             return true;
 
         return false;

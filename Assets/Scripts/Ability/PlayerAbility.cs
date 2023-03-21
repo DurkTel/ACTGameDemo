@@ -6,6 +6,7 @@ public enum AbilityUpdateMode
 {
     Update,
     FixedUpdate,
+    AnimatorMove
 }
 
 public abstract class PlayerAbility : MonoBehaviour
@@ -26,7 +27,9 @@ public abstract class PlayerAbility : MonoBehaviour
 
     public abstract void OnDisEnableAbility();
 
-    public abstract void OnUpdateAnimatorParameter();
+    public virtual void OnUpdateAnimatorParameter() { }
+
+    public virtual void OnResetAnimatorParameter() { }
 
     public virtual void OnAnimatorEvent(AnimationEvent cmd) { }
 
