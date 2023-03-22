@@ -12,13 +12,10 @@ public class EscapeAbility : PlayerAbility
         return m_actions.escape;
     }
 
-    public override void OnDisEnableAbility()
-    {
-
-    }
 
     public override void OnEnableAbility()
     {
+        base.OnEnableAbility();
         if (!m_moveController.IsGrounded())
             playerController.SetAnimationState("Air Escape");
         else
@@ -27,6 +24,7 @@ public class EscapeAbility : PlayerAbility
 
     public override void OnUpdateAbility()
     {
+        base.OnUpdateAbility();
         m_moveController.Move();
         m_actions.escape = playerController.IsInTransition() || playerController.IsInAnimationTag("Escape");
     }

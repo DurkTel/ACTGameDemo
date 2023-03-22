@@ -15,5 +15,7 @@ public class PlayerControllerActions
     {
         sprint = false;
         walk = false;
+        jump = false;
+        escape = false;
     }
 }

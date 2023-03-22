@@ -6,16 +6,17 @@ public class PlayerAnimation : MonoBehaviour
 {
     [HideInInspector]
     public Animator animator;
+    [HideInInspector]
+    public XAnimationStateInfos stateInfos;
 
     protected AnimatorStateInfo m_baseLayerInfo, m_fullBodyLayerInfo;
-
-    protected XAnimationStateInfos m_stateInfos;
 
     protected virtual void Awake()
     {
         animator = GetComponent<Animator>();
-        m_stateInfos = new XAnimationStateInfos(animator);
-        m_stateInfos.RegisterListener();
+        stateInfos = new XAnimationStateInfos(animator);
+        stateInfos.RegisterListener();
+        stateInfos.characterController = GetComponent<CharacterController>();   
     }
 
     protected virtual void Start()
@@ -30,7 +31,7 @@ public class PlayerAnimation : MonoBehaviour
 
     protected virtual void OnDestroy()
     {
-        m_stateInfos.RemoveListener();
+        stateInfos.RemoveListener();
     }
 
 
@@ -62,7 +63,7 @@ public class PlayerAnimation : MonoBehaviour
 
     public bool IsInTransition()
     {
-        if (m_stateInfos.IsInTransition())
+        if (stateInfos.IsInTransition())
             return true;
 
         if (animator.IsInTransition(BaseLayerIndex))
@@ -82,7 +83,7 @@ public class PlayerAnimation : MonoBehaviour
         if (m_fullBodyLayerInfo.IsTag(tag))
             return true;
 
-        if (m_stateInfos.IsTag(tag))
+        if (stateInfos.IsTag(tag))
             return true;
 
         return false;
@@ -98,7 +99,7 @@ public class PlayerAnimation : MonoBehaviour
     public void RegisterAnimationEvents(PlayerAbility[] abilities)
     {
         if (abilities.Length <= 0) return;
-        foreach (var control in m_stateInfos.controls)
+        foreach (var control in stateInfos.controls)
         {
             AnimationControlEvent e = control as AnimationControlEvent;
             if (e != null)
@@ -120,7 +121,7 @@ public class PlayerAnimation : MonoBehaviour
 
     public void RemoveAnimationEvents(PlayerAbility[] abilities)
     {
-        foreach (var control in m_stateInfos.controls)
+        foreach (var control in stateInfos.controls)
         {
             AnimationControlEvent e = control as AnimationControlEvent;
             if (e != null)

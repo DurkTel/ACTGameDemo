@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,7 +16,7 @@ public class PlayerController : PlayerAnimation
         base.Awake();   
         actions = new PlayerControllerActions();
         m_playerAbilities = GetComponents<PlayerAbility>();
-        
+        Array.Sort(m_playerAbilities, (PlayerAbility x, PlayerAbility y) => { return y.priority - x.priority; });
     }
 
     protected override void Start()
@@ -60,7 +61,10 @@ public class PlayerController : PlayerAnimation
             if (ability.Condition())
             {
                 if (nextAbility == null || ability.priority > nextAbility.priority || !nextAbility.Condition())
+                {
                     nextAbility = ability;
+                    break;
+                }
             }
         }
 
@@ -68,7 +72,7 @@ public class PlayerController : PlayerAnimation
         if (nextAbility != m_currentAbilitiy)
         {
             if (m_currentAbilitiy != null)
-                m_currentAbilitiy.OnDisEnableAbility();
+                m_currentAbilitiy.OnDisableAbility();
 
             nextAbility.OnEnableAbility();
 
@@ -78,7 +82,7 @@ public class PlayerController : PlayerAnimation
 
     public bool IsEnableRootMotion(int type)
     {
-        return m_stateInfos.IsEnableRootMotion(type);
+        return stateInfos.IsEnableRootMotion(type);
     }
 
     protected override void OnDestroy()
@@ -86,4 +90,5 @@ public class PlayerController : PlayerAnimation
         base.OnDestroy();   
         RemoveAnimationEvents(m_playerAbilities);
     }
+
 }

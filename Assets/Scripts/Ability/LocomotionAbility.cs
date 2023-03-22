@@ -55,24 +55,13 @@ public class LocomotionAbility : PlayerAbility
         return m_moveController.IsGrounded();
     }
 
-
-    public override void OnDisEnableAbility()
-    {
-        OnResetAnimatorParameter();
-    }
-
-    public override void OnEnableAbility()
-    {
-         
-    }
-
     public override void OnUpdateAbility()
     {
         m_moveType = m_actions.sprint? MoveType.SPRINT : MoveType.RUN;
         m_moveType = m_actions.walk ? MoveType.WALK : m_moveType;
 
         CalculateAngularVelocity(ref m_angularVelocity, ref m_targetDeg);
-        OnUpdateAnimatorParameter();
+        base.OnUpdateAbility();
 
         OnUpdateMove();
         OnUpdateRotate();

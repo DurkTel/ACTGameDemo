@@ -30,18 +30,19 @@ public class AirboneAbility : PlayerAbility
 
     public override bool Condition()
     {
-        return m_isAiring || (m_moveController.IsGrounded() && m_actions.jump) || (m_moveController.IsFalled() && !m_actions.jump);
+        return m_isAiring || (!playerController.IsInTransition() && ((m_moveController.IsGrounded() && m_actions.jump) || (m_moveController.IsFalled() && !m_actions.jump)));
     }
 
-    public override void OnDisEnableAbility()
+    public override void OnDisableAbility()
     {
+        base.OnDisableAbility();
         m_jumpCount = 0;
         m_isAiring = false;
     }
 
     public override void OnEnableAbility()
     {
-        m_speed = playerController.animator.GetFloat(PlayerAnimation.Float_Movement_Hash) / 2f * 0.1f;
+        m_speed = playerController.animator.GetFloat(PlayerAnimation.Float_Movement_Hash) / 2f * 0.1f * 0.5f;
         playerController.SetAnimationState(m_actions.jump ? "Jump First" : "Fall Keep", m_actions.jump ? 0f : 0.1f);
         
         if (m_actions.jump)

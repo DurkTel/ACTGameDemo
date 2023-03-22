@@ -3400,6 +3400,28 @@ BlendTree:
   m_UseAutomaticThresholds: 0
   m_NormalizedBlendValues: 0
   m_BlendType: 0
+--- !u!114 &3181188011053223982
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a9644025a760cc42b6df66f70ae5f23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animationStateInfos:
+    animator: {fileID: 0}
+    controls: []
+    matchTarget: []
+    matchQuaternion: []
+    characterController: {fileID: 0}
+    stateInfos: []
+  tags:
+  - Vault
+  ignore: []
 --- !u!1107 &3199178644931882353
 AnimatorStateMachine:
   serializedVersion: 6
@@ -3807,7 +3829,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Air Escape
-  m_Speed: 1
+  m_Speed: 0.75
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: -287858593751703341}
@@ -5407,7 +5429,8 @@ AnimatorStateMachine:
   m_AnyStateTransitions: []
   m_EntryTransitions: []
   m_StateMachineTransitions: {}
-  m_StateMachineBehaviours: []
+  m_StateMachineBehaviours:
+  - {fileID: 3181188011053223982}
   m_AnyStatePosition: {x: 50, y: 20, z: 0}
   m_EntryPosition: {x: 50, y: 120, z: 0}
   m_ExitPosition: {x: 720, y: 130, z: 0}

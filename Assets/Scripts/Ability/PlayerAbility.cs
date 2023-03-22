@@ -21,11 +21,17 @@ public abstract class PlayerAbility : MonoBehaviour
 
     public abstract bool Condition();
 
-    public abstract void OnEnableAbility();
+    public virtual void OnEnableAbility() { }
 
-    public abstract void OnUpdateAbility();
+    public virtual void OnUpdateAbility()
+    {
+        OnUpdateAnimatorParameter();
+    }
 
-    public abstract void OnDisEnableAbility();
+    public virtual void OnDisableAbility()
+    {
+        OnResetAnimatorParameter();
+    }
 
     public virtual void OnUpdateAnimatorParameter() { }
 
