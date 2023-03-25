@@ -4,14 +4,10 @@ using UnityEngine;
 
 public class EscapeAbility : PlayerAbility
 {
-    private IMove m_moveController;
-
-
     public override bool Condition()
     {
         return m_actions.escape;
     }
-
 
     public override void OnEnableAbility()
     {
@@ -28,11 +24,4 @@ public class EscapeAbility : PlayerAbility
         m_moveController.Move();
         m_actions.escape = playerController.IsInTransition() || playerController.IsInAnimationTag("Escape");
     }
-
-    protected override void Start()
-    {
-        base.Start();
-        m_moveController = GetComponent<MoveController>();
-    }
-
 }

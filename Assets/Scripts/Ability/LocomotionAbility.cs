@@ -30,11 +30,10 @@ public class LocomotionAbility : PlayerAbility
     [SerializeField]
     protected Transform m_rightFootTran;    
 
-    private IMove m_moveController;
-
     private Vector3 m_lastForward;
 
     private MoveType m_moveType = MoveType.RUN;
+
     /// <summary>
     /// 角速度
     /// </summary>
@@ -43,12 +42,6 @@ public class LocomotionAbility : PlayerAbility
     /// 目标角度与当前角度的夹角
     /// </summary>
     private float m_targetDeg;
-
-    protected override void Start()
-    {
-        base.Start();   
-        m_moveController = GetComponent<MoveController>();
-    }
 
     public override bool Condition()
     {
@@ -94,6 +87,7 @@ public class LocomotionAbility : PlayerAbility
         playerController.animator.SetFloat(PlayerAnimation.Float_Movement_Hash, m_actions.move.normalized.magnitude * (int)m_moveType, 0.2f, Time.fixedDeltaTime);
         playerController.animator.SetFloat(PlayerAnimation.Float_AngularVelocity_Hash, m_angularVelocity, 0.2f, Time.fixedDeltaTime);
         playerController.animator.SetFloat(PlayerAnimation.Float_Rotation_Hash, m_targetDeg);
+        playerController.animator.SetBool(PlayerAnimation.Bool_Ground_Hash, true);
     }
 
     public override void OnResetAnimatorParameter()

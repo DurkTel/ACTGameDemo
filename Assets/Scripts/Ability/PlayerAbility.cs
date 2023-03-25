@@ -19,12 +19,16 @@ public abstract class PlayerAbility : MonoBehaviour
 
     public AbilityUpdateMode updateMode = AbilityUpdateMode.FixedUpdate;
 
+    protected IMove m_moveController;
+
+
     public abstract bool Condition();
 
     public virtual void OnEnableAbility() { }
 
     public virtual void OnUpdateAbility()
     {
+        OnUpdateDeltaTime();
         OnUpdateAnimatorParameter();
     }
 
@@ -41,11 +45,30 @@ public abstract class PlayerAbility : MonoBehaviour
 
     public virtual AnimationEvent[] GetAnimatorEvent() { return null; }
 
+    protected void OnUpdateDeltaTime()
+    {
+        switch (updateMode)
+        {
+            case AbilityUpdateMode.Update:
+                m_moveController.deltaTtime = Time.deltaTime;
+                break;
+            case AbilityUpdateMode.FixedUpdate:
+                m_moveController.deltaTtime = Time.fixedDeltaTime;
+                break;
+            case AbilityUpdateMode.AnimatorMove:
+                m_moveController.deltaTtime = Time.deltaTime;
+                break;
+            default:
+                break;
+        }
+    }
+
     protected PlayerControllerActions m_actions;
 
     protected virtual void Start()
     {
         playerController = GetComponent<PlayerController>();
+        m_moveController = GetComponent<MoveController>();
         m_actions = playerController.actions;
     }
 }

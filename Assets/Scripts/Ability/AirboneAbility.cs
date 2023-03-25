@@ -14,19 +14,11 @@ public class AirboneAbility : PlayerAbility
     [SerializeField]
     private float m_rotateSpeed = 10f;
 
-    private IMove m_moveController;
-
     private bool m_isAiring;
 
     private int m_jumpCount;
 
     private float m_speed;
-
-    protected override void Start()
-    {
-        base.Start();
-        m_moveController = GetComponent<MoveController>();
-    }
 
     public override bool Condition()
     {
@@ -42,6 +34,7 @@ public class AirboneAbility : PlayerAbility
 
     public override void OnEnableAbility()
     {
+        m_jumpCount++;
         m_speed = playerController.animator.GetFloat(PlayerAnimation.Float_Movement_Hash) / 2f * 0.1f * 0.5f;
         playerController.SetAnimationState(m_actions.jump ? "Jump First" : "Fall Keep", m_actions.jump ? 0f : 0.1f);
         

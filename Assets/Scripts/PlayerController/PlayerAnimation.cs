@@ -35,10 +35,10 @@ public class PlayerAnimation : MonoBehaviour
     }
 
 
-    public void SetAnimationState(string stateName, float transitionDuration = 0.1f, int layer = 0)
+    public void SetAnimationState(string stateName, float transitionDuration = 0.1f)
     {
-        if (animator.HasState(0, Animator.StringToHash(stateName)))
-            animator.CrossFadeInFixedTime(stateName, transitionDuration, layer);
+        //if (animator.HasState(layerIndex, Animator.StringToHash(stateName)))
+            animator.CrossFadeInFixedTime(stateName, transitionDuration);
     }
 
     public bool HasFinishedAnimation(string state)
@@ -63,8 +63,8 @@ public class PlayerAnimation : MonoBehaviour
 
     public bool IsInTransition()
     {
-        if (stateInfos.IsInTransition())
-            return true;
+        //if (stateInfos.IsInTransition())
+        //    return true;
 
         if (animator.IsInTransition(BaseLayerIndex))
             return true;
@@ -87,6 +87,22 @@ public class PlayerAnimation : MonoBehaviour
             return true;
 
         return false;
+    }
+
+    public bool IsInAnimationName(string name)
+    {
+        if (m_baseLayerInfo.IsName(name))
+            return true;
+
+        if (m_fullBodyLayerInfo.IsName(name))
+            return true;
+
+        return false;
+    }
+
+    public bool IsEnableRootMotion(int type)
+    {
+        return stateInfos.IsEnableRootMotion(type);
     }
 
     private void UpdateAnimatorInfo()
@@ -141,16 +157,19 @@ public class PlayerAnimation : MonoBehaviour
         }
     }
 
-    public static int BaseLayerIndex = Animator.StringToHash("Base Layer");
-    public static int FullBodyLayerIndex = Animator.StringToHash("FullBody Layer");
+    public static int BaseLayerIndex = 0;
+    public static int FullBodyLayerIndex = 1;
 
 
     public static int Float_Movement_Hash = Animator.StringToHash("Float_Movement");
     public static int Float_AngularVelocity_Hash = Animator.StringToHash("Float_AngularVelocity");
     public static int Float_Rotation_Hash = Animator.StringToHash("Float_Rotation");
+    public static int Float_InputHorizontal_Hash = Animator.StringToHash("Float_InputHorizontal");
+    public static int Float_InputVertical_Hash = Animator.StringToHash("Float_InputVertical");
     public static int Float_InputHorizontalLerp_Hash = Animator.StringToHash("Float_InputHorizontalLerp");
     public static int Float_InputVerticalLerp_Hash = Animator.StringToHash("Float_InputVerticalLerp");
     public static int Float_TurnRotation_Hash = Animator.StringToHash("Float_TurnRotation");
     public static int Float_Footstep_Hash = Animator.StringToHash("Float_Footstep");
+    public static int Float_WallRunDir_Hash = Animator.StringToHash("Float_WallRunDir");
     public static int Bool_Ground_Hash = Animator.StringToHash("Bool_Ground");
 }

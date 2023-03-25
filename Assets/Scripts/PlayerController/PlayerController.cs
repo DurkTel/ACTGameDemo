@@ -9,7 +9,7 @@ public class PlayerController : PlayerAnimation
 
     private PlayerAbility[] m_playerAbilities;
 
-    private PlayerAbility m_currentAbilitiy;
+    [SerializeField]private PlayerAbility m_currentAbilitiy;
 
     protected override void Awake()
     {
@@ -78,11 +78,6 @@ public class PlayerController : PlayerAnimation
 
             m_currentAbilitiy = nextAbility;
         }
-    }
-
-    public bool IsEnableRootMotion(int type)
-    {
-        return stateInfos.IsEnableRootMotion(type);
     }
 
     protected override void OnDestroy()

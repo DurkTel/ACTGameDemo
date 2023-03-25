@@ -23,8 +23,6 @@ public class VaultAbility : PlayerAbility
     /// </summary>
     [SerializeField, Header("∑≠‘Ω∫ÛŒª÷√æ‡¿Î")] private float m_distanceAfterVault = 0.5f;
 
-    private IMove m_moveController;
-
     private bool m_isVault;
 
     public override bool Condition()
@@ -53,12 +51,6 @@ public class VaultAbility : PlayerAbility
         playerController.animator.SetFloat(PlayerAnimation.Float_InputVerticalLerp_Hash, 0f);
         playerController.animator.SetFloat(PlayerAnimation.Float_Movement_Hash, 0);
 
-    }
-
-    protected override void Start()
-    {
-        base.Start();
-        m_moveController = GetComponent<MoveController>();
     }
 
     private bool CalculateVault()

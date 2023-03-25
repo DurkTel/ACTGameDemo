@@ -5,17 +5,18 @@ using UnityEngine;
 public interface IMove
 {
     Transform rootTransform { get; set; }
+    float deltaTtime { get; set; }
     void Move();
 
     void Move(Vector3 direction, float speed);
 
-    void Move(Vector3 target, float time, float delay = 0f);
+    void Move(Vector3 target, float time, float delay);
 
     void Rotate();
 
     void Rotate(Vector3 direction, float speed);
 
-    void Rotate(Quaternion target, float time, float delay = 0f);
+    void Rotate(Quaternion target, float time, float delay);
 
     void Stop();
 

@@ -11,6 +11,7 @@ public class MoveController : MonoBehaviour, IMove
     public Transform rootTransform { get; set; }
 
     public bool enableGravity { get; set; }
+    public float deltaTtime { get; set; }
 
     [SerializeField, Header("地面层级")]
     public LayerMask groundLayer;
@@ -21,7 +22,7 @@ public class MoveController : MonoBehaviour, IMove
 
     private Animator m_animator;
 
-
+    
     #region 曲线运动
     /// <summary>
     /// 曲线运动目标位置
@@ -76,6 +77,7 @@ public class MoveController : MonoBehaviour, IMove
         CurveMove();
         CurveRotate();
     }
+
     public void Move()
     {
         characterController.Move(m_animator.deltaPosition);
@@ -86,15 +88,15 @@ public class MoveController : MonoBehaviour, IMove
         direction.y = 0f;
         direction = direction.normalized * Mathf.Clamp(direction.magnitude, 0, 1f);
         //这一帧的移动位置
-        Vector3 targetPosition = rootTransform.position + direction * speed * Time.fixedDeltaTime;
+        Vector3 targetPosition = rootTransform.position + direction * speed * deltaTtime;
         //这一帧的移动速度
-        Vector3 targetVelocity = (targetPosition - rootTransform.position) / Time.fixedDeltaTime;
-        targetVelocity.y = GetGravityAcceleration() * Time.fixedDeltaTime;
+        Vector3 targetVelocity = (targetPosition - rootTransform.position) / deltaTtime;
+        targetVelocity.y = GetGravityAcceleration() * deltaTtime;
         
         characterController.Move(targetVelocity);
     }
 
-    public void Move(Vector3 target, float time, float delay = 0)
+    public void Move(Vector3 target, float time, float delay)
     {
         m_isCurveMoving = true;
         characterController.enabled = false;
@@ -131,12 +133,12 @@ public class MoveController : MonoBehaviour, IMove
 
         var euler = rootTransform.rotation.eulerAngles.NormalizeAngle();
         var targetEuler = Quaternion.LookRotation(direction.normalized).eulerAngles.NormalizeAngle();
-        euler.y = Mathf.LerpAngle(euler.y, targetEuler.y, speed * Time.fixedDeltaTime);
+        euler.y = Mathf.LerpAngle(euler.y, targetEuler.y, speed * deltaTtime);
         Quaternion newRotation = Quaternion.Euler(euler);
         rootTransform.rotation = newRotation;
     }
 
-    public void Rotate(Quaternion target, float time, float delay = 0)
+    public void Rotate(Quaternion target, float time, float delay)
     {
         m_isCurveRotating = true;
         m_curveRotationTarget = target;
@@ -171,7 +173,7 @@ public class MoveController : MonoBehaviour, IMove
     public bool IsGrounded()
     {
         return Physics.SphereCast(rootTransform.position + Vector3.up * 0.5f, characterController.radius,
-                Vector3.down, out RaycastHit hitInfo, 0.5f - characterController.radius + characterController.skinWidth * 2, groundLayer);
+                Vector3.down, out RaycastHit hitInfo, 0.5f - characterController.radius + characterController.skinWidth * 3, groundLayer);
     }
 
     public bool IsFalled()
@@ -198,9 +200,9 @@ public class MoveController : MonoBehaviour, IMove
         }
 
         if (m_gravityVertical >= 0f)
-            m_gravityVertical += gravity * 0.75f * Time.fixedDeltaTime;
+            m_gravityVertical += gravity * 0.75f * deltaTtime;
         else
-            m_gravityVertical += gravity * Time.fixedDeltaTime;
+            m_gravityVertical += gravity * deltaTtime;
     }
 
     public Vector2 GetRelativeMove(Vector3 move)
