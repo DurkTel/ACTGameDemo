@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7a7919aff549244ba65a384ccbc760f, type: 3}
+  m_Name: light3Attack1
+  m_EditorClassIdentifier: 
+  skillCode: 10001
+  skillName: 
+  animationName: Attack_3Combo_1
+  attackPoint: 0.27
+  attackBackswing: 0.4
+  comboSkills:
+  - range1: 0.4
+    range2: 0.7
+    comboSkill: {fileID: 11400000, guid: 477bd95456adef747a436b5c4cb5086f, type: 2}
+  - range1: 0.7
+    range2: 1
+    comboSkill: {fileID: 11400000, guid: 31ef9739abb122848adc3a4e51baba7f, type: 2}

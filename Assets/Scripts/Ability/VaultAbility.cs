@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class VaultAbility : PlayerAbility
 {
+
     [SerializeField, Header("·­Ô½²ã¼¶")]
     protected LayerMask m_vaultLayer;
     /// <summary>
@@ -25,6 +26,10 @@ public class VaultAbility : PlayerAbility
 
     private bool m_isVault;
 
+    public override AbilityType GetAbilityType()
+    {
+        return AbilityType.Vault;
+    }
     public override bool Condition()
     {
         return m_isVault || m_moveController.GetRelativeMove(m_actions.move).y >= 0.5f && !playerController.IsInTransition() && CalculateVault();

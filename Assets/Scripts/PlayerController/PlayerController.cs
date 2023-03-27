@@ -11,11 +11,18 @@ public class PlayerController : PlayerAnimation
 
     [SerializeField]private PlayerAbility m_currentAbilitiy;
 
+    public PlayerAbility currentAbilitiy { get { return m_currentAbilitiy; } }
+
+    private CombatController m_combatAbility;
+
+    public CombatController combatAbility { get { return m_combatAbility; } }
+
     protected override void Awake()
     {
         base.Awake();   
         actions = new PlayerControllerActions();
         m_playerAbilities = GetComponents<PlayerAbility>();
+        m_combatAbility = GetComponent<CombatController>();
         Array.Sort(m_playerAbilities, (PlayerAbility x, PlayerAbility y) => { return y.priority - x.priority; });
     }
 
@@ -31,6 +38,8 @@ public class PlayerController : PlayerAnimation
 
         if (m_currentAbilitiy != null && m_currentAbilitiy.updateMode == AbilityUpdateMode.Update)
             m_currentAbilitiy.OnUpdateAbility();
+
+        m_combatAbility.OnUpdateCombat();
     }
 
     public void FixedUpdate()
@@ -43,6 +52,8 @@ public class PlayerController : PlayerAnimation
     {
         if (m_currentAbilitiy != null && m_currentAbilitiy.updateMode == AbilityUpdateMode.AnimatorMove)
             m_currentAbilitiy.OnUpdateAbility();
+
+        m_combatAbility.OnUpdateCombatMove();
     }
 
     public void LateUpdate()

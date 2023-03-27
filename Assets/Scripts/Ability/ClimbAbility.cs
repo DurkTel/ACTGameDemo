@@ -59,6 +59,11 @@ public class ClimbAbility : PlayerAbility
 
     private Vector2 m_relativeMove;
 
+    public override AbilityType GetAbilityType()
+    {
+        return AbilityType.Climb;
+    }
+
     public override bool Condition()
     {
         return m_curClimbType != ClimbType.None || m_moveController.GetRelativeMove(m_actions.move).y >= 0.5f && !playerController.IsInTransition() && CalculateClimb(out m_curClimbType);
@@ -356,4 +361,5 @@ public class ClimbAbility : PlayerAbility
 
         return false;
     }
+
 }

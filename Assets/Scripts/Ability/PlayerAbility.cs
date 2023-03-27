@@ -9,6 +9,17 @@ public enum AbilityUpdateMode
     AnimatorMove
 }
 
+public enum AbilityType
+{
+    None,
+    Locomotion,
+    Airbone,
+    Escape,
+    Vault,
+    Climb,
+    WallRun
+}
+
 public abstract class PlayerAbility : MonoBehaviour
 {
     public int priority;
@@ -21,6 +32,9 @@ public abstract class PlayerAbility : MonoBehaviour
 
     protected IMove m_moveController;
 
+    protected PlayerControllerActions m_actions;
+
+    public abstract AbilityType GetAbilityType();
 
     public abstract bool Condition();
 
@@ -62,8 +76,6 @@ public abstract class PlayerAbility : MonoBehaviour
                 break;
         }
     }
-
-    protected PlayerControllerActions m_actions;
 
     protected virtual void Start()
     {

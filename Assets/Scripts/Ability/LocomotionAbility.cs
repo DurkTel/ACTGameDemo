@@ -43,6 +43,10 @@ public class LocomotionAbility : PlayerAbility
     /// </summary>
     private float m_targetDeg;
 
+    public override AbilityType GetAbilityType()
+    {
+        return AbilityType.Locomotion;
+    }
     public override bool Condition()
     {
         return m_moveController.IsGrounded();

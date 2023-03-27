@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class AirboneAbility : PlayerAbility
 {
+
     [Header("ÌøÔ¾²ÎÊý")]
     public float jumpHeight;
 
@@ -23,6 +24,11 @@ public class AirboneAbility : PlayerAbility
     public override bool Condition()
     {
         return m_isAiring || (!playerController.IsInTransition() && ((m_moveController.IsGrounded() && m_actions.jump) || (m_moveController.IsFalled() && !m_actions.jump)));
+    }
+
+    public override AbilityType GetAbilityType()
+    {
+        return AbilityType.Airbone;
     }
 
     public override void OnDisableAbility()

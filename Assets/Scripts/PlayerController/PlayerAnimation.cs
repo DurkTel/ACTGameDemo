@@ -61,6 +61,12 @@ public class PlayerAnimation : MonoBehaviour
         return false;
     }
 
+    public float GetAnimationNormalizedTime(int layer)
+    { 
+        AnimatorStateInfo info = animator.GetCurrentAnimatorStateInfo(layer);
+        return info.normalizedTime;
+    }
+
     public bool IsInTransition()
     {
         //if (stateInfos.IsInTransition())
@@ -171,5 +177,6 @@ public class PlayerAnimation : MonoBehaviour
     public static int Float_TurnRotation_Hash = Animator.StringToHash("Float_TurnRotation");
     public static int Float_Footstep_Hash = Animator.StringToHash("Float_Footstep");
     public static int Float_WallRunDir_Hash = Animator.StringToHash("Float_WallRunDir");
+    public static int Float_IntroWeapon_Hash = Animator.StringToHash("Float_IntroWeapon");
     public static int Bool_Ground_Hash = Animator.StringToHash("Bool_Ground");
 }

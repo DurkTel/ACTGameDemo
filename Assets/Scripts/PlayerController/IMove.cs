@@ -18,7 +18,7 @@ public interface IMove
 
     void Rotate(Quaternion target, float time, float delay);
 
-    void Stop();
+    void Stop(bool value);
 
     void EnableGravity(bool value);
 

@@ -41,10 +41,13 @@ public class PlayerControllerInput : MonoBehaviour
     {
         inputActions.Enable();
         inputActions.GamePlay.Walk.performed += RequestWalk;
-        //inputActions.GamePlay.Lock.performed += m_controller.RequestGazing;
+        inputActions.GamePlay.Lock.performed += RequestGazing;
         inputActions.GamePlay.Escape.performed += RequestEscape;
         //inputActions.GamePlay.Escape.performed += m_controller.RequestClimbEnd;
         inputActions.GamePlay.Jump.performed += RequestJump;
+        inputActions.GamePlay.Weapon.performed += RequestWeapon;
+        inputActions.GamePlay.LightAttack.performed += RequestLightAttack;
+        inputActions.GamePlay.HeavyAttack.performed += RequestHeavyAttack;
         //inputActions.GamePlay.Jump.performed += m_controller.RequestClimbEnd;
 
     }
@@ -53,10 +56,13 @@ public class PlayerControllerInput : MonoBehaviour
     {
         inputActions.Disable();
         inputActions.GamePlay.Walk.performed -= RequestWalk;
-        //inputActions.GamePlay.Lock.performed -= m_controller.RequestGazing;
+        inputActions.GamePlay.Lock.performed -= RequestGazing;
         inputActions.GamePlay.Escape.performed -= RequestEscape;
         //inputActions.GamePlay.Escape.performed -= m_controller.RequestClimbEnd;
         inputActions.GamePlay.Jump.performed -= RequestJump;
+        inputActions.GamePlay.Weapon.performed -= RequestWeapon;
+        inputActions.GamePlay.LightAttack.performed -= RequestLightAttack;
+        inputActions.GamePlay.HeavyAttack.performed -= RequestHeavyAttack;
         //inputActions.GamePlay.Jump.performed -= m_controller.RequestClimbEnd;
 
     }
@@ -95,6 +101,11 @@ public class PlayerControllerInput : MonoBehaviour
         m_controller.actions.walk = !m_controller.actions.walk;
     }
 
+    private void RequestGazing(CallbackContext value)
+    {
+        m_controller.actions.gazing = !m_controller.actions.gazing;
+    }
+
     private void RequestJump(CallbackContext value)
     {
         m_controller.actions.jump = value.performed;
@@ -103,5 +114,20 @@ public class PlayerControllerInput : MonoBehaviour
     private void RequestEscape(CallbackContext value)
     {
         m_controller.actions.escape = value.performed;
+    }
+
+    private void RequestWeapon(CallbackContext value)
+    {
+        m_controller.actions.weapon = !m_controller.actions.weapon;
+    }
+
+    private void RequestLightAttack(CallbackContext value)
+    {
+        m_controller.actions.lightAttack = value.performed;
+    }
+
+    private void RequestHeavyAttack(CallbackContext value)
+    {
+        m_controller.actions.heavyAttack = value.performed;
     }
 }

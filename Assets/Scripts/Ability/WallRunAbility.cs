@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class WallRunAbility : PlayerAbility
 {
+
     [SerializeField, Header("ǽ�ܲ㼶")]
     protected LayerMask m_wallRunLayer;
     /// <summary>
@@ -21,7 +22,10 @@ public class WallRunAbility : PlayerAbility
 
     private bool m_wallRunHolding;
 
-
+    public override AbilityType GetAbilityType()
+    {
+        return AbilityType.WallRun;
+    }
     public override bool Condition()
     {
         return !m_moveController.IsGrounded() && CalculateWallRun(out m_wallHit, out m_wallRunDir);

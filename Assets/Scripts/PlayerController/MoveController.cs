@@ -22,6 +22,7 @@ public class MoveController : MonoBehaviour, IMove
 
     private Animator m_animator;
 
+    private bool m_enabled;
     
     #region 曲线运动
     /// <summary>
@@ -85,6 +86,7 @@ public class MoveController : MonoBehaviour, IMove
 
     public void Move(Vector3 direction, float speed)
     {
+        if (m_enabled) return;
         direction.y = 0f;
         direction = direction.normalized * Mathf.Clamp(direction.magnitude, 0, 1f);
         //这一帧的移动位置
@@ -127,6 +129,7 @@ public class MoveController : MonoBehaviour, IMove
 
     public void Rotate(Vector3 direction, float speed)
     {
+        if (m_enabled) return;
         direction.y = 0f;
         if (direction.normalized.magnitude == 0)
             direction = rootTransform.forward;
@@ -160,9 +163,9 @@ public class MoveController : MonoBehaviour, IMove
         rootTransform.rotation = Quaternion.Lerp(rootTransform.rotation, m_curveRotationTarget, m_curveRotationDelta * Time.fixedDeltaTime);
     }
 
-    public void Stop()
+    public void Stop(bool value)
     {
-        throw new System.NotImplementedException();
+        m_enabled = value;
     }
 
     public void EnableGravity(bool value)

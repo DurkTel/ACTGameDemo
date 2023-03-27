@@ -89,13 +89,40 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Weapon"",
+                    ""type"": ""Button"",
+                    ""id"": ""900be26c-70ff-46e2-a08c-faf8477c39d0"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""LightAttack"",
+                    ""type"": ""Button"",
+                    ""id"": ""4b99525c-bb01-4a70-833c-aee3535d76b8"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""HeavyAttack"",
+                    ""type"": ""Button"",
+                    ""id"": ""2d2d38d2-539d-497d-829a-c4b2406811be"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
                 {
                     ""name"": """",
                     ""id"": ""fa3e4364-c2bb-40b4-926a-3eeaca14fcab"",
-                    ""path"": ""<Mouse>/rightButton"",
+                    ""path"": ""<Keyboard>/leftShift"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -300,6 +327,39 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
                     ""action"": ""Escape"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""73e13ad6-f8b0-4fd6-a887-4c6df176f405"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Weapon"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9723dcbe-a984-4981-94d6-ad829af1c242"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""LightAttack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6a16cb86-e4b6-4b57-8191-5ad9503c5183"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""HeavyAttack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -315,6 +375,9 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
         m_GamePlay_Jump = m_GamePlay.FindAction("Jump", throwIfNotFound: true);
         m_GamePlay_Lock = m_GamePlay.FindAction("Lock", throwIfNotFound: true);
         m_GamePlay_Escape = m_GamePlay.FindAction("Escape", throwIfNotFound: true);
+        m_GamePlay_Weapon = m_GamePlay.FindAction("Weapon", throwIfNotFound: true);
+        m_GamePlay_LightAttack = m_GamePlay.FindAction("LightAttack", throwIfNotFound: true);
+        m_GamePlay_HeavyAttack = m_GamePlay.FindAction("HeavyAttack", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -381,6 +444,9 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
     private readonly InputAction m_GamePlay_Jump;
     private readonly InputAction m_GamePlay_Lock;
     private readonly InputAction m_GamePlay_Escape;
+    private readonly InputAction m_GamePlay_Weapon;
+    private readonly InputAction m_GamePlay_LightAttack;
+    private readonly InputAction m_GamePlay_HeavyAttack;
     public struct GamePlayActions
     {
         private @CrossPlatformInput m_Wrapper;
@@ -392,6 +458,9 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
         public InputAction @Jump => m_Wrapper.m_GamePlay_Jump;
         public InputAction @Lock => m_Wrapper.m_GamePlay_Lock;
         public InputAction @Escape => m_Wrapper.m_GamePlay_Escape;
+        public InputAction @Weapon => m_Wrapper.m_GamePlay_Weapon;
+        public InputAction @LightAttack => m_Wrapper.m_GamePlay_LightAttack;
+        public InputAction @HeavyAttack => m_Wrapper.m_GamePlay_HeavyAttack;
         public InputActionMap Get() { return m_Wrapper.m_GamePlay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -422,6 +491,15 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
                 @Escape.started -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnEscape;
                 @Escape.performed -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnEscape;
                 @Escape.canceled -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnEscape;
+                @Weapon.started -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnWeapon;
+                @Weapon.performed -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnWeapon;
+                @Weapon.canceled -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnWeapon;
+                @LightAttack.started -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnLightAttack;
+                @LightAttack.performed -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnLightAttack;
+                @LightAttack.canceled -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnLightAttack;
+                @HeavyAttack.started -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnHeavyAttack;
+                @HeavyAttack.performed -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnHeavyAttack;
+                @HeavyAttack.canceled -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnHeavyAttack;
             }
             m_Wrapper.m_GamePlayActionsCallbackInterface = instance;
             if (instance != null)
@@ -447,6 +525,15 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
                 @Escape.started += instance.OnEscape;
                 @Escape.performed += instance.OnEscape;
                 @Escape.canceled += instance.OnEscape;
+                @Weapon.started += instance.OnWeapon;
+                @Weapon.performed += instance.OnWeapon;
+                @Weapon.canceled += instance.OnWeapon;
+                @LightAttack.started += instance.OnLightAttack;
+                @LightAttack.performed += instance.OnLightAttack;
+                @LightAttack.canceled += instance.OnLightAttack;
+                @HeavyAttack.started += instance.OnHeavyAttack;
+                @HeavyAttack.performed += instance.OnHeavyAttack;
+                @HeavyAttack.canceled += instance.OnHeavyAttack;
             }
         }
     }
@@ -460,5 +547,8 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
         void OnJump(InputAction.CallbackContext context);
         void OnLock(InputAction.CallbackContext context);
         void OnEscape(InputAction.CallbackContext context);
+        void OnWeapon(InputAction.CallbackContext context);
+        void OnLightAttack(InputAction.CallbackContext context);
+        void OnHeavyAttack(InputAction.CallbackContext context);
     }
 }

@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class EscapeAbility : PlayerAbility
 {
+
+    public override AbilityType GetAbilityType()
+    {
+        return AbilityType.Escape;
+    }
     public override bool Condition()
     {
         return m_actions.escape;
