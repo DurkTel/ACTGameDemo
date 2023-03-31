@@ -23,7 +23,7 @@ public class AirboneAbility : PlayerAbility
 
     public override bool Condition()
     {
-        return m_isAiring || (!playerController.IsInTransition() && ((m_moveController.IsGrounded() && m_actions.jump) || (m_moveController.IsFalled() && !m_actions.jump)));
+        return m_isAiring || (!m_actions.gazing && !playerController.IsInTransition() && ((m_moveController.IsGrounded() && m_actions.jump) || (m_moveController.IsFalled() && !m_actions.jump)));
     }
 
     public override AbilityType GetAbilityType()

@@ -112,15 +112,15 @@ public class ClimbAbility : PlayerAbility
 
     public override void OnUpdateAnimatorParameter() 
     {
-        playerController.animator.SetFloat(PlayerAnimation.Float_InputHorizontal_Hash, m_relativeMove.x, 0.2f, Time.fixedDeltaTime);
-        playerController.animator.SetFloat(PlayerAnimation.Float_InputVertical_Hash, m_relativeMove.y, 0.2f, Time.fixedDeltaTime);
+        playerController.animator.SetFloat(PlayerAnimation.Float_InputHorizontalLerp_Hash, m_relativeMove.x, 0.2f, Time.fixedDeltaTime);
+        playerController.animator.SetFloat(PlayerAnimation.Float_InputVerticalLerp_Hash, m_relativeMove.y, 0.2f, Time.fixedDeltaTime);
         playerController.animator.SetBool(PlayerAnimation.Bool_Ground_Hash, m_moveController.IsGrounded());
     }
 
     public override void OnResetAnimatorParameter()
     {
-        playerController.animator.SetFloat(PlayerAnimation.Float_InputHorizontal_Hash, 0f);
-        playerController.animator.SetFloat(PlayerAnimation.Float_InputVertical_Hash, 0f);
+        playerController.animator.SetFloat(PlayerAnimation.Float_InputHorizontalLerp_Hash, 0f);
+        playerController.animator.SetFloat(PlayerAnimation.Float_InputVerticalLerp_Hash, 0f);
         playerController.animator.SetFloat(PlayerAnimation.Float_Movement_Hash, 0f);
     }
 

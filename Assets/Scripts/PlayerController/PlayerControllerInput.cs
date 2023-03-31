@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Windows;
@@ -42,7 +43,6 @@ public class PlayerControllerInput : MonoBehaviour
     {
         inputActions.Enable();
         inputActions.GamePlay.Walk.performed += RequestWalk;
-        inputActions.GamePlay.Lock.performed += RequestGazing;
         inputActions.GamePlay.Escape.performed += RequestEscape;
         //inputActions.GamePlay.Escape.performed += m_controller.RequestClimbEnd;
         inputActions.GamePlay.Jump.performed += RequestJump;
@@ -57,7 +57,6 @@ public class PlayerControllerInput : MonoBehaviour
     {
         inputActions.Disable();
         inputActions.GamePlay.Walk.performed -= RequestWalk;
-        inputActions.GamePlay.Lock.performed -= RequestGazing;
         inputActions.GamePlay.Escape.performed -= RequestEscape;
         //inputActions.GamePlay.Escape.performed -= m_controller.RequestClimbEnd;
         inputActions.GamePlay.Jump.performed -= RequestJump;
@@ -68,15 +67,25 @@ public class PlayerControllerInput : MonoBehaviour
 
     }
 
-    public void Update()
+    private void Update()
     {
         MoveInput();
         CameraInput();
     }
 
+    private void FixedUpdate()
+    {
+        GazingInput();
+
+    }
+
     public virtual void MoveInput()
     {
-        m_inputDirection = inputActions.GamePlay.Move.ReadValue<Vector2>();
+        float up = inputActions.GamePlay.MoveUp.phase == InputActionPhase.Performed ? 1f : 0f;
+        float down = inputActions.GamePlay.MoveDown.phase == InputActionPhase.Performed ? -1f : 0f;
+        float left = inputActions.GamePlay.MoveLeft.phase == InputActionPhase.Performed ? -1f : 0f;
+        float right = inputActions.GamePlay.MoveRight.phase == InputActionPhase.Performed ? 1f : 0f;
+        m_inputDirection.Set(left + right, up + down);
         m_currentDirection.x = m_inputDirection.x;
         m_currentDirection.z = m_inputDirection.y;
 
@@ -86,10 +95,6 @@ public class PlayerControllerInput : MonoBehaviour
         
         m_controller.actions.move = moveDirection;
         m_controller.actions.sprint = inputActions.GamePlay.Run.phase == InputActionPhase.Performed;
-        //m_controller.SetTargetDirection(moveDirection);
-        //m_controller.SetInputDirection(moveDirection);
-
-        //m_controller.RequestSprint(inputActions.GamePlay.Run.phase);
     }
 
     public virtual void CameraInput()
@@ -97,17 +102,18 @@ public class PlayerControllerInput : MonoBehaviour
         m_camera.GetAxisInput(inputActions.GamePlay.Look.ReadValue<Vector2>());
     }
 
+
+    private void GazingInput()
+    {
+        m_controller.actions.gazing = inputActions.GamePlay.Lock.phase == InputActionPhase.Performed;
+        m_camera.CalculateLockon(m_controller.actions.gazing);
+    }
+
     private void RequestWalk(CallbackContext value)
     {
         m_controller.actions.walk = !m_controller.actions.walk;
     }
 
-    private void RequestGazing(CallbackContext value)
-    {
-        m_controller.actions.gazing = !m_controller.actions.gazing;
-        if (m_controller.actions.gazing)
-            m_camera.CalculateLockon();
-    }
 
     private void RequestJump(CallbackContext value)
     {

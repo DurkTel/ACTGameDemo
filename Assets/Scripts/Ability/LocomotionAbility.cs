@@ -88,6 +88,8 @@ public class LocomotionAbility : PlayerAbility
         Vector2 relativeMove = m_moveController.GetRelativeMove(m_actions.move);
         playerController.animator.SetFloat(PlayerAnimation.Float_InputHorizontalLerp_Hash, relativeMove.x, 0.2f, Time.fixedDeltaTime);
         playerController.animator.SetFloat(PlayerAnimation.Float_InputVerticalLerp_Hash, relativeMove.y, 0.2f, Time.fixedDeltaTime);
+        playerController.animator.SetFloat(PlayerAnimation.Float_InputHorizontal_Hash, relativeMove.x);
+        playerController.animator.SetFloat(PlayerAnimation.Float_InputVertical_Hash, relativeMove.y);
         playerController.animator.SetFloat(PlayerAnimation.Float_Movement_Hash, m_actions.move.normalized.magnitude * (int)m_moveType, 0.2f, Time.fixedDeltaTime);
         playerController.animator.SetFloat(PlayerAnimation.Float_AngularVelocity_Hash, m_angularVelocity, 0.2f, Time.fixedDeltaTime);
         playerController.animator.SetFloat(PlayerAnimation.Float_Rotation_Hash, m_targetDeg);

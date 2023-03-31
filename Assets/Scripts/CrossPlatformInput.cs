@@ -37,15 +37,6 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Move"",
-                    ""type"": ""Value"",
-                    ""id"": ""28caa20d-4821-493e-b092-c9e355058215"",
-                    ""expectedControlType"": ""Vector2"",
-                    ""processors"": ""StickDeadzone"",
-                    ""interactions"": """",
-                    ""initialStateCheck"": true
-                },
-                {
                     ""name"": ""Look"",
                     ""type"": ""Value"",
                     ""id"": ""257e1551-9249-4c6b-b96d-f5b38dd94811"",
@@ -116,13 +107,49 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Move（Up）"",
+                    ""type"": ""Button"",
+                    ""id"": ""c5b3d110-f47b-409d-8965-dd67b3a0ac10"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Move（Down）"",
+                    ""type"": ""Button"",
+                    ""id"": ""e7da4a92-c748-4090-ade8-22704c2de419"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Move（Left）"",
+                    ""type"": ""Button"",
+                    ""id"": ""2795b471-5b25-4709-8605-a97c80a2183c"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Move（Right）"",
+                    ""type"": ""Button"",
+                    ""id"": ""ad72d520-22da-4b35-841b-8ffd08bfd148"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
                 {
                     ""name"": """",
                     ""id"": ""fa3e4364-c2bb-40b4-926a-3eeaca14fcab"",
-                    ""path"": ""<Keyboard>/leftShift"",
+                    ""path"": ""<Keyboard>/h"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -140,116 +167,6 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
                     ""action"": ""Run"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""Keyboard"",
-                    ""id"": ""9a955bec-e31e-4aca-98b4-6a17949e4c38"",
-                    ""path"": ""2DVector"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Move"",
-                    ""isComposite"": true,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""up"",
-                    ""id"": ""7b7ecb76-1b06-40a1-81d1-87174a96c8ed"",
-                    ""path"": ""<Keyboard>/w"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""down"",
-                    ""id"": ""f68a6e5d-1367-45e8-80b3-979ee4d4d924"",
-                    ""path"": ""<Keyboard>/s"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""left"",
-                    ""id"": ""5d6f8fcc-c3a9-4c4c-b393-4735fd544ed1"",
-                    ""path"": ""<Keyboard>/a"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""right"",
-                    ""id"": ""5fbcd577-4980-4633-be9e-7f436cbfd03c"",
-                    ""path"": ""<Keyboard>/d"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""Gamepad"",
-                    ""id"": ""ee8d05b0-0e37-4295-871d-8caa54c2c35b"",
-                    ""path"": ""2DVector"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Move"",
-                    ""isComposite"": true,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""up"",
-                    ""id"": ""cf87b027-c815-4ec3-911d-30888d44c194"",
-                    ""path"": ""<Gamepad>/leftStick/up"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""down"",
-                    ""id"": ""ac835a3d-678c-468b-9d1b-201690cd616d"",
-                    ""path"": ""<Gamepad>/leftStick/down"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""left"",
-                    ""id"": ""fa01dda7-c7c4-4144-a707-d271ab489044"",
-                    ""path"": ""<Gamepad>/leftStick/left"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""right"",
-                    ""id"": ""77c5a92f-ae9e-402b-9d8e-0fd0464b6986"",
-                    ""path"": ""<Gamepad>/leftStick/right"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
                 },
                 {
                     ""name"": """",
@@ -309,7 +226,7 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""f96431a8-df15-41b8-8138-792fd053af34"",
-                    ""path"": ""<Keyboard>/capsLock"",
+                    ""path"": ""<Keyboard>/leftShift"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -360,6 +277,94 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
                     ""action"": ""HeavyAttack"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e6916dbf-c11d-41df-af2f-249794eab0a0"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move（Up）"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2a44d969-ed98-4b45-bd74-f945bc372a1d"",
+                    ""path"": ""<Gamepad>/leftStick/up"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move（Up）"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""22312a84-fd74-4071-bdd5-b8f2d809f3da"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move（Down）"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9c5dc92f-2bff-413f-8c43-e28de5167ce1"",
+                    ""path"": ""<Gamepad>/leftStick/down"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move（Down）"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6f0ed13a-3da5-48e1-b7c5-df05021e00fd"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move（Left）"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3ffb0508-6ea2-4809-a698-4b2d7d565b34"",
+                    ""path"": ""<Gamepad>/leftStick/left"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move（Left）"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""15b15b78-8190-438d-90dd-172095ed6bd7"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move（Right）"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ee58573c-bdb7-459c-911e-28ddb3970e4f"",
+                    ""path"": ""<Gamepad>/leftStick/right"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move（Right）"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -369,7 +374,6 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
         // GamePlay
         m_GamePlay = asset.FindActionMap("GamePlay", throwIfNotFound: true);
         m_GamePlay_Run = m_GamePlay.FindAction("Run", throwIfNotFound: true);
-        m_GamePlay_Move = m_GamePlay.FindAction("Move", throwIfNotFound: true);
         m_GamePlay_Look = m_GamePlay.FindAction("Look", throwIfNotFound: true);
         m_GamePlay_Walk = m_GamePlay.FindAction("Walk", throwIfNotFound: true);
         m_GamePlay_Jump = m_GamePlay.FindAction("Jump", throwIfNotFound: true);
@@ -378,6 +382,10 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
         m_GamePlay_Weapon = m_GamePlay.FindAction("Weapon", throwIfNotFound: true);
         m_GamePlay_LightAttack = m_GamePlay.FindAction("LightAttack", throwIfNotFound: true);
         m_GamePlay_HeavyAttack = m_GamePlay.FindAction("HeavyAttack", throwIfNotFound: true);
+        m_GamePlay_MoveUp = m_GamePlay.FindAction("Move（Up）", throwIfNotFound: true);
+        m_GamePlay_MoveDown = m_GamePlay.FindAction("Move（Down）", throwIfNotFound: true);
+        m_GamePlay_MoveLeft = m_GamePlay.FindAction("Move（Left）", throwIfNotFound: true);
+        m_GamePlay_MoveRight = m_GamePlay.FindAction("Move（Right）", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -438,7 +446,6 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
     private readonly InputActionMap m_GamePlay;
     private IGamePlayActions m_GamePlayActionsCallbackInterface;
     private readonly InputAction m_GamePlay_Run;
-    private readonly InputAction m_GamePlay_Move;
     private readonly InputAction m_GamePlay_Look;
     private readonly InputAction m_GamePlay_Walk;
     private readonly InputAction m_GamePlay_Jump;
@@ -447,12 +454,15 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
     private readonly InputAction m_GamePlay_Weapon;
     private readonly InputAction m_GamePlay_LightAttack;
     private readonly InputAction m_GamePlay_HeavyAttack;
+    private readonly InputAction m_GamePlay_MoveUp;
+    private readonly InputAction m_GamePlay_MoveDown;
+    private readonly InputAction m_GamePlay_MoveLeft;
+    private readonly InputAction m_GamePlay_MoveRight;
     public struct GamePlayActions
     {
         private @CrossPlatformInput m_Wrapper;
         public GamePlayActions(@CrossPlatformInput wrapper) { m_Wrapper = wrapper; }
         public InputAction @Run => m_Wrapper.m_GamePlay_Run;
-        public InputAction @Move => m_Wrapper.m_GamePlay_Move;
         public InputAction @Look => m_Wrapper.m_GamePlay_Look;
         public InputAction @Walk => m_Wrapper.m_GamePlay_Walk;
         public InputAction @Jump => m_Wrapper.m_GamePlay_Jump;
@@ -461,6 +471,10 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
         public InputAction @Weapon => m_Wrapper.m_GamePlay_Weapon;
         public InputAction @LightAttack => m_Wrapper.m_GamePlay_LightAttack;
         public InputAction @HeavyAttack => m_Wrapper.m_GamePlay_HeavyAttack;
+        public InputAction @MoveUp => m_Wrapper.m_GamePlay_MoveUp;
+        public InputAction @MoveDown => m_Wrapper.m_GamePlay_MoveDown;
+        public InputAction @MoveLeft => m_Wrapper.m_GamePlay_MoveLeft;
+        public InputAction @MoveRight => m_Wrapper.m_GamePlay_MoveRight;
         public InputActionMap Get() { return m_Wrapper.m_GamePlay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -473,9 +487,6 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
                 @Run.started -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnRun;
                 @Run.performed -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnRun;
                 @Run.canceled -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnRun;
-                @Move.started -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnMove;
-                @Move.performed -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnMove;
-                @Move.canceled -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnMove;
                 @Look.started -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnLook;
                 @Look.performed -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnLook;
                 @Look.canceled -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnLook;
@@ -500,6 +511,18 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
                 @HeavyAttack.started -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnHeavyAttack;
                 @HeavyAttack.performed -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnHeavyAttack;
                 @HeavyAttack.canceled -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnHeavyAttack;
+                @MoveUp.started -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnMoveUp;
+                @MoveUp.performed -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnMoveUp;
+                @MoveUp.canceled -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnMoveUp;
+                @MoveDown.started -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnMoveDown;
+                @MoveDown.performed -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnMoveDown;
+                @MoveDown.canceled -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnMoveDown;
+                @MoveLeft.started -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnMoveLeft;
+                @MoveLeft.performed -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnMoveLeft;
+                @MoveLeft.canceled -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnMoveLeft;
+                @MoveRight.started -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnMoveRight;
+                @MoveRight.performed -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnMoveRight;
+                @MoveRight.canceled -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnMoveRight;
             }
             m_Wrapper.m_GamePlayActionsCallbackInterface = instance;
             if (instance != null)
@@ -507,9 +530,6 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
                 @Run.started += instance.OnRun;
                 @Run.performed += instance.OnRun;
                 @Run.canceled += instance.OnRun;
-                @Move.started += instance.OnMove;
-                @Move.performed += instance.OnMove;
-                @Move.canceled += instance.OnMove;
                 @Look.started += instance.OnLook;
                 @Look.performed += instance.OnLook;
                 @Look.canceled += instance.OnLook;
@@ -534,6 +554,18 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
                 @HeavyAttack.started += instance.OnHeavyAttack;
                 @HeavyAttack.performed += instance.OnHeavyAttack;
                 @HeavyAttack.canceled += instance.OnHeavyAttack;
+                @MoveUp.started += instance.OnMoveUp;
+                @MoveUp.performed += instance.OnMoveUp;
+                @MoveUp.canceled += instance.OnMoveUp;
+                @MoveDown.started += instance.OnMoveDown;
+                @MoveDown.performed += instance.OnMoveDown;
+                @MoveDown.canceled += instance.OnMoveDown;
+                @MoveLeft.started += instance.OnMoveLeft;
+                @MoveLeft.performed += instance.OnMoveLeft;
+                @MoveLeft.canceled += instance.OnMoveLeft;
+                @MoveRight.started += instance.OnMoveRight;
+                @MoveRight.performed += instance.OnMoveRight;
+                @MoveRight.canceled += instance.OnMoveRight;
             }
         }
     }
@@ -541,7 +573,6 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
     public interface IGamePlayActions
     {
         void OnRun(InputAction.CallbackContext context);
-        void OnMove(InputAction.CallbackContext context);
         void OnLook(InputAction.CallbackContext context);
         void OnWalk(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
@@ -550,5 +581,9 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
         void OnWeapon(InputAction.CallbackContext context);
         void OnLightAttack(InputAction.CallbackContext context);
         void OnHeavyAttack(InputAction.CallbackContext context);
+        void OnMoveUp(InputAction.CallbackContext context);
+        void OnMoveDown(InputAction.CallbackContext context);
+        void OnMoveLeft(InputAction.CallbackContext context);
+        void OnMoveRight(InputAction.CallbackContext context);
     }
 }

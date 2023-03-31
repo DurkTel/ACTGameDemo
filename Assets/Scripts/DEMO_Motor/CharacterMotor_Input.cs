@@ -68,7 +68,7 @@ namespace Demo_MoveMotor
 
         public virtual void MoveInput()
         {
-            m_inputDirection = inputActions.GamePlay.Move.ReadValue<Vector2>();
+            //m_inputDirection = inputActions.GamePlay.Move.ReadValue<Vector2>();
             m_currentDirection.x = m_inputDirection.x;
             m_currentDirection.z = m_inputDirection.y;
 

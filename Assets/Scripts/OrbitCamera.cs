@@ -217,6 +217,7 @@ public class OrbitCamera : MonoBehaviour
 
         Vector3 target = lockon.position - focus.position + Vector3.up * lockonHeight;
         orbitAngles = Quaternion.LookRotation(target).eulerAngles;
+        orbitAngles.x = 10f;
         return true;
     }
 
@@ -283,25 +284,29 @@ public class OrbitCamera : MonoBehaviour
     /// <summary>
     /// 检测锁定目标
     /// </summary>
-    public void CalculateLockon()
+    public void CalculateLockon(bool value)
     {
-        Collider[] colliders = Physics.OverlapSphere(focus.position, m_lockonRadius, m_lockonLayer);
-        Transform newLock = null;
-        float minDis = -1f;
-        Vector2 pos1 = Vector2.zero;
-        Vector2 pos2 = new Vector2(focus.position.x, focus.position.z);
-        foreach (Collider coll in colliders)
+        if (value && m_lockon == null)
         {
-            pos1.Set(coll.transform.position.x, coll.transform.position.z);
-            float dis = Vector2.Distance(pos1, pos2);
-            if (minDis < 0 || dis < minDis)
+            Collider[] colliders = Physics.OverlapSphere(focus.position, m_lockonRadius, m_lockonLayer);
+            Transform newLock = null;
+            float minDis = m_lockonRadius;
+            Vector2 pos1 = Vector2.zero;
+            Vector2 pos2 = new Vector2(focus.position.x, focus.position.z);
+            foreach (Collider coll in colliders)
             {
-                minDis = dis;
-                newLock = coll.transform;
+                pos1.Set(coll.transform.position.x, coll.transform.position.z);
+                float dis = Vector2.Distance(pos1, pos2);
+                if (dis < minDis)
+                {
+                    minDis = dis;
+                    newLock = coll.transform;
+                }
             }
+            m_lockon = newLock;
         }
-
-        m_lockon = newLock;
+        else if (!value)
+            m_lockon = null;
     }
 
 }
