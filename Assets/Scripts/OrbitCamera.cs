@@ -13,10 +13,13 @@ public class OrbitCamera : MonoBehaviour
     /// </summary>
     [SerializeField]
     private Transform focus = default;
+
+    private Transform m_lockon = null;
     /// <summary>
     /// 锁定
     /// </summary>
-    public Transform lockon = null;
+    public Transform lockon { get { return m_lockon; } }
+
     /// <summary>
     /// 与焦点的距离
     /// </summary>
@@ -99,7 +102,11 @@ public class OrbitCamera : MonoBehaviour
         }
     }
 
+    [SerializeField, Header("锁定范围")]
+    protected float m_lockonRadius = 10f;
 
+    [SerializeField, Header("可锁定层级")]
+    protected LayerMask m_lockonLayer;
     private void Awake()
     {
         regularCamera = GetComponent<Camera>();
@@ -271,6 +278,30 @@ public class OrbitCamera : MonoBehaviour
             input.x = -input.x;
 
         inputDelta.Set(input.y, input.x);
+    }
+
+    /// <summary>
+    /// 检测锁定目标
+    /// </summary>
+    public void CalculateLockon()
+    {
+        Collider[] colliders = Physics.OverlapSphere(focus.position, m_lockonRadius, m_lockonLayer);
+        Transform newLock = null;
+        float minDis = -1f;
+        Vector2 pos1 = Vector2.zero;
+        Vector2 pos2 = new Vector2(focus.position.x, focus.position.z);
+        foreach (Collider coll in colliders)
+        {
+            pos1.Set(coll.transform.position.x, coll.transform.position.z);
+            float dis = Vector2.Distance(pos1, pos2);
+            if (minDis < 0 || dis < minDis)
+            {
+                minDis = dis;
+                newLock = coll.transform;
+            }
+        }
+
+        m_lockon = newLock;
     }
 
 }

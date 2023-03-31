@@ -184,11 +184,6 @@ namespace Demo_MoveMotor
         /// </summary>
         public void CalculateLockon()
         {
-            if(!m_isGazing)
-            {
-                m_camera.lockon = null;
-                return;
-            }
             Collider[] colliders = Physics.OverlapSphere(rootTransform.position, m_lockonRadius, m_lockonLayer);
             Transform newLock = null;
             float minDis = -1f;
@@ -204,8 +199,6 @@ namespace Demo_MoveMotor
                     newLock = coll.transform;
                 }
             }
-
-            m_camera.lockon = newLock;
         }
 
         /// <summary>

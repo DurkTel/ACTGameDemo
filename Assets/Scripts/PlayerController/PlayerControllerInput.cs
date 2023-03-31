@@ -35,6 +35,7 @@ public class PlayerControllerInput : MonoBehaviour
         inputActions = new CrossPlatformInput();
         m_controller = GetComponent<PlayerController>();
         m_camera = Camera.main.GetComponent<OrbitCamera>();
+        m_controller.actions.cameraTransform = m_camera.transform;
     }
 
     public void OnEnable()
@@ -104,6 +105,8 @@ public class PlayerControllerInput : MonoBehaviour
     private void RequestGazing(CallbackContext value)
     {
         m_controller.actions.gazing = !m_controller.actions.gazing;
+        if (m_controller.actions.gazing)
+            m_camera.CalculateLockon();
     }
 
     private void RequestJump(CallbackContext value)

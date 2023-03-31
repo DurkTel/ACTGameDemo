@@ -179,4 +179,6 @@ public class PlayerAnimation : MonoBehaviour
     public static int Float_WallRunDir_Hash = Animator.StringToHash("Float_WallRunDir");
     public static int Float_IntroWeapon_Hash = Animator.StringToHash("Float_IntroWeapon");
     public static int Bool_Ground_Hash = Animator.StringToHash("Bool_Ground");
+    public static int Bool_Gazing_Hash = Animator.StringToHash("Bool_Gazing");
+
 }

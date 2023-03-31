@@ -5,6 +5,10 @@ using UnityEngine;
 public class PlayerControllerActions
 {
     /// <summary>
+    /// 相机位置
+    /// </summary>
+    public Transform cameraTransform;
+    /// <summary>
     /// 移动
     /// </summary>
     public Vector3 move = Vector3.zero;

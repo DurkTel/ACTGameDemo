@@ -92,6 +92,7 @@ public class LocomotionAbility : PlayerAbility
         playerController.animator.SetFloat(PlayerAnimation.Float_AngularVelocity_Hash, m_angularVelocity, 0.2f, Time.fixedDeltaTime);
         playerController.animator.SetFloat(PlayerAnimation.Float_Rotation_Hash, m_targetDeg);
         playerController.animator.SetBool(PlayerAnimation.Bool_Ground_Hash, true);
+        playerController.animator.SetBool(PlayerAnimation.Bool_Gazing_Hash, m_actions.gazing);
     }
 
     public override void OnResetAnimatorParameter()
@@ -119,7 +120,8 @@ public class LocomotionAbility : PlayerAbility
             m_moveController.Rotate();
         else if (!playerController.IsInAnimationTag("Free Movement") || !playerController.IsInTransition())
         {
-            m_moveController.Rotate(m_actions.move, m_rotateSpeed);
+            Vector3 dir = m_actions.gazing ? m_actions.cameraTransform.forward : m_actions.move;
+            m_moveController.Rotate(dir, m_rotateSpeed);
         }
     }
 
