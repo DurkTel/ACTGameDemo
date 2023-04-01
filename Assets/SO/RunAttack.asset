@@ -15,5 +15,11 @@ MonoBehaviour:
   skillName: 
   animationName: Dash_Attack_ver_B
   attackPoint: 0.38
-  attackBackswing: 0.65
-  comboSkills: []
+  attackBackswing: 0.5
+  priority: 0
+  condition: 257
+  comboSkills:
+  - range1: 0.5
+    range2: 1
+    comboSkill: {fileID: 11400000, guid: de2fe588bff4c844cb78e88abd98c957, type: 2}
+    comboCondition: 1

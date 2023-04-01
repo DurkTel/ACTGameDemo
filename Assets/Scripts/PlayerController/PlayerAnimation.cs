@@ -128,7 +128,7 @@ public class PlayerAnimation : MonoBehaviour
             {
                 foreach (var ability in abilities)
                 {
-                    AnimationEvent[] events = ability.GetAnimatorEvent();
+                    AnimationEventDefine[] events = ability.GetAnimatorEvent();
                     if(events == null || events.Length == 0) continue;  
 
                     foreach (var @event in events)
@@ -150,7 +150,7 @@ public class PlayerAnimation : MonoBehaviour
             {
                 foreach (var ability in abilities)
                 {
-                    AnimationEvent[] events = ability.GetAnimatorEvent();
+                    AnimationEventDefine[] events = ability.GetAnimatorEvent();
                     if (events == null || events.Length == 0) continue;
 
                     foreach (var @event in events)
@@ -161,6 +161,11 @@ public class PlayerAnimation : MonoBehaviour
                 }
             }
         }
+    }
+
+    public void DispatchFrameEvent(string eventName, float param)
+    { 
+        
     }
 
     public static int BaseLayerIndex = 0;

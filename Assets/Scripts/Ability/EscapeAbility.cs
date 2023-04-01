@@ -11,7 +11,7 @@ public class EscapeAbility : PlayerAbility
     }
     public override bool Condition()
     {
-        return m_actions.escape || (m_actions.gazing && m_actions.jump);
+        return m_actions.escape || (m_actions.gazing && m_actions.jump && m_actions.move.magnitude > 0);
     }
 
     public override void OnEnableAbility()
@@ -25,6 +25,12 @@ public class EscapeAbility : PlayerAbility
             playerController.SetAnimationState("Gaze Escape");
         else
             playerController.SetAnimationState("Escape");
+    }
+
+    public override void OnDisableAbility()
+    {
+        base.OnDisableAbility();
+        m_actions.jump = false;
     }
 
     public override void OnUpdateAbility()

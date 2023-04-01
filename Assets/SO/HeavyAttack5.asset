@@ -16,4 +16,6 @@ MonoBehaviour:
   animationName: Attack_5Combo_5
   attackPoint: 0.23
   attackBackswing: 1
+  priority: 0
+  condition: 1
   comboSkills: []

@@ -55,9 +55,9 @@ public abstract class PlayerAbility : MonoBehaviour
 
     public virtual void OnResetAnimatorParameter() { }
 
-    public virtual void OnAnimatorEvent(AnimationEvent cmd) { }
+    public virtual void OnAnimatorEvent(AnimationEventDefine cmd) { }
 
-    public virtual AnimationEvent[] GetAnimatorEvent() { return null; }
+    public virtual AnimationEventDefine[] GetAnimatorEvent() { return null; }
 
     protected void OnUpdateDeltaTime()
     {

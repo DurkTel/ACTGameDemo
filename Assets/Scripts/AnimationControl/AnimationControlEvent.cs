@@ -9,9 +9,9 @@ using UnityEngine.Rendering.Universal;
 /// </summary>
 public class AnimationControlEvent : AnimationControl
 {
-    public AnimationEvent eventName;
+    public AnimationEventDefine eventName;
 
-    public event UnityAction<AnimationEvent> OnAnimationEvent;
+    public event UnityAction<AnimationEventDefine> OnAnimationEvent;
 
     public event UnityAction<AnimatorStateInfo, int, bool> OnStateChangeEvent;
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)

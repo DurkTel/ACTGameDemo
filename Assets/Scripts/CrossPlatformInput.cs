@@ -33,7 +33,7 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
                     ""id"": ""b9880d27-3695-4adb-b479-1f59b02e09e5"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""Hold"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -51,7 +51,7 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
                     ""id"": ""dd78251d-cdec-499d-8c5a-25e92a8acbae"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": ""Press"",
+                    ""interactions"": ""Hold"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -60,7 +60,7 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
                     ""id"": ""e52d5f6f-3afd-448d-9d5c-e29b608857ec"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""Hold"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -69,7 +69,7 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
                     ""id"": ""940a6f85-6abf-4274-a3db-5e8dff2b3eb5"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""Hold"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -78,7 +78,7 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
                     ""id"": ""0bb9c9c0-bfd1-4091-a045-353b6ddfdeb3"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""Hold"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -96,7 +96,7 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
                     ""id"": ""4b99525c-bb01-4a70-833c-aee3535d76b8"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""Hold"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -105,7 +105,7 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
                     ""id"": ""2d2d38d2-539d-497d-829a-c4b2406811be"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""Hold"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -114,7 +114,7 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
                     ""id"": ""c5b3d110-f47b-409d-8965-dd67b3a0ac10"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""Hold"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -123,7 +123,7 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
                     ""id"": ""e7da4a92-c748-4090-ade8-22704c2de419"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""Hold"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -132,7 +132,7 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
                     ""id"": ""2795b471-5b25-4709-8605-a97c80a2183c"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""Hold"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -141,7 +141,7 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
                     ""id"": ""ad72d520-22da-4b35-841b-8ffd08bfd148"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""Hold"",
                     ""initialStateCheck"": false
                 }
             ],

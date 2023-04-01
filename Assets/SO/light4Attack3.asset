@@ -12,12 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7a7919aff549244ba65a384ccbc760f, type: 3}
   m_Name: light4Attack3
   m_EditorClassIdentifier: 
-  skillCode: 10002
   skillName: 
   animationName: Attack_4Combo_3
   attackPoint: 0.25
   attackBackswing: 0.4
+  priority: 0
+  condition: 1
   comboSkills:
   - range1: 0.4
     range2: 1
     comboSkill: {fileID: 11400000, guid: 64417f78a53f6e740b76fc001ae55deb, type: 2}
+    comboCondition: 1

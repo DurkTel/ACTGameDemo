@@ -16,7 +16,10 @@ MonoBehaviour:
   animationName: Attack_5Combo_4
   attackPoint: 0.37
   attackBackswing: 0.65
+  priority: 0
+  condition: 2
   comboSkills:
   - range1: 0.65
     range2: 1
     comboSkill: {fileID: 11400000, guid: 1f7e9ba15fe074a4488c22c8cc97b364, type: 2}
+    comboCondition: 1

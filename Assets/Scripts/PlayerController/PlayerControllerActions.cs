@@ -13,6 +13,22 @@ public class PlayerControllerActions
     /// </summary>
     public Vector3 move = Vector3.zero;
     /// <summary>
+    /// 移动 前
+    /// </summary>
+    public bool moveUp = false;
+    /// <summary>
+    /// 移动 后
+    /// </summary>
+    public bool moveDown = false;
+    /// <summary>
+    /// 移动 左
+    /// </summary>
+    public bool moveLeft = false;
+    /// <summary>
+    /// 移动 右
+    /// </summary>
+    public bool moveRight = false;
+    /// <summary>
     /// 锁定
     /// </summary>
     public bool gazing = false;

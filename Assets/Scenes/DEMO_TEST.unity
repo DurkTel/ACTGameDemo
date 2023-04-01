@@ -26824,6 +26824,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb5116f61325f0143a5b2e38e795633c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  multiTime: 0.20000000298023224
 --- !u!1 &6005309642693209792
 GameObject:
   m_ObjectHideFlags: 0
@@ -27401,7 +27402,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3318024624f9bcb459283245c3786f96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  priority: 2
+  priority: 3
   isEnable: 0
   playerController: {fileID: 0}
   updateMode: 2
@@ -33708,10 +33709,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerController: {fileID: 0}
-  defaultLightCombat: {fileID: 11400000, guid: 93ee3f69337379e42aa14e74a91332bf, type: 2}
-  defaultHeavyCombat: {fileID: 11400000, guid: 2c8b48efdf7c09741b0199062355be36, type: 2}
-  defaultRunCombat: {fileID: 11400000, guid: 9347f31fffd25f240a22ca9ec4a5a350, type: 2}
-  defaultJumpCombat: {fileID: 11400000, guid: 9f10619a464f82344b9790b74da1eb05, type: 2}
+  defaultCombats:
+  - {fileID: 11400000, guid: 2c8b48efdf7c09741b0199062355be36, type: 2}
+  - {fileID: 11400000, guid: 9f10619a464f82344b9790b74da1eb05, type: 2}
+  - {fileID: 11400000, guid: 93ee3f69337379e42aa14e74a91332bf, type: 2}
+  - {fileID: 11400000, guid: 9347f31fffd25f240a22ca9ec4a5a350, type: 2}
+  defaultSkills:
+  - {fileID: 11400000, guid: 612de9e4860b8794fa5bb52c0b327f89, type: 2}
+  - {fileID: 11400000, guid: 5c85c48da0beb35409e2617711e34135, type: 2}
 --- !u!4 &9135004862672526801
 Transform:
   m_ObjectHideFlags: 0

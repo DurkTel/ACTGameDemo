@@ -59,27 +59,27 @@ public class LocomotionAbility : PlayerAbility
 
         CalculateAngularVelocity(ref m_angularVelocity, ref m_targetDeg);
         base.OnUpdateAbility();
-
+        
         OnUpdateMove();
         OnUpdateRotate();
     }
 
-    public override void OnAnimatorEvent(AnimationEvent cmd)
+    public override void OnAnimatorEvent(AnimationEventDefine cmd)
     {
         switch (cmd)
         {
-            case AnimationEvent.ENTER_SHARP_TURN:
+            case AnimationEventDefine.ENTER_SHARP_TURN:
                 playerController.animator.SetFloat(PlayerAnimation.Float_Footstep_Hash, CalculateFootStep());
                 playerController.animator.SetFloat(PlayerAnimation.Float_TurnRotation_Hash, m_targetDeg);
                 break;
         }
     }
 
-    public override AnimationEvent[] GetAnimatorEvent()
+    public override AnimationEventDefine[] GetAnimatorEvent()
     {
-        return new AnimationEvent[]
+        return new AnimationEventDefine[]
         {
-            AnimationEvent.ENTER_SHARP_TURN
+            AnimationEventDefine.ENTER_SHARP_TURN
         };
     }
 
