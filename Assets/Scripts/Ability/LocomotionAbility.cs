@@ -120,7 +120,7 @@ public class LocomotionAbility : PlayerAbility
     {
         if (playerController.IsEnableRootMotion(2))
             m_moveController.Rotate();
-        else if (!playerController.IsInAnimationTag("Free Movement") || !playerController.IsInTransition())
+        else// if (!playerController.IsInAnimationTag("Free Movement") || !playerController.IsInTransition())
         {
             Vector3 dir = m_actions.gazing ? m_actions.cameraTransform.forward : m_actions.move;
             m_moveController.Rotate(dir, m_rotateSpeed);

@@ -20793,7 +20793,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &801478448
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20921,6 +20921,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerController: {fileID: 0}
+  drawGizmos: 0
   defaultCombats:
   - {fileID: 11400000, guid: 2c8b48efdf7c09741b0199062355be36, type: 2}
   - {fileID: 11400000, guid: 9f10619a464f82344b9790b74da1eb05, type: 2}
@@ -45446,6 +45447,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerController: {fileID: 0}
+  drawGizmos: 0
   defaultCombats:
   - {fileID: 11400000, guid: 2c8b48efdf7c09741b0199062355be36, type: 2}
   - {fileID: 11400000, guid: 9f10619a464f82344b9790b74da1eb05, type: 2}
@@ -45458,10 +45460,10 @@ MonoBehaviour:
   detectionPoints:
   - startPoint: {fileID: 41985319}
     endPoint: {fileID: 1352265797}
-    radius: 0.5
+    radius: 0.15
   - startPoint: {fileID: 1402228943}
     endPoint: {fileID: 1446713315}
-    radius: 0.5
+    radius: 0.15
   m_damageLayer:
     serializedVersion: 2
     m_Bits: 8192

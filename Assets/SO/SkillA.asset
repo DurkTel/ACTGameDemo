@@ -16,6 +16,7 @@ MonoBehaviour:
   animationName: Skill_A
   attackPoint: 0.33
   attackBackswing: 1
+  effectCount: 1
   priority: 2
   condition: 13
   comboSkills: []

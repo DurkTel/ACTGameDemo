@@ -10,6 +10,8 @@ public class CombatController : MonoBehaviour
     [HideInInspector]
     public PlayerController playerController;
 
+    public bool drawGizmos;
+
     public CombatSkillConfig[] defaultCombats;
 
     public CombatSkillConfig[] defaultSkills;
@@ -20,7 +22,7 @@ public class CombatController : MonoBehaviour
 
     protected PlayerControllerActions m_actions;
 
-    [Header("伤害层级"),SerializeField]
+    [Header("伤害层级"), SerializeField]
     private LayerMask m_damageLayer;
 
     private bool m_takeOutWeapon;
@@ -56,12 +58,10 @@ public class CombatController : MonoBehaviour
     public void OnUpdateCombatMove()
     {
         ReleaseAttack();
-        
+
         if (m_curBroadcast != null)
         {
-            float acc = Mathf.Max(m_moveController.GetGravityAcceleration(), 0f);
-            m_moveController.characterController.Move(playerController.animator.deltaPosition + new Vector3(0, acc * m_moveController.deltaTtime, 0));
-
+            m_moveController.Move();
             if (m_actions.gazing)
                 m_moveController.Rotate(m_actions.cameraTransform.forward, 10f);
             else
@@ -75,6 +75,8 @@ public class CombatController : MonoBehaviour
 
         foreach (var point in detectionPoints)
         {
+            if (drawGizmos)
+                playerController.debugHelper.DrawCapsule(point.startPoint.position, point.endPoint.position, point.radius, Color.red, 0.1f);
             Collider[] colliders = Physics.OverlapCapsule(point.startPoint.position, point.endPoint.position, point.radius, m_damageLayer);
             if (colliders.Length > 0)
             {
@@ -85,20 +87,16 @@ public class CombatController : MonoBehaviour
                         toActor[i] = controller;
                 }
                 m_curBroadcast.toActor = toActor;
-                CombatBroadcastManager.Instance.AttackBroascatHurt(m_curBroadcast);
+                CombatBroadcastManager.Instance.AttackBroascatHurt(ref m_curBroadcast);
                 break;
             }
         }
     }
 
-    private void PackUpWeapon()
+    private void ReleaseAttack()
     {
-        if (m_actions.weapon != m_takeOutWeapon)
-        {
-            m_takeOutWeapon = m_actions.weapon;
-            playerController.SetAnimationState(m_takeOutWeapon ? "Take Out Weapon" : "Pack Up Weapon");
-            playerController.animator.SetFloat(PlayerAnimation.Float_IntroWeapon_Hash, m_takeOutWeapon ? 1f : 0f);
-        }
+        if (m_curBroadcast != null && !playerController.IsInAnimationTag("Attack"))
+            CombatBroadcastManager.Instance.AttackBroascatEnd(ref m_curBroadcast);
     }
 
     private void ControllerAttack(CombatSkillConfig[] combats, bool force = false)
@@ -139,7 +137,7 @@ public class CombatController : MonoBehaviour
                 m_curBroadcast.fromActor = playerController;
                 m_curBroadcast.combatSkill = newCombat;
                 //广播战报
-                CombatBroadcastManager.Instance.AttackBroascatBegin(m_curBroadcast);
+                CombatBroadcastManager.Instance.AttackBroascatBegin(ref m_curBroadcast);
             }
         }
     }
@@ -182,26 +180,19 @@ public class CombatController : MonoBehaviour
         return true;
     }
 
-    private void ReleaseAttack()
-    {
-        if (m_curBroadcast != null && !playerController.IsInAnimationTag("Attack"))
-            m_curBroadcast = null;
-    }
 
-
-    public void DownOnGround(float time)
+    private void PackUpWeapon()
     {
-        if (Physics.SphereCast(m_moveController.rootTransform.position + Vector3.up * 0.5f, m_moveController.characterController.radius,
-                Vector3.down, out RaycastHit hitInfo, 100f))
+        if (m_actions.weapon != m_takeOutWeapon)
         {
-            m_moveController.Move(hitInfo.point, time, 0f);
+            m_takeOutWeapon = m_actions.weapon;
+            playerController.SetAnimationState(m_takeOutWeapon ? "Take Out Weapon" : "Pack Up Weapon");
+            playerController.animator.SetFloat(PlayerAnimation.Float_IntroWeapon_Hash, m_takeOutWeapon ? 1f : 0f);
         }
     }
 
-    public void SetDetection(int value)
-    {
-        m_combatDetection = value == 1;
-    }
+    public void SetDetection(int value) => m_combatDetection = value == 1;
+
 }
 
 [Serializable]

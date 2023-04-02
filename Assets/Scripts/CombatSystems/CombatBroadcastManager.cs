@@ -29,7 +29,11 @@ public class CombatBroadcastManager : MonoBehaviour
 
     private Queue<CombatBroadcast> m_broadcastHurtQueue;
 
-    public void AttackBroascatBegin(CombatBroadcast broadcastBegin)
+    /// <summary>
+    /// 开始战报
+    /// </summary>
+    /// <param name="broadcastBegin"></param>
+    public void AttackBroascatBegin(ref CombatBroadcast broadcastBegin)
     {
         if (m_broadcastBeginMap == null || !m_broadcastBeginMap.ContainsKey(broadcastBegin.attackId))
         {
@@ -39,7 +43,11 @@ public class CombatBroadcastManager : MonoBehaviour
         }
     }
 
-    public void AttackBroascatHurt(CombatBroadcast broadcastBegin)
+    /// <summary>
+    /// 战报结算
+    /// </summary>
+    /// <param name="broadcastBegin"></param>
+    public void AttackBroascatHurt(ref CombatBroadcast broadcastBegin)
     {
         if (m_broadcastBeginMap.ContainsKey(broadcastBegin.attackId))
         {
@@ -49,20 +57,26 @@ public class CombatBroadcastManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 结束战报
+    /// </summary>
+    /// <param name="broadcastBegin"></param>
+    public void AttackBroascatEnd(ref CombatBroadcast broadcastBegin)
+    {
+        broadcastBegin.End();
+        m_broadcastBeginMap.Remove(broadcastBegin.attackId);
+        broadcastPool.Release(broadcastBegin);
+        broadcastBegin = null;
+    }
+
     private void FixedUpdate()
     {
         if (m_broadcastHurtQueue == null || m_broadcastHurtQueue.Count <= 0) return;
 
         CombatBroadcast broadcast = m_broadcastHurtQueue.Dequeue();
-        bool finish = broadcast.Hurt();
-        if (finish)
-        {
-            m_broadcastBeginMap.Remove(broadcast.attackId);
-            broadcastPool.Release(broadcast);
-        }
+        broadcast.Hurt();
     }
 }
-
 
 public class CombatBroadcast
 {
@@ -83,6 +97,8 @@ public class CombatBroadcast
         fromActor = null;
         toActor = null;
         combatSkill = null;
+        effectCount = 0;
+        beginTime = 0f;
     }
 
     public void Begin()
@@ -91,9 +107,9 @@ public class CombatBroadcast
         fromActor.SetAnimationState(combatSkill.animationName);
     }
 
-    public bool Hurt()
+    public void Hurt()
     {
-        if (toActor == null) return true;
+        if (toActor == null || effectCount++ >= combatSkill.effectCount) return; //这个技能是否已经完成攻击段数
         foreach (var item in toActor)
         {
             float frontOrBack = Vector3.Dot(item.rootTransform.forward, fromActor.rootTransform.forward);
@@ -108,7 +124,10 @@ public class CombatBroadcast
             item.SetAnimationState(string.Format("Damage_{0}_{1}", dir, Random.Range(1, 3)));
             Debug.Log(item.gameObject.name + "收到来自" + fromActor.gameObject.name + "的伤害，伤害来源为:" + combatSkill.animationName);
         }
-        //这个技能是否已经完成攻击段数
-        return ++effectCount >= combatSkill.effectCount;
+    }
+
+    public void End()
+    {
+
     }
 }

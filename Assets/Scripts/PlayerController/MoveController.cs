@@ -94,7 +94,7 @@ public class MoveController : MonoBehaviour, IMove
         //这一帧的移动速度
         Vector3 targetVelocity = (targetPosition - rootTransform.position) / deltaTtime;
         targetVelocity.y = GetGravityAcceleration() * deltaTtime;
-        
+
         characterController.Move(targetVelocity);
     }
 
@@ -130,6 +130,7 @@ public class MoveController : MonoBehaviour, IMove
     public void Rotate(Vector3 direction, float speed)
     {
         if (m_enabled) return;
+
         direction.y = 0f;
         if (direction.normalized.magnitude == 0)
             direction = rootTransform.forward;

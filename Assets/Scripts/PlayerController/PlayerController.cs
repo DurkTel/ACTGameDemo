@@ -19,12 +19,15 @@ public class PlayerController : PlayerAnimation
 
     public Transform rootTransform { get; set; }
 
+    public DebugHelper debugHelper { get; set; }
+
     protected override void Awake()
     {
         base.Awake();   
         actions = new PlayerControllerActions();
         m_playerAbilities = GetComponents<PlayerAbility>();
         m_combatAbility = GetComponent<CombatController>();
+        debugHelper = GetComponent<DebugHelper>();
         Array.Sort(m_playerAbilities, (PlayerAbility x, PlayerAbility y) => { return y.priority - x.priority; });
     }
 

@@ -16,7 +16,7 @@ MonoBehaviour:
   animationName: UpperAttack
   attackPoint: 0.14
   attackBackswing: 0.2
-  effectCount: 0
+  effectCount: 1
   priority: 2
   condition: 516
   comboSkills:

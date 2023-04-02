@@ -16,6 +16,7 @@ MonoBehaviour:
   animationName: Jump_Attack_Combo_3
   attackPoint: 0.16
   attackBackswing: 0.25
+  effectCount: 1
   priority: 1
   condition: 129
   comboSkills:

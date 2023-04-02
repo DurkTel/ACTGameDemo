@@ -16,7 +16,7 @@ MonoBehaviour:
   animationName: Attack_3Combo_1
   attackPoint: 0.27
   attackBackswing: 0.4
-  effectCount: 0
+  effectCount: 1
   priority: 0
   condition: 1
   comboSkills:
