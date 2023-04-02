@@ -18,8 +18,4 @@ MonoBehaviour:
   attackBackswing: 0.6
   priority: 2
   condition: 21
-  comboSkills:
-  - range1: 0.6
-    range2: 1
-    comboSkill: {fileID: 11400000, guid: 9f10619a464f82344b9790b74da1eb05, type: 2}
-    comboCondition: 129
+  comboSkills: []

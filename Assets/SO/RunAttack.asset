@@ -16,7 +16,8 @@ MonoBehaviour:
   animationName: Dash_Attack_ver_B
   attackPoint: 0.38
   attackBackswing: 0.5
-  priority: 0
+  effectCount: 0
+  priority: 1
   condition: 257
   comboSkills:
   - range1: 0.5

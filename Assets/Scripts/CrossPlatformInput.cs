@@ -109,6 +109,15 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""AttackEx"",
+                    ""type"": ""Button"",
+                    ""id"": ""60b8f3ba-a340-4cce-91ed-b564dc31a363"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""Move（Up）"",
                     ""type"": ""Button"",
                     ""id"": ""c5b3d110-f47b-409d-8965-dd67b3a0ac10"",
@@ -365,6 +374,17 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
                     ""action"": ""Move（Right）"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""127dd225-9b4a-4394-924a-b13b4822c2ca"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""AttackEx"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -382,6 +402,7 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
         m_GamePlay_Weapon = m_GamePlay.FindAction("Weapon", throwIfNotFound: true);
         m_GamePlay_LightAttack = m_GamePlay.FindAction("LightAttack", throwIfNotFound: true);
         m_GamePlay_HeavyAttack = m_GamePlay.FindAction("HeavyAttack", throwIfNotFound: true);
+        m_GamePlay_AttackEx = m_GamePlay.FindAction("AttackEx", throwIfNotFound: true);
         m_GamePlay_MoveUp = m_GamePlay.FindAction("Move（Up）", throwIfNotFound: true);
         m_GamePlay_MoveDown = m_GamePlay.FindAction("Move（Down）", throwIfNotFound: true);
         m_GamePlay_MoveLeft = m_GamePlay.FindAction("Move（Left）", throwIfNotFound: true);
@@ -454,6 +475,7 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
     private readonly InputAction m_GamePlay_Weapon;
     private readonly InputAction m_GamePlay_LightAttack;
     private readonly InputAction m_GamePlay_HeavyAttack;
+    private readonly InputAction m_GamePlay_AttackEx;
     private readonly InputAction m_GamePlay_MoveUp;
     private readonly InputAction m_GamePlay_MoveDown;
     private readonly InputAction m_GamePlay_MoveLeft;
@@ -471,6 +493,7 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
         public InputAction @Weapon => m_Wrapper.m_GamePlay_Weapon;
         public InputAction @LightAttack => m_Wrapper.m_GamePlay_LightAttack;
         public InputAction @HeavyAttack => m_Wrapper.m_GamePlay_HeavyAttack;
+        public InputAction @AttackEx => m_Wrapper.m_GamePlay_AttackEx;
         public InputAction @MoveUp => m_Wrapper.m_GamePlay_MoveUp;
         public InputAction @MoveDown => m_Wrapper.m_GamePlay_MoveDown;
         public InputAction @MoveLeft => m_Wrapper.m_GamePlay_MoveLeft;
@@ -511,6 +534,9 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
                 @HeavyAttack.started -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnHeavyAttack;
                 @HeavyAttack.performed -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnHeavyAttack;
                 @HeavyAttack.canceled -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnHeavyAttack;
+                @AttackEx.started -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnAttackEx;
+                @AttackEx.performed -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnAttackEx;
+                @AttackEx.canceled -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnAttackEx;
                 @MoveUp.started -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnMoveUp;
                 @MoveUp.performed -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnMoveUp;
                 @MoveUp.canceled -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnMoveUp;
@@ -554,6 +580,9 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
                 @HeavyAttack.started += instance.OnHeavyAttack;
                 @HeavyAttack.performed += instance.OnHeavyAttack;
                 @HeavyAttack.canceled += instance.OnHeavyAttack;
+                @AttackEx.started += instance.OnAttackEx;
+                @AttackEx.performed += instance.OnAttackEx;
+                @AttackEx.canceled += instance.OnAttackEx;
                 @MoveUp.started += instance.OnMoveUp;
                 @MoveUp.performed += instance.OnMoveUp;
                 @MoveUp.canceled += instance.OnMoveUp;
@@ -581,6 +610,7 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
         void OnWeapon(InputAction.CallbackContext context);
         void OnLightAttack(InputAction.CallbackContext context);
         void OnHeavyAttack(InputAction.CallbackContext context);
+        void OnAttackEx(InputAction.CallbackContext context);
         void OnMoveUp(InputAction.CallbackContext context);
         void OnMoveDown(InputAction.CallbackContext context);
         void OnMoveLeft(InputAction.CallbackContext context);

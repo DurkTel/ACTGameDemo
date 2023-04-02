@@ -171,7 +171,7 @@ public class PlayerAnimation : MonoBehaviour
     public static int BaseLayerIndex = 0;
     public static int FullBodyLayerIndex = 1;
 
-
+    public static int Curve_MotionY_Hash = Animator.StringToHash("Curve_MotionY");
     public static int Float_Movement_Hash = Animator.StringToHash("Float_Movement");
     public static int Float_AngularVelocity_Hash = Animator.StringToHash("Float_AngularVelocity");
     public static int Float_Rotation_Hash = Animator.StringToHash("Float_Rotation");

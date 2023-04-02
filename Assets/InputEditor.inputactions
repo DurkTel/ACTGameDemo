@@ -87,6 +87,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "AttackEx",
+                    "type": "Button",
+                    "id": "60b8f3ba-a340-4cce-91ed-b564dc31a363",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Move（Up）",
                     "type": "Button",
                     "id": "c5b3d110-f47b-409d-8965-dd67b3a0ac10",
@@ -341,6 +350,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Move（Right）",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "127dd225-9b4a-4394-924a-b13b4822c2ca",
+                    "path": "<Keyboard>/f",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "AttackEx",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

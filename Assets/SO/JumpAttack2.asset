@@ -15,11 +15,11 @@ MonoBehaviour:
   skillName: 
   animationName: Jump_Attack_Combo_2
   attackPoint: 0.13
-  attackBackswing: 0.4
+  attackBackswing: 0.2
   priority: 1
   condition: 129
   comboSkills:
-  - range1: 0.4
+  - range1: 0.2
     range2: 1
     comboSkill: {fileID: 11400000, guid: 622ebdefb754b5946a25554866132b1d, type: 2}
     comboCondition: 1

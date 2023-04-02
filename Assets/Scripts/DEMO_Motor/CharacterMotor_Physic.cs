@@ -11,15 +11,6 @@ namespace Demo_MoveMotor
 {
     public class CharacterMotor_Physic : CharacterMotor
     {
-        public enum DirectionCast
-        {
-            Left = -1,
-            Right = 1,
-            Forward = 2,
-            Backward = -2,
-            Up = 3,
-            Down = -3,
-        }
         /// <summary>
         /// 前方接触墙的法线方向
         /// </summary>

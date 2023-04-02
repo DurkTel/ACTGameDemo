@@ -194,6 +194,7 @@ public class MoveController : MonoBehaviour, IMove
         m_gravityVertical = Mathf.Sqrt(-2 * gravity * height);
     }
 
+
     private void CalculateGravity()
     {
         if (IsGrounded() && m_gravityVertical <= 0f)

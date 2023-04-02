@@ -17,6 +17,8 @@ public class PlayerController : PlayerAnimation
 
     public CombatController combatAbility { get { return m_combatAbility; } }
 
+    public Transform rootTransform { get; set; }
+
     protected override void Awake()
     {
         base.Awake();   
@@ -29,6 +31,7 @@ public class PlayerController : PlayerAnimation
     protected override void Start()
     {
         base.Start();
+        rootTransform = transform;
         RegisterAnimationEvents(m_playerAbilities);
     }
 
@@ -46,6 +49,8 @@ public class PlayerController : PlayerAnimation
     {
         if (m_currentAbilitiy != null && m_currentAbilitiy.updateMode == AbilityUpdateMode.FixedUpdate)
             m_currentAbilitiy.OnUpdateAbility();
+
+        m_combatAbility.OnCombatDetection();
     }
 
     public void OnAnimatorMove()
@@ -97,4 +102,14 @@ public class PlayerController : PlayerAnimation
         RemoveAnimationEvents(m_playerAbilities);
     }
 
+}
+
+public enum DirectionCast
+{
+    Left = -1,
+    Right = 1,
+    Forward = 2,
+    Backward = -2,
+    Up = 3,
+    Down = -3,
 }

@@ -60,7 +60,10 @@ public class PlayerControllerActions
     /// ÖØ¹¥»÷
     /// </summary>
     public bool heavyAttack = false;
-
+    /// <summary>
+    /// ¹¥»÷À©Õ¹
+    /// </summary>
+    public bool attackEx = false;
     public void ResetActions()
     {
         sprint = false;

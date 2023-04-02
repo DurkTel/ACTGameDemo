@@ -17,6 +17,7 @@ public class CombatSkillConfig : ScriptableObject
         MoveRight = 64,
         Jump = 128,
         Sprint = 256,
+        AttackEx = 512,
     }
     /// <summary>
     /// 技能名字
@@ -34,6 +35,10 @@ public class CombatSkillConfig : ScriptableObject
     /// 攻击后摇
     /// </summary>
     public float attackBackswing;
+    /// <summary>
+    /// 攻击段数
+    /// </summary>
+    public int effectCount;
     /// <summary>
     /// 优先级
     /// </summary>

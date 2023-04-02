@@ -247,6 +247,12 @@ public class PlayerControllerInput : MonoBehaviour, CrossPlatformInput.IGamePlay
         if (phase == PlayerInputPhase.DoubleClick)
             m_controller.actions.sprint = true;
     }
+
+    public void OnAttackEx(InputAction.CallbackContext context)
+    {
+        if (ButtonHandle(context) == PlayerInputPhase.Click)
+            m_controller.actions.attackEx = true;
+    }
 }
 
 /// <summary>

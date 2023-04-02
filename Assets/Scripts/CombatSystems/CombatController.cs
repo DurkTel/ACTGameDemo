@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static CombatSkillConfig;
+using static UnityEngine.InputSystem.DefaultInputActions;
 
 public class CombatController : MonoBehaviour
 {
@@ -13,17 +14,22 @@ public class CombatController : MonoBehaviour
 
     public CombatSkillConfig[] defaultSkills;
 
+    public CombatDetectionPoint[] detectionPoints;
+
     protected MoveController m_moveController;
 
     protected PlayerControllerActions m_actions;
 
+    [Header("伤害层级"),SerializeField]
+    private LayerMask m_damageLayer;
+
     private bool m_takeOutWeapon;
 
-    private CombatSkillConfig m_curCombat;
-
-    private CombatSkillConfig m_curSkill;
-
     private float m_normalizedTime;
+
+    private bool m_combatDetection;
+
+    private CombatBroadcast m_curBroadcast;
 
     private void Start()
     {
@@ -39,26 +45,49 @@ public class CombatController : MonoBehaviour
     {
         m_normalizedTime = Mathf.Repeat(playerController.GetAnimationNormalizedTime(PlayerAnimation.FullBodyLayerIndex), 1);
         PackUpWeapon();
-        ControllerAttack(defaultSkills, ref m_curSkill);
-        if (m_curSkill == null)
-            ControllerAttack(defaultCombats, ref m_curCombat);
+        ControllerAttack(defaultSkills, true);
+        ControllerAttack(defaultCombats);
+        m_moveController.Stop(m_curBroadcast != null);
         m_actions.lightAttack = false;
         m_actions.heavyAttack = false;
-        m_moveController.Stop(m_curCombat != null || m_curSkill != null);
+        m_actions.attackEx = false;
     }
 
     public void OnUpdateCombatMove()
     {
         ReleaseAttack();
         
-        if (m_curCombat != null || m_curSkill != null)
+        if (m_curBroadcast != null)
         {
-            m_moveController.characterController.Move(playerController.animator.deltaPosition + new Vector3(0, m_moveController.GetGravityAcceleration() * m_moveController.deltaTtime, 0));
+            float acc = Mathf.Max(m_moveController.GetGravityAcceleration(), 0f);
+            m_moveController.characterController.Move(playerController.animator.deltaPosition + new Vector3(0, acc * m_moveController.deltaTtime, 0));
 
             if (m_actions.gazing)
                 m_moveController.Rotate(m_actions.cameraTransform.forward, 10f);
             else
                 m_moveController.Rotate();
+        }
+    }
+
+    public void OnCombatDetection()
+    {
+        if (!m_combatDetection || m_curBroadcast == null) return;
+
+        foreach (var point in detectionPoints)
+        {
+            Collider[] colliders = Physics.OverlapCapsule(point.startPoint.position, point.endPoint.position, point.radius, m_damageLayer);
+            if (colliders.Length > 0)
+            {
+                PlayerController[] toActor = new PlayerController[colliders.Length];
+                for (int i = 0; i < colliders.Length; i++)
+                {
+                    if (colliders[i].gameObject != this.gameObject && colliders[i].TryGetComponent(out PlayerController controller))
+                        toActor[i] = controller;
+                }
+                m_curBroadcast.toActor = toActor;
+                CombatBroadcastManager.Instance.AttackBroascatHurt(m_curBroadcast);
+                break;
+            }
         }
     }
 
@@ -72,41 +101,45 @@ public class CombatController : MonoBehaviour
         }
     }
 
-    private void ControllerAttack(CombatSkillConfig[] combats, ref CombatSkillConfig curCombat)
+    private void ControllerAttack(CombatSkillConfig[] combats, bool force = false)
     {
         if (!m_takeOutWeapon) return;
-        if (m_actions.lightAttack || m_actions.heavyAttack)
+        if (!force && m_curBroadcast != null) return;
+        if (m_actions.lightAttack || m_actions.heavyAttack || m_actions.attackEx)
         {
-            bool dirty = false;
-            if (curCombat == null)
+            CombatSkillConfig newCombat = null;
+            if (m_curBroadcast == null)
             {
                 for (int i = 0; i < combats.Length; i++)
                 {
                     CombatSkillConfig combat = combats[i];
                     if (CheckCondition(combat.condition))
                     {
-                        curCombat = combat;
-                        dirty = true;
+                        newCombat = combat;
                         break;
                     }
                 }
             }
-            else if (curCombat.comboSkills.Length > 0)
+            else if (m_curBroadcast.combatSkill.comboSkills.Length > 0)
             {
-                foreach (var item in curCombat.comboSkills)
+                foreach (var item in m_curBroadcast.combatSkill.comboSkills)
                 {
                     if (CheckCondition(item.comboCondition) && m_normalizedTime >= item.range1 && m_normalizedTime <= item.range2) //符合触发范围
                     {
-                        curCombat = item.comboSkill;
-                        dirty = true;
+                        newCombat = item.comboSkill;
                         break;
                     }
                 }
             }
 
-            if (dirty)
+            if (newCombat != null)
             {
-                playerController.SetAnimationState(curCombat.animationName);
+                //构造战报信息
+                m_curBroadcast = CombatBroadcastManager.Instance.broadcastPool.Get();
+                m_curBroadcast.fromActor = playerController;
+                m_curBroadcast.combatSkill = newCombat;
+                //广播战报
+                CombatBroadcastManager.Instance.AttackBroascatBegin(m_curBroadcast);
             }
         }
     }
@@ -143,15 +176,40 @@ public class CombatController : MonoBehaviour
         if (attackType.HasFlag(CombatAttackCondition.Sprint) && !m_actions.sprint)
             return false;
 
+        if (attackType.HasFlag(CombatAttackCondition.AttackEx) && !m_actions.attackEx)
+            return false;
+
         return true;
     }
 
     private void ReleaseAttack()
     {
-        if (m_curCombat != null && !playerController.IsInAnimationTag("Attack"))
-            m_curCombat = null;
-
-        if (m_curSkill != null && !playerController.IsInAnimationTag("Skill"))
-            m_curSkill = null;
+        if (m_curBroadcast != null && !playerController.IsInAnimationTag("Attack"))
+            m_curBroadcast = null;
     }
+
+
+    public void DownOnGround(float time)
+    {
+        if (Physics.SphereCast(m_moveController.rootTransform.position + Vector3.up * 0.5f, m_moveController.characterController.radius,
+                Vector3.down, out RaycastHit hitInfo, 100f))
+        {
+            m_moveController.Move(hitInfo.point, time, 0f);
+        }
+    }
+
+    public void SetDetection(int value)
+    {
+        m_combatDetection = value == 1;
+    }
+}
+
+[Serializable]
+public struct CombatDetectionPoint
+{
+    public Transform startPoint;
+
+    public Transform endPoint;
+
+    public float radius;
 }
