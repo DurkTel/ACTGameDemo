@@ -64,6 +64,18 @@ public class PlayerControllerActions
     /// ¹¥»÷À©Õ¹
     /// </summary>
     public bool attackEx = false;
+    /// <summary>
+    /// »÷µ¹ 0 Î´»÷µ¹  1Ç°Å¿  -1ºóÅ¿
+    /// </summary>
+    public int knockDown = 0;
+    /// <summary>
+    /// »÷·É ¸¡¿Õ
+    /// </summary>
+    public bool knockUp = false;
+    /// <summary>
+    /// ÊÜ»÷Õ½±¨
+    /// </summary>
+    public CombatBroadcast hurtBroadcast = null;
     public void ResetActions()
     {
         sprint = false;

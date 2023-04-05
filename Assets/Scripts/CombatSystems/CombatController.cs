@@ -47,26 +47,26 @@ public class CombatController : MonoBehaviour
     {
         m_normalizedTime = Mathf.Repeat(playerController.GetAnimationNormalizedTime(PlayerAnimation.FullBodyLayerIndex), 1);
         PackUpWeapon();
-        ControllerAttack(defaultSkills, true);
-        ControllerAttack(defaultCombats);
-        m_moveController.Stop(m_curBroadcast != null);
-        m_actions.lightAttack = false;
-        m_actions.heavyAttack = false;
-        m_actions.attackEx = false;
+        //ControllerAttack(defaultSkills, true);
+        //ControllerAttack(defaultCombats);
+        //m_moveController.Stop(m_curBroadcast != null);
+        //m_actions.lightAttack = false;
+        //m_actions.heavyAttack = false;
+        //m_actions.attackEx = false;
     }
 
     public void OnUpdateCombatMove()
     {
-        ReleaseAttack();
+        //ReleaseAttack();
 
-        if (m_curBroadcast != null)
-        {
-            m_moveController.Move();
-            if (m_actions.gazing)
-                m_moveController.Rotate(m_actions.cameraTransform.forward, 10f);
-            else
-                m_moveController.Rotate();
-        }
+        //if (m_curBroadcast != null)
+        //{
+        //    m_moveController.Move();
+        //    if (m_actions.gazing)
+        //        m_moveController.Rotate(m_actions.cameraTransform.forward, 10f);
+        //    else
+        //        m_moveController.Rotate();
+        //}
     }
 
     public void OnCombatDetection()
@@ -193,14 +193,4 @@ public class CombatController : MonoBehaviour
 
     public void SetDetection(int value) => m_combatDetection = value == 1;
 
-}
-
-[Serializable]
-public struct CombatDetectionPoint
-{
-    public Transform startPoint;
-
-    public Transform endPoint;
-
-    public float radius;
 }

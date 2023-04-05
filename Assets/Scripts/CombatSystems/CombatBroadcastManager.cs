@@ -58,7 +58,17 @@ public class CombatBroadcastManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 结束战报
+    /// 打断战报，打断技能，未能完整释放（是否已经结算不能确定）
+    /// </summary>
+    /// <param name="broadcastBegin"></param>
+    public void AttackBroascatBreak(ref CombatBroadcast broadcastBegin)
+    {
+        broadcastBegin.End();
+        m_broadcastBeginMap.Remove(broadcastBegin.attackId);
+    }
+
+    /// <summary>
+    /// 结束战报，后摇动画结束
     /// </summary>
     /// <param name="broadcastBegin"></param>
     public void AttackBroascatEnd(ref CombatBroadcast broadcastBegin)
@@ -73,8 +83,16 @@ public class CombatBroadcastManager : MonoBehaviour
     {
         if (m_broadcastHurtQueue == null || m_broadcastHurtQueue.Count <= 0) return;
 
-        CombatBroadcast broadcast = m_broadcastHurtQueue.Dequeue();
-        broadcast.Hurt();
+        while (m_broadcastHurtQueue.Count > 0)
+        {
+
+            CombatBroadcast broadcast = m_broadcastHurtQueue.Dequeue();
+            if (broadcast.toActor == null || broadcast.effectCount++ >= broadcast.combatSkill.effectCount) continue; //这个技能是否已经完成攻击段数
+            broadcast.Hurt();
+
+            //卡肉
+            broadcast.fromActor.SetAnimatorPauseFrame(0f, 5f);
+        }
     }
 }
 
@@ -109,21 +127,8 @@ public class CombatBroadcast
 
     public void Hurt()
     {
-        if (toActor == null || effectCount++ >= combatSkill.effectCount) return; //这个技能是否已经完成攻击段数
         foreach (var item in toActor)
-        {
-            float frontOrBack = Vector3.Dot(item.rootTransform.forward, fromActor.rootTransform.forward);
-            float leftOrRight = Vector3.Cross(item.rootTransform.forward, fromActor.rootTransform.forward).y;
-            string dir = "";
-            if (Mathf.Abs(frontOrBack) > Mathf.Abs(leftOrRight))
-                dir = frontOrBack > 0 ? "Back" : "Front";
-            else
-                dir = leftOrRight > 0 ? "Left" : "Right";
-
-            Random.InitState((int)Time.realtimeSinceStartup);
-            item.SetAnimationState(string.Format("Damage_{0}_{1}", dir, Random.Range(1, 3)));
-            Debug.Log(item.gameObject.name + "收到来自" + fromActor.gameObject.name + "的伤害，伤害来源为:" + combatSkill.animationName);
-        }
+            item.actions.hurtBroadcast = this;
     }
 
     public void End()

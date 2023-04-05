@@ -40,6 +40,14 @@ public class CombatSkillConfig : ScriptableObject
     /// </summary>
     public int effectCount;
     /// <summary>
+    /// 击退距离
+    /// </summary>
+    public float repulsionDistance;
+    /// <summary>
+    /// 受击浮空系数
+    /// </summary>
+    public float strikeFly;
+    /// <summary>
     /// 优先级
     /// </summary>
     public int priority;

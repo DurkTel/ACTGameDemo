@@ -13,10 +13,10 @@ public class MoveController : MonoBehaviour, IMove
     public bool enableGravity { get; set; }
     public float deltaTtime { get; set; }
 
+    public float gravity { get; set; }
+
     [SerializeField, Header("地面层级")]
     public LayerMask groundLayer;
-
-    public float gravity;
 
     private float m_gravityVertical;
 
@@ -29,6 +29,14 @@ public class MoveController : MonoBehaviour, IMove
     /// 曲线运动目标位置
     /// </summary>
     private Vector3 m_curveMoveTarget;
+    /// <summary>
+    /// 曲线旋转初始位置
+    /// </summary>
+    private Vector3 m_curveMoveOriginal;
+    /// <summary>
+    /// 曲线旋转进度
+    /// </summary>
+    private float m_curveMoveProgress;
     /// <summary>
     /// 曲线运动中
     /// </summary>
@@ -46,6 +54,14 @@ public class MoveController : MonoBehaviour, IMove
     /// 曲线旋转目标位置
     /// </summary>
     private Quaternion m_curveRotationTarget;
+    /// <summary>
+    /// 曲线旋转初始位置
+    /// </summary>
+    private Quaternion m_curveRotationOriginal;
+    /// <summary>
+    /// 曲线旋转进度
+    /// </summary>
+    private float m_curveRotationProgress;
     /// <summary>
     /// 曲线旋转中
     /// </summary>
@@ -65,6 +81,7 @@ public class MoveController : MonoBehaviour, IMove
         characterController = GetComponent<CharacterController>();
         m_animator = GetComponent<Animator>();
         rootTransform = transform;
+        gravity = -20f;
     }
 
     public void Update()
@@ -104,7 +121,9 @@ public class MoveController : MonoBehaviour, IMove
         characterController.enabled = false;
         m_curveMoveTarget = target;
         m_curveMoveBeginTime = Time.realtimeSinceStartup + delay;
-        m_curveMoveDelta = Vector3.Distance(rootTransform.position, target) / time;
+        m_curveMoveDelta = Time.fixedDeltaTime / time;
+        m_curveMoveOriginal = rootTransform.position;
+        m_curveMoveProgress = 0f;
     }
 
     private void CurveMove()
@@ -112,14 +131,14 @@ public class MoveController : MonoBehaviour, IMove
         if (!m_isCurveMoving || Time.realtimeSinceStartup < m_curveMoveBeginTime)
             return;
 
-        if (Vector3.Distance(m_curveMoveTarget, rootTransform.position) <= 0.01f)
+        if (m_curveMoveProgress >= 1f)
         {
             m_isCurveMoving = false;
             characterController.enabled = true;
             return;
         }
 
-        rootTransform.position = Vector3.MoveTowards(rootTransform.position, m_curveMoveTarget, m_curveMoveDelta * Time.fixedDeltaTime);
+        rootTransform.position = Vector3.Lerp(m_curveMoveOriginal, m_curveMoveTarget, m_curveMoveProgress += m_curveMoveDelta);
     }
 
     public void Rotate()
@@ -142,12 +161,15 @@ public class MoveController : MonoBehaviour, IMove
         rootTransform.rotation = newRotation;
     }
 
+
     public void Rotate(Quaternion target, float time, float delay)
     {
         m_isCurveRotating = true;
         m_curveRotationTarget = target;
         m_curveRotationBeginTime = Time.realtimeSinceStartup + delay;
-        m_curveRotationDelta = Quaternion.Angle(target, rootTransform.rotation) / time;
+        m_curveRotationDelta = Time.fixedDeltaTime / time;
+        m_curveRotationOriginal = rootTransform.rotation;
+        m_curveRotationProgress = 0f;
     }
 
     private void CurveRotate()
@@ -155,13 +177,13 @@ public class MoveController : MonoBehaviour, IMove
         if (!m_isCurveRotating || Time.realtimeSinceStartup < m_curveRotationBeginTime)
             return;
 
-        if (Quaternion.Angle(m_curveRotationTarget, rootTransform.rotation) <= 0.01f)
+        if(m_curveRotationProgress >= 1f)
         {
             m_isCurveRotating = false;
             return;
         }
 
-        rootTransform.rotation = Quaternion.Lerp(rootTransform.rotation, m_curveRotationTarget, m_curveRotationDelta * Time.fixedDeltaTime);
+        rootTransform.rotation = Quaternion.Lerp(m_curveRotationOriginal, m_curveRotationTarget, m_curveRotationProgress += m_curveRotationDelta);
     }
 
     public void Stop(bool value)

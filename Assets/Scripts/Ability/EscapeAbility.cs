@@ -17,6 +17,9 @@ public class EscapeAbility : PlayerAbility
     public override void OnEnableAbility()
     {
         base.OnEnableAbility();
+        Vector2 relativeMove = m_moveController.GetRelativeMove(m_actions.move);
+        playerController.animator.SetFloat(PlayerAnimation.Float_InputHorizontal_Hash, relativeMove.x);
+        playerController.animator.SetFloat(PlayerAnimation.Float_InputVertical_Hash, relativeMove.y);
         m_actions.jump = false;
         m_actions.escape = true;
         if (!m_moveController.IsGrounded())
@@ -27,17 +30,12 @@ public class EscapeAbility : PlayerAbility
             playerController.SetAnimationState("Escape");
     }
 
-    public override void OnDisableAbility()
-    {
-        base.OnDisableAbility();
-        m_actions.jump = false;
-    }
-
     public override void OnUpdateAbility()
     {
         base.OnUpdateAbility();
         m_moveController.Move();
         m_moveController.Rotate();
+        m_actions.jump = false;
         m_actions.escape = playerController.IsInTransition() || playerController.IsInAnimationTag("Escape");
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.InputSystem.DefaultInputActions;
 
 public class PlayerController : PlayerAnimation
 {
@@ -13,20 +14,19 @@ public class PlayerController : PlayerAnimation
 
     public PlayerAbility currentAbilitiy { get { return m_currentAbilitiy; } }
 
-    private CombatController m_combatAbility;
-
-    public CombatController combatAbility { get { return m_combatAbility; } }
-
     public Transform rootTransform { get; set; }
 
     public DebugHelper debugHelper { get; set; }
+
+    public bool combatState { get; set; }
+
+    public Transform weaponPoint;
 
     protected override void Awake()
     {
         base.Awake();   
         actions = new PlayerControllerActions();
         m_playerAbilities = GetComponents<PlayerAbility>();
-        m_combatAbility = GetComponent<CombatController>();
         debugHelper = GetComponent<DebugHelper>();
         Array.Sort(m_playerAbilities, (PlayerAbility x, PlayerAbility y) => { return y.priority - x.priority; });
     }
@@ -45,23 +45,19 @@ public class PlayerController : PlayerAnimation
         if (m_currentAbilitiy != null && m_currentAbilitiy.updateMode == AbilityUpdateMode.Update)
             m_currentAbilitiy.OnUpdateAbility();
 
-        m_combatAbility.OnUpdateCombat();
+        PackUpWeapon();
     }
 
     public void FixedUpdate()
     {
         if (m_currentAbilitiy != null && m_currentAbilitiy.updateMode == AbilityUpdateMode.FixedUpdate)
             m_currentAbilitiy.OnUpdateAbility();
-
-        m_combatAbility.OnCombatDetection();
     }
 
     public void OnAnimatorMove()
     {
         if (m_currentAbilitiy != null && m_currentAbilitiy.updateMode == AbilityUpdateMode.AnimatorMove)
             m_currentAbilitiy.OnUpdateAbility();
-
-        m_combatAbility.OnUpdateCombatMove();
     }
 
     public void LateUpdate()
@@ -97,6 +93,28 @@ public class PlayerController : PlayerAnimation
 
             m_currentAbilitiy = nextAbility;
         }
+    }
+
+    private void PackUpWeapon()
+    {
+        if (actions.weapon != combatState)
+        {
+            combatState = actions.weapon;
+            SetAnimationState(combatState ? "Take Out Weapon" : "Pack Up Weapon");
+            if (!combatState)
+                TimerManager.Instance.AddTimer(() =>
+                {
+                    weaponPoint.gameObject.SetActive(false);
+                }, 0f, 1f);
+            else
+            {
+                weaponPoint.gameObject.SetActive(true);
+                actions.lightAttack = false;
+                actions.heavyAttack = false;
+                actions.attackEx = false;
+            }
+        }
+        animator.SetFloat(Float_IntroWeapon_Hash, combatState ? 1f : 0f, 0.2f, Time.deltaTime);
     }
 
     protected override void OnDestroy()

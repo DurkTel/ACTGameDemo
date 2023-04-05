@@ -30,7 +30,8 @@ public class TimerManager : MonoBehaviour
 
     private Timer SetTimer(TimerType timerType, UnityAction callback, float delay, float interval, int duration)
     {
-        Timer timer = new Timer().SetData(timerType, callback, delay, interval, duration);
+        Timer timer = Pool<Timer>.Get();
+        timer.SetData(timerType, callback, delay, interval, duration);
         return timer;
     }
 
@@ -86,7 +87,7 @@ public class TimerManager : MonoBehaviour
             {
                 if (m_allTimer.ContainsKey(key))
                 {
-                    m_allTimer[key] = null;
+                    Pool<Timer>.Release(m_allTimer[key]);
                     m_allTimer.Remove(key);
                 }
             }
@@ -114,9 +115,8 @@ public class TimerManager : MonoBehaviour
 
     public class Timer
     {
-        private static int m_ID = 99;
-
-        public int id { get { return ++m_ID; } }
+        private static int s_guid = 0;
+        public int id { get; set; }
 
         private TimerType m_timerType;
 
@@ -140,6 +140,9 @@ public class TimerManager : MonoBehaviour
 
         public Timer SetData(TimerType timerType, UnityAction callback, float delay, float interval, int duration)
         {
+            this.id = ++s_guid;
+            this.m_allCount = 0;
+            this.m_finish = false;
             this.m_timerType = timerType;
             this.m_callback = callback;
             this.m_delay = delay;

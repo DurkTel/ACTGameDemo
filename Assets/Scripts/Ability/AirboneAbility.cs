@@ -21,6 +21,8 @@ public class AirboneAbility : PlayerAbility
 
     private float m_speed;
 
+    private Vector2 m_relativeMove;
+
     public override bool Condition()
     {
         return m_isAiring || (!playerController.IsInTransition() && ((m_moveController.IsGrounded() && m_actions.jump) || (m_moveController.IsFalled() && !m_actions.jump)));
@@ -57,10 +59,10 @@ public class AirboneAbility : PlayerAbility
 
         if (m_actions.jump)
             JumpUpSecond();
-        
-        m_moveController.Move(m_moveController.rootTransform.forward, m_speed);
-        Vector3 dir = m_actions.gazing ? m_actions.cameraTransform.forward : m_actions.move;
-        m_moveController.Rotate(dir, m_rotateSpeed);
+
+        m_moveController.Move(m_moveController.rootTransform.forward * Mathf.Max(m_relativeMove.y, 0f), m_speed);
+        //Vector3 dir = m_actions.gazing ? m_actions.cameraTransform.forward : m_actions.move;
+        //m_moveController.Rotate(dir, m_rotateSpeed);
 
         m_isAiring = playerController.IsInAnimationTag("Air");
 
@@ -68,7 +70,9 @@ public class AirboneAbility : PlayerAbility
 
     public override void OnUpdateAnimatorParameter()
     {
+        m_relativeMove = m_moveController.GetRelativeMove(m_actions.move);
         playerController.animator.SetBool(PlayerAnimation.Bool_Ground_Hash, m_moveController.IsGrounded());
+        playerController.animator.SetFloat(PlayerAnimation.Float_Movement_Hash, m_relativeMove.y, 0.2f, Time.fixedDeltaTime);
     }
 
     private void JumpUpSecond()

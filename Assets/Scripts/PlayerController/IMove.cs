@@ -6,6 +6,8 @@ public interface IMove
 {
     Transform rootTransform { get; set; }
     float deltaTtime { get; set; }
+
+    float gravity { get; set; }
     void Move();
 
     void Move(Vector3 direction, float speed);

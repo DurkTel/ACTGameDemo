@@ -17,7 +17,9 @@ public enum AbilityType
     Escape,
     Vault,
     Climb,
-    WallRun
+    WallRun,
+    Combat,
+    Hurt
 }
 
 public abstract class PlayerAbility : MonoBehaviour

@@ -17,6 +17,8 @@ MonoBehaviour:
   attackPoint: 0.16
   attackBackswing: 0.3
   effectCount: 1
+  repulsionDistance: 0.6
+  strikeFly: 0
   priority: 0
   condition: 1
   comboSkills:

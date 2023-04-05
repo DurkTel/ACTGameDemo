@@ -287,24 +287,7 @@ public class OrbitCamera : MonoBehaviour
     public void CalculateLockon(bool value)
     {
         if (value && m_lockon == null)
-        {
-            Collider[] colliders = Physics.OverlapSphere(focus.position, m_lockonRadius, m_lockonLayer);
-            Transform newLock = null;
-            float minDis = m_lockonRadius;
-            Vector2 pos1 = Vector2.zero;
-            Vector2 pos2 = new Vector2(focus.position.x, focus.position.z);
-            foreach (Collider coll in colliders)
-            {
-                pos1.Set(coll.transform.position.x, coll.transform.position.z);
-                float dis = Vector2.Distance(pos1, pos2);
-                if (dis < minDis)
-                {
-                    minDis = dis;
-                    newLock = coll.transform;
-                }
-            }
-            m_lockon = newLock;
-        }
+            m_lockon = focus.ObtainNearestTarget(m_lockonRadius, m_lockonLayer, focus.root);
         else if (!value)
             m_lockon = null;
     }

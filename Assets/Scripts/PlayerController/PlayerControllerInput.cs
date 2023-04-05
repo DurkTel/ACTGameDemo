@@ -186,6 +186,7 @@ public class PlayerControllerInput : MonoBehaviour, CrossPlatformInput.IGamePlay
         PlayerInputPhase phase = ButtonHandle(context);
         m_controller.actions.gazing = phase != PlayerInputPhase.Release && phase != PlayerInputPhase.None;
         m_camera.CalculateLockon(m_controller.actions.gazing);
+        m_controller.actions.walk = m_controller.actions.gazing;
     }
 
     public void OnEscape(InputAction.CallbackContext context)

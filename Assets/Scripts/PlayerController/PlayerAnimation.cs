@@ -11,6 +11,8 @@ public class PlayerAnimation : MonoBehaviour
 
     protected AnimatorStateInfo m_baseLayerInfo, m_fullBodyLayerInfo;
 
+    protected int m_pauseFrameTimer;
+
     protected virtual void Awake()
     {
         animator = GetComponent<Animator>();
@@ -64,7 +66,7 @@ public class PlayerAnimation : MonoBehaviour
     public float GetAnimationNormalizedTime(int layer)
     { 
         AnimatorStateInfo info = animator.GetCurrentAnimatorStateInfo(layer);
-        return info.normalizedTime;
+        return Mathf.Repeat(info.normalizedTime, 1);
     }
 
     public bool IsInTransition()
@@ -109,6 +111,31 @@ public class PlayerAnimation : MonoBehaviour
     public bool IsEnableRootMotion(int type)
     {
         return stateInfos.IsEnableRootMotion(type);
+    }
+
+    public void SetAnimatorLayerWeight(int layerIndex, float weight)
+    { 
+        animator.SetLayerWeight(layerIndex, weight);    
+    }
+
+    public void SetAnimatorPauseFrame(float interval, float duration)
+    {
+        animator.speed = interval;
+        TimerManager.Instance.DelTimer(m_pauseFrameTimer);
+        m_pauseFrameTimer = TimerManager.Instance.AddFrame(() =>
+        {
+            animator.speed = 1f;
+        }, 0f, duration);
+    }
+
+    public void SetAnimatorLayerWeight(int layerIndex, float weight, float time)
+    {
+        int interval = (int)(time / Time.fixedDeltaTime);
+        TimerManager.Instance.AddTimer(() =>
+        {
+            animator.SetLayerWeight(layerIndex, weight);
+
+        }, 0f, Time.fixedDeltaTime, interval);
     }
 
     private void UpdateAnimatorInfo()
@@ -163,10 +190,6 @@ public class PlayerAnimation : MonoBehaviour
         }
     }
 
-    public void DispatchFrameEvent(string eventName, float param)
-    { 
-        
-    }
 
     public static int BaseLayerIndex = 0;
     public static int FullBodyLayerIndex = 1;
