@@ -24,6 +24,10 @@ public class CombatSkillConfig : ScriptableObject
     /// </summary>
     public string skillName;
     /// <summary>
+    /// ±êÇ©
+    /// </summary>
+    public string tag;
+    /// <summary>
     /// ¶¯»­Ãû³Æ
     /// </summary>
     public string animationName;

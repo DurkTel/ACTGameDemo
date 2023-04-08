@@ -12,15 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7a7919aff549244ba65a384ccbc760f, type: 3}
   m_Name: JumpAttack4
   m_EditorClassIdentifier: 
-  skillName: 
+  skillName: "\u7A7A\u4E2D\u653B\u51FB"
+  tag: Air Attack
   animationName: Jump_Attack_Combo_4
-  attackPoint: 0.16
-  attackBackswing: 0.25
+  attackPoint: 0.2
+  attackBackswing: 0.5
   effectCount: 1
+  repulsionDistance: 0
+  strikeFly: 0
   priority: 1
   condition: 129
   comboSkills:
-  - range1: 0.25
+  - range1: 0.5
     range2: 1
     comboSkill: {fileID: 11400000, guid: 15e7f4df5878014449d24a8ce012a083, type: 2}
     comboCondition: 1

@@ -29,4 +29,10 @@ public class AnimationControlRootMotion : AnimationControl
         }
     }
 
+    public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    {
+        base.OnStateExit(animator, stateInfo, layerIndex);
+        animationStateInfos.stateInfos[layerIndex].enableRootMotionRotation = false;
+    }
+
 }

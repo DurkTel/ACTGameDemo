@@ -6,11 +6,15 @@ public class HurtAbility : PlayerAbility
 {
     private CombatBroadcast m_curBroadcast;
 
+    private int m_attackId;
+
     private bool m_isGrounded;
+
+    private Vector3 m_moveCompensation;
 
     public override bool Condition()
     {
-        return m_actions.hurtBroadcast != null;
+        return m_actions.hurtBroadcastId > 0;
     }
 
     public override AbilityType GetAbilityType()
@@ -30,25 +34,15 @@ public class HurtAbility : PlayerAbility
         ReleaseHurt();
         RequestHurt();
 
-        if (!m_isGrounded && playerController.IsInAnimationName("Damage_Up_2"))
-        {
-            m_moveController.gravity = -5f;
-            m_moveController.Move(Vector3.zero, 0f);
-        }
-    }
-
-    private void FixedUpdate()
-    {
-        m_isGrounded = m_moveController.IsGrounded();
-        if(m_isGrounded)
-            m_moveController.gravity = -20f;
+        moveController.MoveCompensation(playerController.rootTransform.up * moveController.GetGravityAcceleration() / 2f * Time.deltaTime);
     }
 
     private void RequestHurt()
     {
-        if (m_curBroadcast == m_actions.hurtBroadcast) return;
-        m_curBroadcast = m_actions.hurtBroadcast;
-
+        if (m_attackId == m_actions.hurtBroadcastId) return;
+        if (!CombatBroadcastManager.Instance.TypGetAttackBroascat(m_actions.hurtBroadcastId, out m_curBroadcast)) return;
+        m_attackId = m_actions.hurtBroadcastId;
+        
         //Debug.Log(playerController.gameObject.name + "收到来自" + m_curBroadcast.fromActor.gameObject.name + "的伤害，伤害来源为:" + m_curBroadcast.combatSkill.animationName);
         HurtBehaviour();
     }
@@ -60,18 +54,18 @@ public class HurtAbility : PlayerAbility
         Vector3 beatBackDir = playerController.rootTransform.position - m_curBroadcast.fromActor.rootTransform.position;
         beatBackDir.Normalize();
         beatBackDir.y = m_curBroadcast.combatSkill.strikeFly;
-        m_moveController.Move(playerController.rootTransform.position + beatBackDir * m_curBroadcast.combatSkill.repulsionDistance, 0.15f, 0f);
+        moveController.SetGravityAcceleration(0);
+        moveController.Move(playerController.rootTransform.position + beatBackDir * m_curBroadcast.combatSkill.repulsionDistance, 0.15f, 0f);
         if (m_isGrounded && m_curBroadcast.combatSkill.repulsionDistance < 2f && beatBackDir.y == 0f)
-            m_moveController.Rotate(Quaternion.LookRotation(-beatBackDir), 0.15f, 0f);
+            moveController.Rotate(Quaternion.LookRotation(-beatBackDir), 0.15f, 0f);
 
         string dir = "";
         string flag = "";
-        print(m_isGrounded);
+        
         if (!m_isGrounded)
         {
             dir = "Up";
             flag = "3";
-            print(111);
         }
         else if (m_curBroadcast.combatSkill.strikeFly > 0)
         {
@@ -107,8 +101,8 @@ public class HurtAbility : PlayerAbility
     {
         if (!playerController.IsInAnimationTag("Hurt"))
         {
-            m_actions.hurtBroadcast = null;
-            m_curBroadcast = null;
+            m_actions.hurtBroadcastId = -1;
+            m_actions.jump = false;
         }
     }
 

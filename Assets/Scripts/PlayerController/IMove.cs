@@ -14,11 +14,15 @@ public interface IMove
 
     void Move(Vector3 target, float time, float delay);
 
+    void MoveCompensation(Vector3 direction = default);
+
     void Rotate();
 
     void Rotate(Vector3 direction, float speed);
 
     void Rotate(Quaternion target, float time, float delay);
+
+    void RotateCompensation();
 
     void Stop(bool value);
 

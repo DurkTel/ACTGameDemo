@@ -58,12 +58,15 @@ public class ObjectPool<T> : IPool where T : new()
 
     public T Get()
     {
+        T newObj = default;
         if (m_stack.Count > 0)
         {
-            return m_stack.Pop();
+            newObj = m_stack.Pop();
+            m_onGet?.Invoke(newObj);
+            return newObj;
         }
 
-        T newObj = new T();
+        newObj = new T();
         m_onGet?.Invoke(newObj);
 
         return newObj;

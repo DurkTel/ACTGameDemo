@@ -25,15 +25,28 @@ public class CombatBroadcastManager : MonoBehaviour
 
     private Dictionary<int, CombatBroadcast> m_broadcastBeginMap;
 
-    public ObjectPool<CombatBroadcast> broadcastPool = new ObjectPool<CombatBroadcast>((p) => { p.attackId = ++s_attackId; }, (p) => { p.Release(); });
+    private Dictionary<int, int> m_effectCounter = new Dictionary<int, int>();
 
     private Queue<CombatBroadcast> m_broadcastHurtQueue;
+
+    public static CombatBroadcast GetCombatBroadcast(out int attackId)
+    {
+        CombatBroadcast broadcast = new CombatBroadcast();
+        broadcast.attackId = ++s_attackId;
+        attackId = broadcast.attackId;
+        return broadcast;
+    }
+
+    public bool TypGetAttackBroascat(int attackId, out CombatBroadcast broadcast)
+    {
+        return m_broadcastBeginMap.TryGetValue(attackId, out broadcast);
+    }
 
     /// <summary>
     /// 开始战报
     /// </summary>
     /// <param name="broadcastBegin"></param>
-    public void AttackBroascatBegin(ref CombatBroadcast broadcastBegin)
+    public void AttackBroascatBegin(CombatBroadcast broadcastBegin)
     {
         if (m_broadcastBeginMap == null || !m_broadcastBeginMap.ContainsKey(broadcastBegin.attackId))
         {
@@ -47,7 +60,7 @@ public class CombatBroadcastManager : MonoBehaviour
     /// 战报结算
     /// </summary>
     /// <param name="broadcastBegin"></param>
-    public void AttackBroascatHurt(ref CombatBroadcast broadcastBegin)
+    public void AttackBroascatHurt(CombatBroadcast broadcastBegin)
     {
         if (m_broadcastBeginMap.ContainsKey(broadcastBegin.attackId))
         {
@@ -61,22 +74,23 @@ public class CombatBroadcastManager : MonoBehaviour
     /// 打断战报，打断技能，未能完整释放（是否已经结算不能确定）
     /// </summary>
     /// <param name="broadcastBegin"></param>
-    public void AttackBroascatBreak(ref CombatBroadcast broadcastBegin)
+    public void AttackBroascatBreak(CombatBroadcast broadcastBegin)
     {
         broadcastBegin.End();
         m_broadcastBeginMap.Remove(broadcastBegin.attackId);
+        m_effectCounter.Remove(broadcastBegin.attackId);    
     }
 
     /// <summary>
     /// 结束战报，后摇动画结束
     /// </summary>
     /// <param name="broadcastBegin"></param>
-    public void AttackBroascatEnd(ref CombatBroadcast broadcastBegin)
+    public void AttackBroascatEnd(CombatBroadcast broadcastBegin)
     {
         broadcastBegin.End();
         m_broadcastBeginMap.Remove(broadcastBegin.attackId);
-        broadcastPool.Release(broadcastBegin);
-        broadcastBegin = null;
+        m_effectCounter.Remove(broadcastBegin.attackId);
+        //broadcastPool.Release(broadcastBegin);
     }
 
     private void FixedUpdate()
@@ -87,22 +101,33 @@ public class CombatBroadcastManager : MonoBehaviour
         {
 
             CombatBroadcast broadcast = m_broadcastHurtQueue.Dequeue();
-            if (broadcast.toActor == null || broadcast.effectCount++ >= broadcast.combatSkill.effectCount) continue; //这个技能是否已经完成攻击段数
+
+            //这个技能是否已经完成攻击段数
+            if (broadcast.toActor == null || (m_effectCounter.TryGetValue(broadcast.attackId, out int effectCount) && effectCount >= broadcast.combatSkill.effectCount))
+                continue;
+
+            TryAddEffectCount(broadcast.attackId);
             broadcast.Hurt();
 
             //卡肉
             broadcast.fromActor.SetAnimatorPauseFrame(0f, 5f);
         }
     }
+
+    private void TryAddEffectCount(int attackId)
+    {
+        if (m_effectCounter.ContainsKey(attackId))
+            m_effectCounter[attackId]++;
+        else
+            m_effectCounter[attackId] = 1;
+    }
 }
 
-public class CombatBroadcast
+public struct CombatBroadcast
 {
     public int attackId;
 
     public float beginTime;
-
-    public int effectCount;
 
     public PlayerController fromActor;
 
@@ -115,7 +140,6 @@ public class CombatBroadcast
         fromActor = null;
         toActor = null;
         combatSkill = null;
-        effectCount = 0;
         beginTime = 0f;
     }
 
@@ -128,7 +152,7 @@ public class CombatBroadcast
     public void Hurt()
     {
         foreach (var item in toActor)
-            item.actions.hurtBroadcast = this;
+            item.actions.hurtBroadcastId = attackId;
     }
 
     public void End()

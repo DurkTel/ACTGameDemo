@@ -49,7 +49,7 @@ public class LocomotionAbility : PlayerAbility
     }
     public override bool Condition()
     {
-        return m_moveController.IsGrounded();
+        return moveController.IsGrounded();
     }
 
     public override void OnUpdateAbility()
@@ -85,7 +85,7 @@ public class LocomotionAbility : PlayerAbility
 
     public override void OnUpdateAnimatorParameter()
     {
-        Vector2 relativeMove = m_moveController.GetRelativeMove(m_actions.move);
+        Vector2 relativeMove = moveController.GetRelativeMove(m_actions.move);
         playerController.animator.SetFloat(PlayerAnimation.Float_InputHorizontalLerp_Hash, relativeMove.x, 0.2f, Time.fixedDeltaTime);
         playerController.animator.SetFloat(PlayerAnimation.Float_InputVerticalLerp_Hash, relativeMove.y, 0.2f, Time.fixedDeltaTime);
         playerController.animator.SetFloat(PlayerAnimation.Float_InputHorizontal_Hash, relativeMove.x);
@@ -93,8 +93,7 @@ public class LocomotionAbility : PlayerAbility
         playerController.animator.SetFloat(PlayerAnimation.Float_Movement_Hash, m_actions.move.normalized.magnitude * (int)m_moveType, 0.2f, Time.fixedDeltaTime);
         playerController.animator.SetFloat(PlayerAnimation.Float_AngularVelocity_Hash, m_angularVelocity, 0.2f, Time.fixedDeltaTime);
         playerController.animator.SetFloat(PlayerAnimation.Float_Rotation_Hash, m_targetDeg);
-        playerController.animator.SetBool(PlayerAnimation.Bool_Ground_Hash, true);
-        playerController.animator.SetBool(PlayerAnimation.Bool_Gazing_Hash, m_actions.gazing);
+        
     }
 
     public override void OnResetAnimatorParameter()
@@ -108,22 +107,22 @@ public class LocomotionAbility : PlayerAbility
     private void OnUpdateMove()
     {
         if (playerController.IsEnableRootMotion(1))
-            m_moveController.Move();
+            moveController.Move();
         else
         {
             float speed = GetMoveSpeed();
-            m_moveController.Move(m_actions.move, speed * moveMultiplier);
+            moveController.Move(m_actions.move, speed * moveMultiplier);
         }
     }
 
     private void OnUpdateRotate()
     {
         if (playerController.IsEnableRootMotion(2))
-            m_moveController.Rotate();
+            moveController.Rotate();
         else// if (!playerController.IsInAnimationTag("Free Movement") || !playerController.IsInTransition())
         {
             Vector3 dir = m_actions.gazing ? m_actions.cameraTransform.forward : m_actions.move;
-            m_moveController.Rotate(dir, m_rotateSpeed);
+            moveController.Rotate(dir, m_rotateSpeed);
         }
     }
 
@@ -155,15 +154,15 @@ public class LocomotionAbility : PlayerAbility
     {
         Vector3 direction = m_actions.move;
         direction.y = 0f;
-        Vector3 roleDelta = m_moveController.rootTransform.InverseTransformDirection(direction);
+        Vector3 roleDelta = moveController.rootTransform.InverseTransformDirection(direction);
         //计算目标角度与当前角度的夹角弧度
         targetDeg = Mathf.Atan2(roleDelta.x, roleDelta.z) * Mathf.Rad2Deg;
         float deg1 = targetDeg * 0.002f;
 
-        Vector3 localForward = m_moveController.rootTransform.InverseTransformDirection(m_lastForward);
+        Vector3 localForward = moveController.rootTransform.InverseTransformDirection(m_lastForward);
         float deg2 = Mathf.Atan2(localForward.x, localForward.z) * Mathf.Rad2Deg;
 
-        m_lastForward = m_moveController.rootTransform.forward;
+        m_lastForward = moveController.rootTransform.forward;
 
         float velocity = deg1 - deg2;
         velocity *= 0.002f;

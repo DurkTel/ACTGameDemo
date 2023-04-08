@@ -28,14 +28,14 @@ public class WallRunAbility : PlayerAbility
     }
     public override bool Condition()
     {
-        return !m_moveController.IsGrounded() && CalculateWallRun(out m_wallHit, out m_wallRunDir);
+        return !moveController.IsGrounded() && CalculateWallRun(out m_wallHit, out m_wallRunDir);
     }
 
     public override void OnEnableAbility()
     {
         base.OnEnableAbility();
-        string animation = m_moveController.GetGravityAcceleration() <= -2f ? "Wall Run Jump Start" : "Wall Run Start";
-        m_moveController.rootTransform.position = CalculateOffset(0.4f);
+        string animation = moveController.GetGravityAcceleration() <= -2f ? "Wall Run Jump Start" : "Wall Run Start";
+        moveController.rootTransform.position = CalculateOffset(0.4f);
         playerController.SetAnimationState(animation, 0.05f);
     }
 
@@ -48,7 +48,7 @@ public class WallRunAbility : PlayerAbility
 
     public override void OnUpdateAnimatorParameter()
     {
-        Vector2 relativeMove = m_moveController.GetRelativeMove(m_actions.move);
+        Vector2 relativeMove = moveController.GetRelativeMove(m_actions.move);
         playerController.animator.SetFloat(PlayerAnimation.Float_InputHorizontal_Hash, relativeMove.x);
         playerController.animator.SetFloat(PlayerAnimation.Float_InputVertical_Hash, relativeMove.y);
         playerController.animator.SetFloat(PlayerAnimation.Float_WallRunDir_Hash, m_wallRunDir);
@@ -64,17 +64,17 @@ public class WallRunAbility : PlayerAbility
     public override void OnUpdateAbility()
     {
         base.OnUpdateAbility();
-        Vector2 relativeMove = m_moveController.GetRelativeMove(m_actions.move);
+        Vector2 relativeMove = moveController.GetRelativeMove(m_actions.move);
 
         //叉乘得出与墙面平行方向
         m_wallRunForward = Vector3.Cross(m_wallHit.normal, Vector3.up);
         //点乘得出与角色面朝方向相同的
-        m_wallRunForward = Vector3.Dot(m_moveController.rootTransform.forward, m_wallRunForward) > 0 ? m_wallRunForward : -m_wallRunForward;
+        m_wallRunForward = Vector3.Dot(moveController.rootTransform.forward, m_wallRunForward) > 0 ? m_wallRunForward : -m_wallRunForward;
         m_wallRunForward = m_wallRunForward * Mathf.Abs(relativeMove.y);
 
         if (relativeMove.y < 0f)
         {
-            m_moveController.rootTransform.rotation = Quaternion.LookRotation(-m_moveController.rootTransform.forward);
+            moveController.rootTransform.rotation = Quaternion.LookRotation(-moveController.rootTransform.forward);
             m_wallRunDir = -m_wallRunDir;
         }
 
@@ -85,7 +85,7 @@ public class WallRunAbility : PlayerAbility
             if (!m_wallRunHolding)
             {
                 m_wallRunHolding = true;
-                m_moveController.rootTransform.position = CalculateOffset(0.25f);
+                moveController.rootTransform.position = CalculateOffset(0.25f);
             }
         }
         else
@@ -93,13 +93,13 @@ public class WallRunAbility : PlayerAbility
             if (m_wallRunHolding)
             {
                 m_wallRunHolding = false;
-                m_moveController.rootTransform.position = CalculateOffset(0.4f);
+                moveController.rootTransform.position = CalculateOffset(0.4f);
             }
         }
 
-        m_moveController.Move(m_wallRunForward, 0.1f);
-        m_moveController.Rotate(m_wallRunForward, 20f);
-        m_moveController.SetGravityAcceleration(0f);
+        moveController.Move(m_wallRunForward, 0.1f);
+        moveController.Rotate(m_wallRunForward, 20f);
+        moveController.SetGravityAcceleration(0f);
     }
 
     private Vector3 CalculateOffset(float offset)
@@ -114,8 +114,8 @@ public class WallRunAbility : PlayerAbility
     private bool CalculateWallRun(out RaycastHit wallHit, out float dir)
     {
         //左右是否有墙
-        bool right = Physics.SphereCast(m_moveController.rootTransform.position + Vector3.up, m_capsuleCastRadius, m_moveController.rootTransform.right, out RaycastHit rightHit, 0.5f, m_wallRunLayer, QueryTriggerInteraction.Ignore);
-        bool left = Physics.SphereCast(m_moveController.rootTransform.position + Vector3.up, m_capsuleCastRadius, -m_moveController.rootTransform.right, out RaycastHit leftHit, 0.5f, m_wallRunLayer, QueryTriggerInteraction.Ignore);
+        bool right = Physics.SphereCast(moveController.rootTransform.position + Vector3.up, m_capsuleCastRadius, moveController.rootTransform.right, out RaycastHit rightHit, 0.5f, m_wallRunLayer, QueryTriggerInteraction.Ignore);
+        bool left = Physics.SphereCast(moveController.rootTransform.position + Vector3.up, m_capsuleCastRadius, -moveController.rootTransform.right, out RaycastHit leftHit, 0.5f, m_wallRunLayer, QueryTriggerInteraction.Ignore);
 
         //m_debugHelper.DrawLine(rootTransform.position + Vector3.up, rootTransform.position + Vector3.up + rootTransform.right * 0.5f, Color.blue);
         //m_debugHelper.DrawLine(rootTransform.position + Vector3.up, rootTransform.position + Vector3.up - rootTransform.right * 0.5f, Color.blue);

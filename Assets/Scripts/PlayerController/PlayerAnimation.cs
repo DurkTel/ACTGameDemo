@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.InputSystem.DefaultInputActions;
 
 public class PlayerAnimation : MonoBehaviour
 {
@@ -120,11 +121,14 @@ public class PlayerAnimation : MonoBehaviour
 
     public void SetAnimatorPauseFrame(float interval, float duration)
     {
+        float delta = animator.speed - interval;
+        float upSpeed = delta + animator.speed;
         animator.speed = interval;
         TimerManager.Instance.DelTimer(m_pauseFrameTimer);
         m_pauseFrameTimer = TimerManager.Instance.AddFrame(() =>
         {
             animator.speed = 1f;
+            upSpeed -= delta;
         }, 0f, duration);
     }
 
@@ -138,10 +142,11 @@ public class PlayerAnimation : MonoBehaviour
         }, 0f, Time.fixedDeltaTime, interval);
     }
 
-    private void UpdateAnimatorInfo()
+    protected virtual void UpdateAnimatorInfo()
     {
         m_baseLayerInfo = animator.GetCurrentAnimatorStateInfo(BaseLayerIndex);
         m_fullBodyLayerInfo = animator.GetCurrentAnimatorStateInfo(FullBodyLayerIndex);
+
     }
 
 
@@ -194,7 +199,11 @@ public class PlayerAnimation : MonoBehaviour
     public static int BaseLayerIndex = 0;
     public static int FullBodyLayerIndex = 1;
 
-    public static int Curve_MotionY_Hash = Animator.StringToHash("Curve_MotionY");
+    public static int Compensation_Front_Hash = Animator.StringToHash("Compensation_Front");
+    public static int Compensation_Up_Hash = Animator.StringToHash("Compensation_Up");
+    public static int Compensation_Right_Hash = Animator.StringToHash("Compensation_Right");
+
+
     public static int Float_Movement_Hash = Animator.StringToHash("Float_Movement");
     public static int Float_AngularVelocity_Hash = Animator.StringToHash("Float_AngularVelocity");
     public static int Float_Rotation_Hash = Animator.StringToHash("Float_Rotation");

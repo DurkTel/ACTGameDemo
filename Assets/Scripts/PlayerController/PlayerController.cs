@@ -10,7 +10,8 @@ public class PlayerController : PlayerAnimation
 
     private PlayerAbility[] m_playerAbilities;
 
-    [SerializeField]private PlayerAbility m_currentAbilitiy;
+    [SerializeField]
+    private PlayerAbility m_currentAbilitiy;
 
     public PlayerAbility currentAbilitiy { get { return m_currentAbilitiy; } }
 
@@ -20,6 +21,8 @@ public class PlayerController : PlayerAnimation
 
     public bool combatState { get; set; }
 
+    public IMove moveController;
+
     public Transform weaponPoint;
 
     protected override void Awake()
@@ -27,6 +30,7 @@ public class PlayerController : PlayerAnimation
         base.Awake();   
         actions = new PlayerControllerActions();
         m_playerAbilities = GetComponents<PlayerAbility>();
+        moveController = GetComponent<IMove>();
         debugHelper = GetComponent<DebugHelper>();
         Array.Sort(m_playerAbilities, (PlayerAbility x, PlayerAbility y) => { return y.priority - x.priority; });
     }
@@ -93,6 +97,24 @@ public class PlayerController : PlayerAnimation
 
             m_currentAbilitiy = nextAbility;
         }
+    }
+
+    protected override void UpdateAnimatorInfo()
+    {
+        base.UpdateAnimatorInfo();
+        animator.SetBool(Bool_Ground_Hash, moveController.IsGrounded());
+        animator.SetBool(Bool_Gazing_Hash, actions.gazing);
+
+    }
+
+    public float GetGroundClearance()
+    {
+        if (Physics.Raycast(rootTransform.position, Vector3.down, out RaycastHit raycastHit, 100f))
+        { 
+            return raycastHit.distance;
+        }
+
+        return 0f;
     }
 
     private void PackUpWeapon()

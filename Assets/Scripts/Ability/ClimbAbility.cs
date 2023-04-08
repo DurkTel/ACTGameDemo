@@ -51,7 +51,7 @@ public class ClimbAbility : PlayerAbility
     {
         get
         {
-            return new Vector3(m_moveController.rootTransform.position.x, m_climbHeightMark, m_moveController.rootTransform.position.z);
+            return new Vector3(moveController.rootTransform.position.x, m_climbHeightMark, moveController.rootTransform.position.z);
         }
     }
 
@@ -66,11 +66,12 @@ public class ClimbAbility : PlayerAbility
 
     public override bool Condition()
     {
-        return m_curClimbType != ClimbType.None || m_moveController.GetRelativeMove(m_actions.move).y >= 0.5f && !playerController.IsInTransition() && CalculateClimb(out m_curClimbType);
+        return m_curClimbType != ClimbType.None || moveController.GetRelativeMove(m_actions.move).y >= 0.5f && !playerController.IsInTransition() && CalculateClimb(out m_curClimbType);
     }
 
     public override void OnEnableAbility() 
     {
+        base.OnEnableAbility(); 
         OnResetAnimatorParameter();
         string animationName = m_curClimbType == ClimbType.HighClimbing ? "Height Climb Up" : "Short Climb";
         playerController.SetAnimationState(animationName, 0f);
@@ -79,10 +80,10 @@ public class ClimbAbility : PlayerAbility
     public override void OnUpdateAbility()
     {
         if (playerController.IsEnableRootMotion(1))
-            m_moveController.Move();
+            moveController.Move();
         if (playerController.IsEnableRootMotion(2))
-            m_moveController.Rotate();
-        m_relativeMove = m_moveController.GetRelativeMove(m_actions.move);
+            moveController.Rotate();
+        m_relativeMove = moveController.GetRelativeMove(m_actions.move);
 
         float relativityRight = m_relativeMove.x;
         if (Mathf.Abs(relativityRight) > 0f)
@@ -92,8 +93,8 @@ public class ClimbAbility : PlayerAbility
                 if (CalculateCorner((DirectionCast)relativityRight, out Vector3 targetPosition, out Quaternion targetQuaternion))
                 {
                     playerController.SetAnimationState(relativityRight > 0 ? "Climb Hop Right" : "Climb Hop Left", 0.1f);
-                    m_moveController.Move(targetPosition, 0.2f, 0f);
-                    m_moveController.Rotate(targetQuaternion, 0.1f, 0f);
+                    moveController.Move(targetPosition, 0.2f, 0f);
+                    moveController.Rotate(targetQuaternion, 0.1f, 0f);
                 }
                 m_relativeMove.x = 0f;
             }
@@ -103,7 +104,7 @@ public class ClimbAbility : PlayerAbility
         ExecuteClimbJump();
 
         if (playerController.IsInAnimationName("Height Climb Fall"))
-            m_moveController.Move(Vector3.zero, 0.5f); //œ¬◊π
+            moveController.Move(Vector3.zero, 0.5f); //œ¬◊π
 
 
         if (!playerController.IsInAnimationTag("Climb"))
@@ -116,7 +117,6 @@ public class ClimbAbility : PlayerAbility
         playerController.animator.SetFloat(PlayerAnimation.Float_InputVerticalLerp_Hash, m_relativeMove.y, 0.2f, Time.fixedDeltaTime);
         playerController.animator.SetFloat(PlayerAnimation.Float_InputHorizontal_Hash, m_relativeMove.x);
         playerController.animator.SetFloat(PlayerAnimation.Float_InputVertical_Hash, m_relativeMove.y);
-        playerController.animator.SetBool(PlayerAnimation.Bool_Ground_Hash, m_moveController.IsGrounded());
     }
 
     public override void OnResetAnimatorParameter()
@@ -133,7 +133,7 @@ public class ClimbAbility : PlayerAbility
         if (m_actions.jump)
         {
             m_actions.jump = false;
-            Vector2 relativeMove = m_moveController.GetRelativeMove(m_actions.move);
+            Vector2 relativeMove = moveController.GetRelativeMove(m_actions.move);
 
             float relativityRight = relativeMove.x;
             if (playerController.IsInAnimationName("Climb Jump Hold"))
@@ -141,8 +141,8 @@ public class ClimbAbility : PlayerAbility
                 if (CalculateJumpClimb(DirectionCast.Backward, out Vector3 targetPosition, out Quaternion targetQuaternion))
                 {
                     playerController.SetAnimationState("Climb Jump Mid", 0f);
-                    m_moveController.Move(targetPosition, 0.6f, 0f);
-                    m_moveController.Rotate(targetQuaternion, 0.15f, 0.08f);
+                    moveController.Move(targetPosition, 0.6f, 0f);
+                    moveController.Rotate(targetQuaternion, 0.15f, 0.08f);
                 }
             }
             else if (playerController.IsInAnimationName("Height Climb Hold"))
@@ -152,8 +152,8 @@ public class ClimbAbility : PlayerAbility
                     if (CalculateJumpClimb(DirectionCast.Up, out Vector3 targetPosition, out Quaternion targetQuaternion))
                     {
                         playerController.SetAnimationState("Climb Hop Up", 0.1f);
-                        m_moveController.Move(targetPosition, 0.2f, 0f);
-                        m_moveController.Rotate(targetQuaternion, 0.1f, 0f);
+                        moveController.Move(targetPosition, 0.2f, 0f);
+                        moveController.Rotate(targetQuaternion, 0.1f, 0f);
                     }
                     else
                     {
@@ -166,8 +166,8 @@ public class ClimbAbility : PlayerAbility
                     if (CalculateJumpClimb((DirectionCast)relativityRight, out Vector3 targetPosition, out Quaternion targetQuaternion))
                     {
                         playerController.SetAnimationState(relativityRight > 0 ? "Climb Hop Right" : "Climb Hop Left", 0.1f);
-                        m_moveController.Move(targetPosition, 0.2f, 0f);
-                        m_moveController.Rotate(targetQuaternion, 0.1f, 0f);
+                        moveController.Move(targetPosition, 0.2f, 0f);
+                        moveController.Rotate(targetQuaternion, 0.1f, 0f);
                     }
                 }
             }
@@ -175,7 +175,7 @@ public class ClimbAbility : PlayerAbility
         else if(m_actions.escape)
         {
             m_actions.escape = false;
-            m_moveController.SetGravityAcceleration(0f);
+            moveController.SetGravityAcceleration(0f);
             playerController.SetAnimationState("Height Climb Fall", 0f);
         }
     }
@@ -186,11 +186,11 @@ public class ClimbAbility : PlayerAbility
     /// <returns></returns>
     private bool CalculateClimb(out ClimbType climbType)
     {
-        Vector3 p1 = m_moveController.rootTransform.position + Vector3.up * (m_minClimbHeight + m_capsuleCastRadius);
-        Vector3 p2 = m_moveController.rootTransform.position + Vector3.up * (m_capsuleCastHeight - m_capsuleCastRadius);
+        Vector3 p1 = moveController.rootTransform.position + Vector3.up * (m_minClimbHeight + m_capsuleCastRadius);
+        Vector3 p2 = moveController.rootTransform.position + Vector3.up * (m_capsuleCastHeight - m_capsuleCastRadius);
         //m_debugHelper.DrawCapsule(p1, p2, m_overlapRadius, Color.white);
         //m_debugHelper.DrawLabel("≈ ≈¿ºÏ≤‚", p1 + Vector3.up, Color.blue);
-        if (Physics.CapsuleCast(p1, p2, m_capsuleCastRadius, m_moveController.rootTransform.forward, out RaycastHit forwardHit, m_overlapRadius, m_climbLayer, QueryTriggerInteraction.Ignore))
+        if (Physics.CapsuleCast(p1, p2, m_capsuleCastRadius, moveController.rootTransform.forward, out RaycastHit forwardHit, m_overlapRadius, m_climbLayer, QueryTriggerInteraction.Ignore))
         {
             RaycastHit topHit;
             Vector3 sphereStart = forwardHit.point;
@@ -204,7 +204,7 @@ public class ClimbAbility : PlayerAbility
                 return true;
             }
             //‘ŸºÏ≤‚∏ﬂŒª≈ ≈¿
-            sphereStart.y = m_moveController.rootTransform.position.y + m_maxClimbHeightHeight + m_capsuleCastRadius;
+            sphereStart.y = moveController.rootTransform.position.y + m_maxClimbHeightHeight + m_capsuleCastRadius;
             if (Physics.SphereCast(sphereStart, m_capsuleCastRadius, Vector3.down, out topHit, m_maxClimbHeightHeight - m_maxClimbHeightShort, m_climbLayer, QueryTriggerInteraction.Ignore))
             {
                 //m_debugHelper.DrawSphere(topHit.point, 0.1f, Color.red, 3f);
@@ -214,7 +214,7 @@ public class ClimbAbility : PlayerAbility
                 //√ÊœÚ«Ω±⁄
                 Vector3 faceTo = -forwardHit.normal;
                 faceTo.y = 0f;
-                m_moveController.rootTransform.rotation = Quaternion.LookRotation(faceTo);
+                moveController.rootTransform.rotation = Quaternion.LookRotation(faceTo);
                 climbType = ClimbType.HighClimbing;
                 return true;
             }
@@ -236,7 +236,7 @@ public class ClimbAbility : PlayerAbility
 
         for (int i = 1; i <= count; i++)
         {
-            Vector3 center = currentClimbPoint + m_moveController.rootTransform.right * i * (int)direction * 0.35f * 2f;
+            Vector3 center = currentClimbPoint + moveController.rootTransform.right * i * (int)direction * 0.35f * 2f;
             Vector3 top = center + Vector3.up * 0.25f;
             Vector3 down = center + Vector3.down * 0.25f;
 
@@ -262,13 +262,13 @@ public class ClimbAbility : PlayerAbility
         int dir = (int)direction;
 
         //◊Û/”“ «∞∑Ωø™ ººÏ≤‚
-        Vector3 center = currentClimbPoint + m_moveController.rootTransform.right * dir + m_moveController.rootTransform.forward * 0.75f;
+        Vector3 center = currentClimbPoint + moveController.rootTransform.right * dir + moveController.rootTransform.forward * 0.75f;
         Vector3 p1 = center + Vector3.up * m_capsuleCastRadius;
         Vector3 p2 = center + Vector3.down * m_capsuleCastRadius;
         //m_debugHelper.DrawCapsule(p1, p2, m_capsuleCastRadius, Color.yellow);
         //m_debugHelper.DrawCapsule(p2 - m_moveController.rootTransform.right * dir, p1 - m_moveController.rootTransform.right * dir, m_capsuleCastRadius, Color.yellow);
 
-        RaycastHit[] castAll = Physics.CapsuleCastAll(p1, p2, m_capsuleCastRadius, -m_moveController.rootTransform.right * dir, 1.2f, m_climbLayer, QueryTriggerInteraction.Ignore);
+        RaycastHit[] castAll = Physics.CapsuleCastAll(p1, p2, m_capsuleCastRadius, -moveController.rootTransform.right * dir, 1.2f, m_climbLayer, QueryTriggerInteraction.Ignore);
         if (castAll.Length > 0)
         {
             //◊Û/”“±ﬂ”–«Ω±⁄
@@ -289,8 +289,8 @@ public class ClimbAbility : PlayerAbility
             }
         }
 
-        targetPosition = m_moveController.rootTransform.position;
-        targetQuaternion = m_moveController.rootTransform.rotation;
+        targetPosition = moveController.rootTransform.position;
+        targetQuaternion = moveController.rootTransform.rotation;
         return false;
     }
 
@@ -307,7 +307,7 @@ public class ClimbAbility : PlayerAbility
             Vector3 p1 = currentClimbPoint + Vector3.up * m_maxClimbHeightHeight;
             Vector3 p2 = currentClimbPoint + Vector3.down * m_maxClimbHeightHeight;
             //m_debugHelper.DrawCapsule(p1 - m_moveController.rootTransform.forward * 4.5f, p2 - m_moveController.rootTransform.forward * 4.5f, m_capsuleCastRadius, Color.blue);
-            if (Physics.CapsuleCast(p1, p2, m_capsuleCastRadius, -m_moveController.rootTransform.forward, out RaycastHit horizontal, 4.5f, m_climbLayer, QueryTriggerInteraction.Ignore))
+            if (Physics.CapsuleCast(p1, p2, m_capsuleCastRadius, -moveController.rootTransform.forward, out RaycastHit horizontal, 4.5f, m_climbLayer, QueryTriggerInteraction.Ignore))
             {
                 float height = horizontal.collider.bounds.size.y;
                 //m_debugHelper.DrawCapsule(horizontal.point + Vector3.up * height, horizontal.point + Vector3.up * height + Vector3.down * height, 0.1f, Color.red, 3f);
@@ -326,8 +326,8 @@ public class ClimbAbility : PlayerAbility
         else if (direction == DirectionCast.Left || direction == DirectionCast.Right) //◊Û”“Ã¯
         {
             int dir = (int)direction;
-            Vector3 center = currentClimbPoint + m_moveController.rootTransform.right * dir * 1.5f - m_moveController.rootTransform.forward;
-            if (Physics.SphereCast(center, m_capsuleCastRadius, m_moveController.rootTransform.forward, out RaycastHit horizontal, m_capsuleCastRadius + 1f, m_climbLayer, QueryTriggerInteraction.Ignore))
+            Vector3 center = currentClimbPoint + moveController.rootTransform.right * dir * 1.5f - moveController.rootTransform.forward;
+            if (Physics.SphereCast(center, m_capsuleCastRadius, moveController.rootTransform.forward, out RaycastHit horizontal, m_capsuleCastRadius + 1f, m_climbLayer, QueryTriggerInteraction.Ignore))
             {
                 if (Physics.SphereCast(horizontal.point + Vector3.up * 0.5f, m_capsuleCastRadius, Vector3.down, out RaycastHit topHit, 0.5f, m_climbLayer, QueryTriggerInteraction.Ignore))
                 {
@@ -343,10 +343,10 @@ public class ClimbAbility : PlayerAbility
         }
         else if (direction == DirectionCast.Up) //œÚ…œÃ¯
         {
-            Vector3 center = currentClimbPoint + m_moveController.rootTransform.up - m_moveController.rootTransform.forward;
+            Vector3 center = currentClimbPoint + moveController.rootTransform.up - moveController.rootTransform.forward;
             Vector3 p1 = center + Vector3.up * 0.5f;
             Vector3 p2 = center + Vector3.down * 0.5f;
-            if (Physics.CapsuleCast(p1, p2, m_capsuleCastRadius, m_moveController.rootTransform.forward, out RaycastHit horizontal, m_capsuleCastRadius + 1f, m_climbLayer, QueryTriggerInteraction.Ignore))
+            if (Physics.CapsuleCast(p1, p2, m_capsuleCastRadius, moveController.rootTransform.forward, out RaycastHit horizontal, m_capsuleCastRadius + 1f, m_climbLayer, QueryTriggerInteraction.Ignore))
             {
                 if (Physics.SphereCast(horizontal.point + Vector3.up * 0.5f, m_capsuleCastRadius, Vector3.down, out RaycastHit topHit, 0.5f, m_climbLayer, QueryTriggerInteraction.Ignore))
                 {
@@ -360,8 +360,8 @@ public class ClimbAbility : PlayerAbility
             }
         }
 
-        targetPosition = m_moveController.rootTransform.position;
-        targetQuaternion = m_moveController.rootTransform.rotation;
+        targetPosition = moveController.rootTransform.position;
+        targetQuaternion = moveController.rootTransform.rotation;
 
         return false;
     }

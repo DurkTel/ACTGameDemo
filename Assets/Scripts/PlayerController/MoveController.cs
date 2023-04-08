@@ -23,7 +23,11 @@ public class MoveController : MonoBehaviour, IMove
     private Animator m_animator;
 
     private bool m_enabled;
-    
+
+    private bool m_isGrounded;
+
+    private bool m_isFall;
+
     #region 曲线运动
     /// <summary>
     /// 曲线运动目标位置
@@ -84,23 +88,31 @@ public class MoveController : MonoBehaviour, IMove
         gravity = -20f;
     }
 
-    public void Update()
-    {
-        
-    }
-
     public void FixedUpdate()
     {
+        m_isGrounded = Physics.SphereCast(rootTransform.position + Vector3.up * 0.5f, characterController.radius,
+                Vector3.down, out RaycastHit hitInfo, 0.5f - characterController.radius + characterController.skinWidth * 3, groundLayer);
+
+        m_isFall = !m_isGrounded && !Physics.Raycast(rootTransform.position, Vector3.down, 0.3f, groundLayer);
+
         CalculateGravity();
         CurveMove();
         CurveRotate();
     }
 
+    /// <summary>
+    /// 动画位移
+    /// </summary>
     public void Move()
     {
         characterController.Move(m_animator.deltaPosition);
     }
 
+    /// <summary>
+    /// 方向位移
+    /// </summary>
+    /// <param name="direction"></param>
+    /// <param name="speed"></param>
     public void Move(Vector3 direction, float speed)
     {
         if (m_enabled) return;
@@ -115,6 +127,12 @@ public class MoveController : MonoBehaviour, IMove
         characterController.Move(targetVelocity);
     }
 
+    /// <summary>
+    /// 定点位移
+    /// </summary>
+    /// <param name="target"></param>
+    /// <param name="time"></param>
+    /// <param name="delay"></param>
     public void Move(Vector3 target, float time, float delay)
     {
         m_isCurveMoving = true;
@@ -141,11 +159,19 @@ public class MoveController : MonoBehaviour, IMove
         rootTransform.position = Vector3.Lerp(m_curveMoveOriginal, m_curveMoveTarget, m_curveMoveProgress += m_curveMoveDelta);
     }
 
+    /// <summary>
+    /// 动画旋转
+    /// </summary>
     public void Rotate()
     {
         rootTransform.rotation *= m_animator.deltaRotation;
     }
 
+    /// <summary>
+    /// 方向旋转
+    /// </summary>
+    /// <param name="direction"></param>
+    /// <param name="speed"></param>
     public void Rotate(Vector3 direction, float speed)
     {
         if (m_enabled) return;
@@ -161,7 +187,12 @@ public class MoveController : MonoBehaviour, IMove
         rootTransform.rotation = newRotation;
     }
 
-
+    /// <summary>
+    /// 顶点旋转
+    /// </summary>
+    /// <param name="target"></param>
+    /// <param name="time"></param>
+    /// <param name="delay"></param>
     public void Rotate(Quaternion target, float time, float delay)
     {
         m_isCurveRotating = true;
@@ -186,43 +217,68 @@ public class MoveController : MonoBehaviour, IMove
         rootTransform.rotation = Quaternion.Lerp(m_curveRotationOriginal, m_curveRotationTarget, m_curveRotationProgress += m_curveRotationDelta);
     }
 
+    /// <summary>
+    /// 停止
+    /// </summary>
+    /// <param name="value"></param>
     public void Stop(bool value)
     {
         m_enabled = value;
     }
 
+    /// <summary>
+    /// 使用重力
+    /// </summary>
+    /// <param name="value"></param>
     public void EnableGravity(bool value)
     {
         enableGravity = value;
     }
 
+    /// <summary>
+    /// 是否着地
+    /// </summary>
+    /// <returns></returns>
     public bool IsGrounded()
     {
-        return Physics.SphereCast(rootTransform.position + Vector3.up * 0.5f, characterController.radius,
-                Vector3.down, out RaycastHit hitInfo, 0.5f - characterController.radius + characterController.skinWidth * 3, groundLayer);
+        return m_isGrounded;
     }
 
+    /// <summary>
+    /// 是否可以下落
+    /// </summary>
+    /// <returns></returns>
     public bool IsFalled()
     {
-        return !Physics.SphereCast(rootTransform.position + Vector3.up * 0.5f, characterController.radius, Vector3.down, out RaycastHit hit, 0.8f, groundLayer);
+        return m_isFall;
     }
 
+    /// <summary>
+    /// 当前重力加速度
+    /// </summary>
+    /// <returns></returns>
     public float GetGravityAcceleration()
     {
         return m_gravityVertical;
     }
 
+    /// <summary>
+    /// 设置重力加速度
+    /// </summary>
+    /// <param name="height">高度</param>
     public void SetGravityAcceleration(float height)
     {
         m_gravityVertical = Mathf.Sqrt(-2 * gravity * height);
     }
 
-
+    /// <summary>
+    /// 计算重力
+    /// </summary>
     private void CalculateGravity()
     {
         if (IsGrounded() && m_gravityVertical <= 0f)
         {
-            m_gravityVertical = 0f;
+            m_gravityVertical = gravity * deltaTtime;
             return;
         }
 
@@ -232,11 +288,39 @@ public class MoveController : MonoBehaviour, IMove
             m_gravityVertical += gravity * deltaTtime;
     }
 
+    /// <summary>
+    /// 获得相应角色的方向
+    /// </summary>
+    /// <param name="move"></param>
+    /// <returns></returns>
     public Vector2 GetRelativeMove(Vector3 move)
     {
         float x = Vector3.Dot(move.normalized, rootTransform.right);
         float y = Vector3.Dot(move.normalized, rootTransform.forward);
         Vector2 relative = new Vector2(x.NormalizeFloat(), y.NormalizeFloat());
         return relative;
+    }
+
+    /// <summary>
+    /// 动画位置补偿
+    /// </summary>
+    /// <param name="direction">补偿方向</param>
+    public void MoveCompensation(Vector3 direction = default)
+    {
+        float x =  m_animator.GetFloat(PlayerAnimation.Compensation_Right_Hash);
+        float z = m_animator.GetFloat(PlayerAnimation.Compensation_Front_Hash);
+        float y = m_animator.GetFloat(PlayerAnimation.Compensation_Up_Hash);
+
+        Vector3 moveCompensation = rootTransform.forward * z + rootTransform.right * x + rootTransform.up * y;
+        characterController.Move(m_animator.deltaPosition + moveCompensation + direction);
+    }
+
+    /// <summary>
+    /// 动画旋转补偿
+    /// </summary>
+    /// <param name="direction">补偿方向</param>
+    public void RotateCompensation()
+    {
+        rootTransform.rotation *= m_animator.deltaRotation;
     }
 }

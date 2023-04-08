@@ -12,6 +12,7 @@ public class AnimationControlTag : AnimationControl
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         base.OnStateEnter(animator, stateInfo, layerIndex);
+        if (animationStateInfos.stateInfos.Length <= layerIndex) return;
         animationStateInfos.stateInfos[layerIndex].tags ??= new List<string>();
         //进入新动画再清掉 避免处于过渡时是空tags
         animationStateInfos.stateInfos[layerIndex].tags.Clear();

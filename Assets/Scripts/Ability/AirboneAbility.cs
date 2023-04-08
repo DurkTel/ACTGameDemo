@@ -25,7 +25,7 @@ public class AirboneAbility : PlayerAbility
 
     public override bool Condition()
     {
-        return m_isAiring || (!playerController.IsInTransition() && ((m_moveController.IsGrounded() && m_actions.jump) || (m_moveController.IsFalled() && !m_actions.jump)));
+        return m_isAiring || (!playerController.IsInTransition() && ((moveController.IsGrounded() && m_actions.jump) || (moveController.IsFalled() && !m_actions.jump)));
     }
 
     public override AbilityType GetAbilityType()
@@ -42,12 +42,13 @@ public class AirboneAbility : PlayerAbility
 
     public override void OnEnableAbility()
     {
+        base.OnEnableAbility();
         m_jumpCount++;
         m_speed = playerController.animator.GetFloat(PlayerAnimation.Float_Movement_Hash) / 2f * 0.1f * 0.5f;
         playerController.SetAnimationState(m_actions.jump ? "Jump First" : "Fall Keep", m_actions.jump ? 0f : 0.1f);
         
         if (m_actions.jump)
-            m_moveController.SetGravityAcceleration(jumpHeight);
+            moveController.SetGravityAcceleration(jumpHeight);
 
         m_actions.jump = false;
         m_isAiring = true;
@@ -60,18 +61,14 @@ public class AirboneAbility : PlayerAbility
         if (m_actions.jump)
             JumpUpSecond();
 
-        m_moveController.Move(m_moveController.rootTransform.forward * Mathf.Max(m_relativeMove.y, 0f), m_speed);
-        //Vector3 dir = m_actions.gazing ? m_actions.cameraTransform.forward : m_actions.move;
-        //m_moveController.Rotate(dir, m_rotateSpeed);
+        moveController.Move(moveController.rootTransform.forward * Mathf.Max(m_relativeMove.y, 0f), m_speed);
 
         m_isAiring = playerController.IsInAnimationTag("Air");
-
     }
 
     public override void OnUpdateAnimatorParameter()
     {
-        m_relativeMove = m_moveController.GetRelativeMove(m_actions.move);
-        playerController.animator.SetBool(PlayerAnimation.Bool_Ground_Hash, m_moveController.IsGrounded());
+        m_relativeMove = moveController.GetRelativeMove(m_actions.move);
         playerController.animator.SetFloat(PlayerAnimation.Float_Movement_Hash, m_relativeMove.y, 0.2f, Time.fixedDeltaTime);
     }
 
@@ -80,7 +77,7 @@ public class AirboneAbility : PlayerAbility
         m_actions.jump = false;
         if (++m_jumpCount > jumpFrequency) return;
         playerController.SetAnimationState("Jump Second", 0f);
-        m_moveController.SetGravityAcceleration(jumpHeight);
+        moveController.SetGravityAcceleration(jumpHeight);
     }
 
 

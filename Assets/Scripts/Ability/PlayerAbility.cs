@@ -25,14 +25,14 @@ public enum AbilityType
 public abstract class PlayerAbility : MonoBehaviour
 {
     public int priority;
-
-    public bool isEnable;
+    [SerializeField]
+    protected bool m_isEnable;
     [HideInInspector]
     public PlayerController playerController;
 
     public AbilityUpdateMode updateMode = AbilityUpdateMode.FixedUpdate;
 
-    protected IMove m_moveController;
+    public IMove moveController;
 
     protected PlayerControllerActions m_actions;
 
@@ -40,7 +40,10 @@ public abstract class PlayerAbility : MonoBehaviour
 
     public abstract bool Condition();
 
-    public virtual void OnEnableAbility() { }
+    public virtual void OnEnableAbility() 
+    {
+        m_isEnable = true;
+    }
 
     public virtual void OnUpdateAbility()
     {
@@ -50,6 +53,7 @@ public abstract class PlayerAbility : MonoBehaviour
 
     public virtual void OnDisableAbility()
     {
+        m_isEnable = false;
         OnResetAnimatorParameter();
     }
 
@@ -66,13 +70,13 @@ public abstract class PlayerAbility : MonoBehaviour
         switch (updateMode)
         {
             case AbilityUpdateMode.Update:
-                m_moveController.deltaTtime = Time.deltaTime;
+                moveController.deltaTtime = Time.deltaTime;
                 break;
             case AbilityUpdateMode.FixedUpdate:
-                m_moveController.deltaTtime = Time.fixedDeltaTime;
+                moveController.deltaTtime = Time.fixedDeltaTime;
                 break;
             case AbilityUpdateMode.AnimatorMove:
-                m_moveController.deltaTtime = Time.deltaTime;
+                moveController.deltaTtime = Time.deltaTime;
                 break;
             default:
                 break;
@@ -82,7 +86,7 @@ public abstract class PlayerAbility : MonoBehaviour
     protected virtual void Start()
     {
         playerController = GetComponent<PlayerController>();
-        m_moveController = GetComponent<MoveController>();
+        moveController = playerController.moveController;
         m_actions = playerController.actions;
     }
 }

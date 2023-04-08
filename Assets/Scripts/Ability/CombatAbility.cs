@@ -19,9 +19,13 @@ public class CombatAbility : PlayerAbility
 
     private CombatBroadcast m_curBroadcast;
 
+    private int m_curBroadcastId;
+
     private float m_normalizedTime;
 
     private bool m_combatDetection;
+
+    private Vector3 m_moveCompensation;
 
     public void SetDetection(int value) => m_combatDetection = value == 1;
 
@@ -33,7 +37,7 @@ public class CombatAbility : PlayerAbility
 
     public override bool Condition()
     {
-        if (m_curBroadcast != null) return true;
+        if (m_curBroadcastId > 0) return true;
         if (!m_actions.weapon) return false;
         if (GetAttackSignal())
         {
@@ -44,9 +48,7 @@ public class CombatAbility : PlayerAbility
                 if (CheckCondition(combat.condition))
                 {
                     //构造战报信息
-                    m_curBroadcast = CombatBroadcastManager.Instance.broadcastPool.Get();
-                    m_curBroadcast.fromActor = playerController;
-                    m_curBroadcast.combatSkill = combat;
+                    m_curBroadcast = InitCombatBroad(combat);
                     ReleaseAttackSignal();
                     return true;
                 }
@@ -65,7 +67,7 @@ public class CombatAbility : PlayerAbility
     {
         base.OnEnableAbility();
         OnResetAnimatorParameter();
-        CombatBroadcastManager.Instance.AttackBroascatBegin(ref m_curBroadcast);
+        CombatBroadcastManager.Instance.AttackBroascatBegin(m_curBroadcast);
         AutoLock();
     }
 
@@ -95,13 +97,15 @@ public class CombatAbility : PlayerAbility
 
     private void FixedUpdate()
     {
+        if (!m_isEnable) return;
         ControlDetection();
     }
 
     private void OnAnimatorMove()
     {
+        if (!m_isEnable) return;
         ReleaseAttack();
-        m_moveController.Move();
+        moveController.MoveCompensation();
     }
 
     /// <summary>
@@ -109,7 +113,7 @@ public class CombatAbility : PlayerAbility
     /// </summary>
     private void ControlDetection()
     {
-        if (!m_combatDetection || m_curBroadcast == null) return;
+        if (!m_combatDetection || m_curBroadcastId < 0) return;
 
         foreach (var point in detectionPoints)
         {
@@ -124,11 +128,11 @@ public class CombatAbility : PlayerAbility
                     if (colliders[i].gameObject != this.gameObject && colliders[i].TryGetComponent(out PlayerController controller))
                         temp.Add(controller);
                 }
-                if (temp.Count > 0)
+                if (temp.Count > 0 && CombatBroadcastManager.Instance.TypGetAttackBroascat(m_curBroadcastId, out CombatBroadcast broadcast))
                 {
+                    m_curBroadcast = broadcast;
                     m_curBroadcast.toActor = temp.ToArray();
-                    CombatBroadcastManager.Instance.AttackBroascatHurt(ref m_curBroadcast);
-
+                    CombatBroadcastManager.Instance.AttackBroascatHurt(m_curBroadcast);
                     break;
                 }
             }
@@ -141,7 +145,7 @@ public class CombatAbility : PlayerAbility
     /// <param name="combats"></param>
     private void ControlCombo()
     {
-        if (!m_actions.weapon || m_curBroadcast == null) return;
+        if (!m_actions.weapon || m_curBroadcastId < 0) return;
         if (GetAttackSignal())
         {
             CombatSkillConfig newCombat = null;
@@ -149,6 +153,8 @@ public class CombatAbility : PlayerAbility
             {
                 foreach (var item in m_curBroadcast.combatSkill.comboSkills)
                 {
+                    if (item.comboSkill.tag.Equals("Air Attack") && playerController.GetGroundClearance() < 0.5f) //空中攻击离地太近不给放
+                        continue;
                     if (CheckCondition(item.comboCondition) && m_normalizedTime >= item.range1 && m_normalizedTime <= item.range2) //符合触发范围
                     {
                         newCombat = item.comboSkill;
@@ -160,13 +166,11 @@ public class CombatAbility : PlayerAbility
             if (newCombat != null)
             {
                 //先打断当前的战报
-                CombatBroadcastManager.Instance.AttackBroascatBreak(ref m_curBroadcast);
+                CombatBroadcastManager.Instance.AttackBroascatBreak(m_curBroadcast);
                 //刷新战报信息
-                m_curBroadcast.fromActor = playerController;
-                m_curBroadcast.combatSkill = newCombat;
-                m_curBroadcast.effectCount = 0;
+                m_curBroadcast = InitCombatBroad(newCombat);
                 //广播战报
-                CombatBroadcastManager.Instance.AttackBroascatBegin(ref m_curBroadcast);
+                CombatBroadcastManager.Instance.AttackBroascatBegin(m_curBroadcast);
                 AutoLock();
                 ReleaseAttackSignal();
             }
@@ -178,8 +182,21 @@ public class CombatAbility : PlayerAbility
     /// </summary>
     private void ReleaseAttack()
     {
-        if (m_curBroadcast != null && !playerController.IsInAnimationTag("Attack") && !playerController.IsInTransition())
-            CombatBroadcastManager.Instance.AttackBroascatEnd(ref m_curBroadcast);
+        if (m_curBroadcastId > 0 && !playerController.IsInTransition() && (!playerController.IsInAnimationTag("Attack")  || (m_curBroadcast.combatSkill.tag.Equals("Air Attack") && playerController.GetGroundClearance() < 0.5f)))
+        {
+            m_curBroadcastId = -1;
+            m_actions.jump = false;
+            moveController.SetGravityAcceleration(0);
+            CombatBroadcastManager.Instance.AttackBroascatEnd(m_curBroadcast);
+        }
+    }
+
+    private CombatBroadcast InitCombatBroad(CombatSkillConfig newCombat)
+    {
+        CombatBroadcast broadcast = CombatBroadcastManager.GetCombatBroadcast(out m_curBroadcastId);
+        broadcast.fromActor = playerController;
+        broadcast.combatSkill = newCombat;
+        return broadcast;
     }
 
     /// <summary>
@@ -211,7 +228,7 @@ public class CombatAbility : PlayerAbility
         if (target == null) return;
         Vector3 dir = target.position - playerController.rootTransform.position;
         dir.y = 0f;
-        m_moveController.Rotate(Quaternion.LookRotation(dir), 0.2f, 0f);
+        moveController.Rotate(Quaternion.LookRotation(dir), 0.2f, 0f);
     }
 
     /// <summary>
@@ -220,7 +237,7 @@ public class CombatAbility : PlayerAbility
     /// <returns></returns>
     private float GetAttackProgress()
     {
-        if (m_curBroadcast == null || !playerController.IsInAnimationName(m_curBroadcast.combatSkill.animationName)) return 0f;
+        if (m_curBroadcastId < 0 || !playerController.IsInAnimationName(m_curBroadcast.combatSkill.animationName)) return 0f;
         float progress = playerController.GetAnimationNormalizedTime(PlayerAnimation.FullBodyLayerIndex);
         return progress;
     }
@@ -256,7 +273,7 @@ public class CombatAbility : PlayerAbility
         if (attackType.HasFlag(CombatAttackCondition.MoveRight) && !m_actions.moveRight)
             return false;
 
-        if (attackType.HasFlag(CombatAttackCondition.Jump) && m_moveController.IsGrounded())
+        if (attackType.HasFlag(CombatAttackCondition.Jump) && moveController.IsGrounded())
             return false;
 
         if (attackType.HasFlag(CombatAttackCondition.Sprint) && !m_actions.sprint)
@@ -267,6 +284,7 @@ public class CombatAbility : PlayerAbility
 
         return true;
     }
+
 }
 
 

@@ -75,7 +75,7 @@ public class PlayerControllerActions
     /// <summary>
     /// ÊÜ»÷Õ½±¨
     /// </summary>
-    public CombatBroadcast hurtBroadcast = null;
+    public int hurtBroadcastId = -1;
     public void ResetActions()
     {
         sprint = false;

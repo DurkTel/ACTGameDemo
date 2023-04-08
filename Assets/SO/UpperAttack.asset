@@ -13,12 +13,13 @@ MonoBehaviour:
   m_Name: UpperAttack
   m_EditorClassIdentifier: 
   skillName: 
+  tag: 
   animationName: UpperAttack
   attackPoint: 0.14
   attackBackswing: 0.2
   effectCount: 1
   repulsionDistance: 0.45
-  strikeFly: 5
+  strikeFly: 7
   priority: 2
   condition: 512
   comboSkills:
