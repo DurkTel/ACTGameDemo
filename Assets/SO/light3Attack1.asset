@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: light3Attack1
   m_EditorClassIdentifier: 
   skillName: 
+  tag: 
   animationName: Attack_3Combo_1
   attackPoint: 0.27
   attackBackswing: 0.4
   effectCount: 1
-  repulsionDistance: 0.45
+  repulsionDistance: 0.03
   strikeFly: 0
   priority: 0
   condition: 1

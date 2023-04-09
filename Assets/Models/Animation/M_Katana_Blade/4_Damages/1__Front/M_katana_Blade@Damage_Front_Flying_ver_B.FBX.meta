@@ -1037,8 +1037,8 @@ ModelImporter:
       loopTime: 0
       loopBlend: 0
       loopBlendOrientation: 1
-      loopBlendPositionY: 1
-      loopBlendPositionXZ: 1
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
       keepOriginalOrientation: 1
       keepOriginalPositionY: 0
       keepOriginalPositionXZ: 0
@@ -1060,14 +1060,32 @@ ModelImporter:
             inWeight: 0
             outWeight: 0
           - serializedVersion: 3
+            time: 0.21888722
+            value: -0.0034221131
+            inSlope: -0.015634138
+            outSlope: 4.657672
+            tangentMode: 5
+            weightedMode: 0
+            inWeight: 0.33333334
+            outWeight: 0.33333334
+          - serializedVersion: 3
             time: 0.317757
-            value: 0.15
+            value: 1
             inSlope: 0
             outSlope: 0
             tangentMode: 0
             weightedMode: 0
             inWeight: 0
             outWeight: 0
+          - serializedVersion: 3
+            time: 0.45941266
+            value: -0.0021735802
+            inSlope: -1.9438053
+            outSlope: 0.0040207757
+            tangentMode: 65
+            weightedMode: 0
+            inWeight: 0.33333334
+            outWeight: 0.33333334
           - serializedVersion: 3
             time: 1
             value: 0

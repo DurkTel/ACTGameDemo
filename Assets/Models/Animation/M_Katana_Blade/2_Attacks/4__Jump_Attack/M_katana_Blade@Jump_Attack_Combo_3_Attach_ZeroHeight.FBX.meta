@@ -1012,7 +1012,7 @@ ModelImporter:
       lastFrame: 25
       wrapMode: 0
       orientationOffsetY: 0
-      level: -1
+      level: -0.4
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
@@ -1029,7 +1029,7 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
-      - time: 0.26168224
+      - time: 0.2385341
         functionName: SetDetection
         data: 
         objectReferenceParameter: {instanceID: 0}

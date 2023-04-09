@@ -8,9 +8,7 @@ public class HurtAbility : PlayerAbility
 
     private int m_attackId;
 
-    private bool m_isGrounded;
-
-    private Vector3 m_moveCompensation;
+    private float m_compensationPowerPlane, m_compensationPowerAir;
 
     public override bool Condition()
     {
@@ -34,7 +32,7 @@ public class HurtAbility : PlayerAbility
         ReleaseHurt();
         RequestHurt();
 
-        moveController.MoveCompensation(playerController.rootTransform.up * moveController.GetGravityAcceleration() / 2f * Time.deltaTime);
+        moveController.MoveCompensation(m_compensationPowerPlane, m_compensationPowerAir);
     }
 
     private void RequestHurt()
@@ -42,8 +40,8 @@ public class HurtAbility : PlayerAbility
         if (m_attackId == m_actions.hurtBroadcastId) return;
         if (!CombatBroadcastManager.Instance.TypGetAttackBroascat(m_actions.hurtBroadcastId, out m_curBroadcast)) return;
         m_attackId = m_actions.hurtBroadcastId;
-        
-        //Debug.Log(playerController.gameObject.name + "收到来自" + m_curBroadcast.fromActor.gameObject.name + "的伤害，伤害来源为:" + m_curBroadcast.combatSkill.animationName);
+
+        Debug.Log(playerController.gameObject.name + "收到来自" + m_curBroadcast.fromActor.gameObject.name + "的伤害，伤害来源为:" + m_curBroadcast.combatSkill.animationName);
         HurtBehaviour();
     }
 
@@ -53,16 +51,19 @@ public class HurtAbility : PlayerAbility
         float leftOrRight = Vector3.Cross(playerController.rootTransform.forward, m_curBroadcast.fromActor.rootTransform.forward).y;
         Vector3 beatBackDir = playerController.rootTransform.position - m_curBroadcast.fromActor.rootTransform.position;
         beatBackDir.Normalize();
-        beatBackDir.y = m_curBroadcast.combatSkill.strikeFly;
-        moveController.SetGravityAcceleration(0);
-        moveController.Move(playerController.rootTransform.position + beatBackDir * m_curBroadcast.combatSkill.repulsionDistance, 0.15f, 0f);
-        if (m_isGrounded && m_curBroadcast.combatSkill.repulsionDistance < 2f && beatBackDir.y == 0f)
-            moveController.Rotate(Quaternion.LookRotation(-beatBackDir), 0.15f, 0f);
+        //beatBackDir.y = m_curBroadcast.combatSkill.strikeFly;
+        //moveController.SetGravityAcceleration(0);
+        //moveController.Move(playerController.rootTransform.position + beatBackDir * m_curBroadcast.combatSkill.repulsionDistance, 0.15f, 0f);
+        //if (m_isGrounded && m_curBroadcast.combatSkill.repulsionDistance < 2f && beatBackDir.y == 0f)
+        //    moveController.Rotate(Quaternion.LookRotation(-beatBackDir), 0.15f, 0f);
+
+        m_compensationPowerPlane = m_curBroadcast.combatSkill.repulsionDistance;
+        m_compensationPowerAir = m_curBroadcast.combatSkill.strikeFly;
 
         string dir = "";
         string flag = "";
         
-        if (!m_isGrounded)
+        if (!moveController.IsGrounded())
         {
             dir = "Up";
             flag = "3";
@@ -77,7 +78,7 @@ public class HurtAbility : PlayerAbility
             dir = m_actions.knockDown > 0 ? "Back" : "Front";
             flag = "Down";
         }
-        else if (m_curBroadcast.combatSkill.repulsionDistance >= 2f)
+        else if (m_curBroadcast.combatSkill.repulsionDistance >= 0.1f)
         {
             dir = frontOrBack > 0 ? "Back" : "Front";
             flag = "Big";
@@ -88,7 +89,7 @@ public class HurtAbility : PlayerAbility
             if (Mathf.Abs(frontOrBack) > Mathf.Abs(leftOrRight))
                 dir = frontOrBack > 0 ? "Back" : "Front";
             else
-                dir = leftOrRight > 0 ? "Left" : "Right";
+                dir = leftOrRight > 0 ? "Right" : "Left";
 
             Random.InitState((int)Time.realtimeSinceStartup);
             flag = Random.Range(1, 3).ToString();
@@ -103,6 +104,8 @@ public class HurtAbility : PlayerAbility
         {
             m_actions.hurtBroadcastId = -1;
             m_actions.jump = false;
+            m_compensationPowerPlane = 1f;
+            m_compensationPowerAir = 1f;
         }
     }
 

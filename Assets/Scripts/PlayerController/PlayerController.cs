@@ -21,7 +21,7 @@ public class PlayerController : PlayerAnimation
 
     public bool combatState { get; set; }
 
-    public IMove moveController;
+    public MoveController moveController;
 
     public Transform weaponPoint;
 
@@ -30,7 +30,7 @@ public class PlayerController : PlayerAnimation
         base.Awake();   
         actions = new PlayerControllerActions();
         m_playerAbilities = GetComponents<PlayerAbility>();
-        moveController = GetComponent<IMove>();
+        moveController = GetComponent<MoveController>();
         debugHelper = GetComponent<DebugHelper>();
         Array.Sort(m_playerAbilities, (PlayerAbility x, PlayerAbility y) => { return y.priority - x.priority; });
     }

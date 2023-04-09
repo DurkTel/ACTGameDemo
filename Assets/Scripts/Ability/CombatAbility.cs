@@ -14,6 +14,10 @@ public class CombatAbility : PlayerAbility
 
     public float autoLockRadius;
 
+    public float autoCloseToDistanceMin;
+
+    public float autoCloseToDistanceMax;
+
     [Header("伤害层级"), SerializeField]
     private LayerMask m_damageLayer;
 
@@ -25,7 +29,7 @@ public class CombatAbility : PlayerAbility
 
     private bool m_combatDetection;
 
-    private Vector3 m_moveCompensation;
+    private float m_compensationPowerPlane, m_compensationPowerAir;
 
     public void SetDetection(int value) => m_combatDetection = value == 1;
 
@@ -105,7 +109,7 @@ public class CombatAbility : PlayerAbility
     {
         if (!m_isEnable) return;
         ReleaseAttack();
-        moveController.MoveCompensation();
+        moveController.MoveCompensation(m_compensationPowerPlane, m_compensationPowerAir);
     }
 
     /// <summary>
@@ -153,7 +157,7 @@ public class CombatAbility : PlayerAbility
             {
                 foreach (var item in m_curBroadcast.combatSkill.comboSkills)
                 {
-                    if (item.comboSkill.tag.Equals("Air Attack") && playerController.GetGroundClearance() < 0.5f) //空中攻击离地太近不给放
+                    if (item.comboSkill != null && item.comboSkill.tag.Equals("Air Attack") && playerController.GetGroundClearance() < 0.5f) //空中攻击离地太近不给放
                         continue;
                     if (CheckCondition(item.comboCondition) && m_normalizedTime >= item.range1 && m_normalizedTime <= item.range2) //符合触发范围
                     {
@@ -182,11 +186,14 @@ public class CombatAbility : PlayerAbility
     /// </summary>
     private void ReleaseAttack()
     {
-        if (m_curBroadcastId > 0 && !playerController.IsInTransition() && (!playerController.IsInAnimationTag("Attack")  || (m_curBroadcast.combatSkill.tag.Equals("Air Attack") && playerController.GetGroundClearance() < 0.5f)))
+        if (m_curBroadcastId > 0 && !playerController.IsInTransition() && (!playerController.IsInAnimationTag("Attack")  
+            || (m_curBroadcast.combatSkill != null && m_curBroadcast.combatSkill.tag.Equals("Air Attack") && playerController.GetGroundClearance() < 0.5f)))
         {
             m_curBroadcastId = -1;
             m_actions.jump = false;
-            moveController.SetGravityAcceleration(0);
+            //moveController.SetGravityAcceleration(0);
+            m_compensationPowerPlane = 1f;
+            m_compensationPowerAir = 1f;
             CombatBroadcastManager.Instance.AttackBroascatEnd(m_curBroadcast);
         }
     }
@@ -229,6 +236,16 @@ public class CombatAbility : PlayerAbility
         Vector3 dir = target.position - playerController.rootTransform.position;
         dir.y = 0f;
         moveController.Rotate(Quaternion.LookRotation(dir), 0.2f, 0f);
+        //float dis = Vector3.Distance(playerController.rootTransform.position, target.position);
+        //if (dis >= autoCloseToDistanceMin)
+        //{
+        //    print(dis);
+        //    m_compensationPowerPlane = Mathf.Max(autoCloseToDistanceMax / 10, dis / 20);
+        //}
+        //else
+        //{
+        //    m_compensationPowerPlane = 0f;
+        //}
     }
 
     /// <summary>

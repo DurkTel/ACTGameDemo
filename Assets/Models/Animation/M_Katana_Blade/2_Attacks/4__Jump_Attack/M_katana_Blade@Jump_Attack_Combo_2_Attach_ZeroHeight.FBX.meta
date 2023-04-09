@@ -1012,7 +1012,7 @@ ModelImporter:
       lastFrame: 18
       wrapMode: 0
       orientationOffsetY: 0
-      level: -1
+      level: -0.6
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
@@ -1063,7 +1063,7 @@ ModelImporter:
           postInfinity: 3
           rotationOrder: 4
       events:
-      - time: 0.211838
+      - time: 0.1956343
         functionName: SetDetection
         data: 
         objectReferenceParameter: {instanceID: 0}

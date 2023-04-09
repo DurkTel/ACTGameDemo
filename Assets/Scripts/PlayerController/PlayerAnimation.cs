@@ -121,15 +121,15 @@ public class PlayerAnimation : MonoBehaviour
 
     public void SetAnimatorPauseFrame(float interval, float duration)
     {
-        float delta = animator.speed - interval;
-        float upSpeed = delta + animator.speed;
+        float delta = 1f - interval;
+        float upSpeed = 1f + delta;
         animator.speed = interval;
-        TimerManager.Instance.DelTimer(m_pauseFrameTimer);
+        //TimerManager.Instance.DelTimer(m_pauseFrameTimer);
         m_pauseFrameTimer = TimerManager.Instance.AddFrame(() =>
         {
-            animator.speed = 1f;
+            animator.speed = upSpeed;
             upSpeed -= delta;
-        }, 0f, duration);
+        }, 0f, duration, 2);
     }
 
     public void SetAnimatorLayerWeight(int layerIndex, float weight, float time)
@@ -199,6 +199,7 @@ public class PlayerAnimation : MonoBehaviour
     public static int BaseLayerIndex = 0;
     public static int FullBodyLayerIndex = 1;
 
+    public static int Compensation_Custom_Hash = Animator.StringToHash("Compensation_Custom");
     public static int Compensation_Front_Hash = Animator.StringToHash("Compensation_Front");
     public static int Compensation_Up_Hash = Animator.StringToHash("Compensation_Up");
     public static int Compensation_Right_Hash = Animator.StringToHash("Compensation_Right");

@@ -13,7 +13,7 @@ public class Test : MonoBehaviour
 
     void Start()
     {
-        ListNode re = AddTwoNumbers(new ListNode(9), new ListNode(1, new ListNode(9, new ListNode(9, new ListNode(9, new ListNode(9, new ListNode(9, new ListNode(9, new ListNode(9, new ListNode(9, new ListNode(9)))))))))));
+        ListNode re = AddTwoNumbersEx(new ListNode(9, new ListNode(9, new ListNode(9, new ListNode(9)))), new ListNode(9, new ListNode(9, new ListNode(9, new ListNode(9, new ListNode(9, new ListNode(9, new ListNode(9))))))));
         while (true)
         {
             if (re == null) break;
@@ -51,6 +51,34 @@ public class Test : MonoBehaviour
             this.val = val;
             this.next = next;
         }
+    }
+
+    public ListNode AddTwoNumbersEx(ListNode l1, ListNode l2)
+    {
+        bool flag = false;
+        ListNode GetListNode(ListNode l1, ListNode l2)
+        {
+            if (l1 == null && l2 == null) return null;
+
+            int sum = (l1 == null ? 0 : l1.val) + (l2 == null ? 0 : l2.val);
+            int newRe = sum % 10;
+            if (flag)
+            {
+                flag = false;
+                newRe++;
+            }
+
+            if (l1 != null)
+                l1 = l1.next;
+            if (l2 != null)
+                l2 = l2.next;
+            if (sum >= 10)
+                flag = true;
+
+            return new ListNode(newRe, GetListNode(l1, l2));
+        }
+
+        return GetListNode(l1, l2);
     }
     public ListNode AddTwoNumbers(ListNode l1, ListNode l2)
     {

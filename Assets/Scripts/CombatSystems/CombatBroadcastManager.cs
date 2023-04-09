@@ -110,7 +110,7 @@ public class CombatBroadcastManager : MonoBehaviour
             broadcast.Hurt();
 
             //ø®»‚
-            broadcast.fromActor.SetAnimatorPauseFrame(0f, 5f);
+            broadcast.fromActor.SetAnimatorPauseFrame(0f, 10f);
         }
     }
 

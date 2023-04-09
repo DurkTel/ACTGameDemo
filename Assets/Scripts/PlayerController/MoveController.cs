@@ -286,6 +286,8 @@ public class MoveController : MonoBehaviour, IMove
             m_gravityVertical += gravity * 0.75f * deltaTtime;
         else
             m_gravityVertical += gravity * deltaTtime;
+
+        m_gravityVertical = Mathf.Max(-8.5f, m_gravityVertical);
     }
 
     /// <summary>
@@ -313,6 +315,16 @@ public class MoveController : MonoBehaviour, IMove
 
         Vector3 moveCompensation = rootTransform.forward * z + rootTransform.right * x + rootTransform.up * y;
         characterController.Move(m_animator.deltaPosition + moveCompensation + direction);
+    }
+
+    public void MoveCompensation(float planePower, float airPower)
+    {
+        float x = m_animator.GetFloat(PlayerAnimation.Compensation_Right_Hash);
+        float z = m_animator.GetFloat(PlayerAnimation.Compensation_Front_Hash);
+        float y = m_animator.GetFloat(PlayerAnimation.Compensation_Up_Hash);
+
+        Vector3 moveCompensation = rootTransform.forward * z * planePower + rootTransform.right * x * planePower + rootTransform.up * y * airPower;
+        characterController.Move(m_animator.deltaPosition + moveCompensation);
     }
 
     /// <summary>

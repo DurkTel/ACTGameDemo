@@ -32,7 +32,7 @@ public abstract class PlayerAbility : MonoBehaviour
 
     public AbilityUpdateMode updateMode = AbilityUpdateMode.FixedUpdate;
 
-    public IMove moveController;
+    public MoveController moveController;
 
     protected PlayerControllerActions m_actions;
 
