@@ -63,6 +63,10 @@ public abstract class PlayerAbility : MonoBehaviour
 
     public virtual void OnAnimatorEvent(AnimationEventDefine cmd) { }
 
+    public virtual void OnAnimatorEvent(AnimationEventDefine cmd, int param) { }
+
+    public virtual void OnAnimatorEvent(AnimationEventDefine cmd, string param) { }
+
     public virtual AnimationEventDefine[] GetAnimatorEvent() { return null; }
 
     protected void OnUpdateDeltaTime()

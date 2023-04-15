@@ -11,5 +11,13 @@ public enum AnimationEventDefine
     /// <summary>
     /// 添加重力加速度
     /// </summary>
-    ADD_GRAVITY_ACCELERATION
+    ADD_GRAVITY_ACCELERATION,
+    /// <summary>
+    /// 进入动画
+    /// </summary>
+    ANIMATION_ENTER,
+    /// <summary>
+    /// 退出动画
+    /// </summary>
+    ANIMATION_EXIT,
 }

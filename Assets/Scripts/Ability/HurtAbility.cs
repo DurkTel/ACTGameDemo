@@ -10,6 +10,8 @@ public class HurtAbility : PlayerAbility
 
     private float m_compensationPowerPlane, m_compensationPowerAir;
 
+    private int m_curAnimationHash;
+
     public override bool Condition()
     {
         return m_actions.hurtBroadcastId > 0;
@@ -33,6 +35,28 @@ public class HurtAbility : PlayerAbility
         RequestHurt();
 
         moveController.MoveCompensation(m_compensationPowerPlane, m_compensationPowerAir);
+    }
+
+    public override void OnAnimatorEvent(AnimationEventDefine cmd, int param)
+    {
+        switch (cmd)
+        {
+            case AnimationEventDefine.ANIMATION_EXIT:
+                if (param == m_curAnimationHash)
+                {
+                    m_compensationPowerPlane = 1f;
+                    m_compensationPowerAir = 1f;
+                }
+                break;
+        }
+    }
+
+    public override AnimationEventDefine[] GetAnimatorEvent()
+    {
+        return new AnimationEventDefine[]
+        {
+            AnimationEventDefine.ANIMATION_EXIT
+        };
     }
 
     private void RequestHurt()
@@ -95,7 +119,10 @@ public class HurtAbility : PlayerAbility
             flag = Random.Range(1, 3).ToString();
         }
 
-        playerController.SetAnimationState(string.Format("Damage_{0}_{1}", dir, flag));
+        string name = string.Format("Damage_{0}_{1}", dir, flag);
+        m_curAnimationHash = Animator.StringToHash(name);   
+
+        playerController.SetAnimationState(name);
     }
 
     private void ReleaseHurt()
@@ -104,8 +131,7 @@ public class HurtAbility : PlayerAbility
         {
             m_actions.hurtBroadcastId = -1;
             m_actions.jump = false;
-            m_compensationPowerPlane = 1f;
-            m_compensationPowerAir = 1f;
+
         }
     }
 

@@ -13,19 +13,88 @@ public class Test : MonoBehaviour
 
     void Start()
     {
-        ListNode re = AddTwoNumbersEx(new ListNode(9, new ListNode(9, new ListNode(9, new ListNode(9)))), new ListNode(9, new ListNode(9, new ListNode(9, new ListNode(9, new ListNode(9, new ListNode(9, new ListNode(9))))))));
-        while (true)
-        {
-            if (re == null) break;
-            print(re.val);
-            re = re.next;
-        }
+        //print(LongestPalindrome("babad"));
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    public string LongestPalindrome(string s)
+    {
+        int index = 0;
+        int max = 1;
+        int length = s.Length;
+        for (int i = 0; i < length; i++)
+        {
+            int len = 1;
+            int left = i;
+            int right = i;
+            while (left >= 0 && right <= length - 1 && s[left] == s[right])
+            {
+                if (len % 2 == 0)
+                {
+                    if (len % 2 == 0 && left > 0 && s[i] == s[left - 1])
+                    {
+                        len++;
+                        left--;
+                        if (len > max)
+                        {
+                            max = len;
+                            index = left;
+                        }
+                    }
+                    else if (right < length - 1 && s[i] == s[right + 1])
+                    {
+                        len++;
+                        right++;
+                        if (len > max)
+                        {
+                            max = len;
+                            index = left;
+                        }
+                    }
+                    
+                }
+                else if (left > 0 && right < length - 1 && s[left - 1] == s[right + 1])
+                {
+                    len = len + 2;
+                    left--;
+                    right++;
+                    if (len > max)
+                    {
+                        max = len;
+                        index = left;
+                    }
+                }
+                else
+                    break;
+            }
+        }
+
+        return s.Substring(index, max);
+    }
+
+    public int LengthOfLongestSubstring(string s)
+    {
+        List<char> mark = new List<char>();
+        int max = 0;
+        int counter = 0;
+        for (int i = 0; i < s.Length; i++)
+        {
+            while (mark.Contains(s[i]))
+            {
+                counter--;
+                mark.RemoveAt(0);
+            }
+            mark.Add(s[i]);
+            counter++;
+            max = counter > max ? counter : max;
+        }
+
+        return max;
     }
 
     public int[] TwoSum(int[] nums, int target)

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class CombatBroadcastManager : MonoBehaviour
 {
@@ -109,8 +110,6 @@ public class CombatBroadcastManager : MonoBehaviour
             TryAddEffectCount(broadcast.attackId);
             broadcast.Hurt();
 
-            //ø®»‚
-            broadcast.fromActor.SetAnimatorPauseFrame(0f, 10f);
         }
     }
 
@@ -135,11 +134,14 @@ public struct CombatBroadcast
 
     public CombatSkillConfig combatSkill;
 
+    public UnityAction hurtAction;
+
     public void Release()
     {
         fromActor = null;
         toActor = null;
         combatSkill = null;
+        hurtAction = null;
         beginTime = 0f;
     }
 
@@ -153,6 +155,8 @@ public struct CombatBroadcast
     {
         foreach (var item in toActor)
             item.actions.hurtBroadcastId = attackId;
+
+        hurtAction?.Invoke();
     }
 
     public void End()

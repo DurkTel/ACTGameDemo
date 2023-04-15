@@ -19,7 +19,7 @@ MonoBehaviour:
   attackBackswing: 0.5
   effectCount: 1
   repulsionDistance: 0
-  strikeFly: 0.05
+  strikeFly: 0.02
   priority: 1
   condition: 129
   comboSkills:

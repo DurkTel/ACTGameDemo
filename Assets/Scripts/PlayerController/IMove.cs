@@ -8,6 +8,9 @@ public interface IMove
     float deltaTtime { get; set; }
 
     float gravity { get; set; }
+
+    MoveType moveType { get; set; }
+
     void Move();
 
     void Move(Vector3 direction, float speed);
@@ -36,6 +39,6 @@ public interface IMove
 
     Vector2 GetRelativeMove(Vector3 move);
 
-    void SetGravityAcceleration(float height);
+    void SetGravityAccelerationByHeight(float height);
 
 }

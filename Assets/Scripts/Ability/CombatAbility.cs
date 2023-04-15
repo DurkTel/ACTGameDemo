@@ -36,6 +36,8 @@ public class CombatAbility : PlayerAbility
     protected override void Start()
     {
         base.Start();
+        m_compensationPowerPlane = 1f;
+        m_compensationPowerAir = 1f;
         System.Array.Sort(defaultCombats, (CombatSkillConfig x, CombatSkillConfig y) => { return y.priority - x.priority; });
     }
 
@@ -73,11 +75,14 @@ public class CombatAbility : PlayerAbility
         OnResetAnimatorParameter();
         CombatBroadcastManager.Instance.AttackBroascatBegin(m_curBroadcast);
         AutoLock();
+        moveController.EnableGravity(false);
     }
 
     public override void OnDisableAbility()
     {
         base.OnDisableAbility();
+        moveController.EnableGravity(true);
+        moveController.SetGravityAcceleration(-999);
     }
 
     public override void OnUpdateAbility()
@@ -88,13 +93,20 @@ public class CombatAbility : PlayerAbility
 
     }
 
+    public override void OnUpdateAnimatorParameter()
+    {
+        base.OnUpdateAnimatorParameter();
+        playerController.animator.SetFloat(PlayerAnimation.Float_Movement_Hash, m_actions.move.normalized.magnitude * (int)moveController.moveType, 0.2f, Time.fixedDeltaTime);
+
+    }
+
     public override void OnResetAnimatorParameter() 
     {
-        playerController.animator.SetFloat(PlayerAnimation.Float_InputHorizontalLerp_Hash, 0f);
-        playerController.animator.SetFloat(PlayerAnimation.Float_InputVerticalLerp_Hash, 0f);
-        playerController.animator.SetFloat(PlayerAnimation.Float_AngularVelocity_Hash, 0f);
-        playerController.animator.SetFloat(PlayerAnimation.Float_Rotation_Hash, 0f);
-        playerController.animator.SetFloat(PlayerAnimation.Float_Movement_Hash, 0f);
+        //playerController.animator.SetFloat(PlayerAnimation.Float_InputHorizontalLerp_Hash, 0f);
+        //playerController.animator.SetFloat(PlayerAnimation.Float_InputVerticalLerp_Hash, 0f);
+        //playerController.animator.SetFloat(PlayerAnimation.Float_AngularVelocity_Hash, 0f);
+        //playerController.animator.SetFloat(PlayerAnimation.Float_Rotation_Hash, 0f);
+        //playerController.animator.SetFloat(PlayerAnimation.Float_Movement_Hash, 0f);
 
     }
 
@@ -186,8 +198,8 @@ public class CombatAbility : PlayerAbility
     /// </summary>
     private void ReleaseAttack()
     {
-        if (m_curBroadcastId > 0 && !playerController.IsInTransition() && (!playerController.IsInAnimationTag("Attack")  
-            || (m_curBroadcast.combatSkill != null && m_curBroadcast.combatSkill.tag.Equals("Air Attack") && playerController.GetGroundClearance() < 0.5f)))
+        if (m_curBroadcastId > 0 && (!playerController.IsInAnimationTag("Attack")  || (m_curBroadcast.combatSkill != null && m_curBroadcast.combatSkill.tag.Equals("Air Attack") 
+            && playerController.GetGroundClearance() < 0.5f)))
         {
             m_curBroadcastId = -1;
             m_actions.jump = false;
@@ -203,7 +215,16 @@ public class CombatAbility : PlayerAbility
         CombatBroadcast broadcast = CombatBroadcastManager.GetCombatBroadcast(out m_curBroadcastId);
         broadcast.fromActor = playerController;
         broadcast.combatSkill = newCombat;
+        broadcast.hurtAction = CombatSuccess;
         return broadcast;
+    }
+
+    private void CombatSuccess()
+    {
+        //¿¨Èâ
+        playerController.SetAnimatorPauseFrame(0f, 10f);
+        if (playerController.shakeCamera != null)
+            playerController.shakeCamera.ShakeScreen(2, 1f, 0.15f, 0.3f, 0.2f);
     }
 
     /// <summary>

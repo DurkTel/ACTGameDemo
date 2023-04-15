@@ -48,7 +48,7 @@ public class AirboneAbility : PlayerAbility
         playerController.SetAnimationState(m_actions.jump ? "Jump First" : "Fall Keep", m_actions.jump ? 0f : 0.1f);
         
         if (m_actions.jump)
-            moveController.SetGravityAcceleration(jumpHeight);
+            moveController.SetGravityAccelerationByHeight(jumpHeight);
 
         m_actions.jump = false;
         m_isAiring = true;
@@ -77,7 +77,7 @@ public class AirboneAbility : PlayerAbility
         m_actions.jump = false;
         if (++m_jumpCount > jumpFrequency) return;
         playerController.SetAnimationState("Jump Second", 0f);
-        moveController.SetGravityAcceleration(jumpHeight);
+        moveController.SetGravityAccelerationByHeight(jumpHeight);
     }
 
 

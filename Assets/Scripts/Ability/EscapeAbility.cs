@@ -36,6 +36,6 @@ public class EscapeAbility : PlayerAbility
         moveController.MoveCompensation();
         moveController.Rotate();
         m_actions.jump = false;
-        m_actions.escape = playerController.IsInTransition() || playerController.IsInAnimationTag("Escape");
+        m_actions.escape = playerController.IsInAnimationTag("Escape");
     }
 }

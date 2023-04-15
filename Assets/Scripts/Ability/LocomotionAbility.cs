@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using static Demo_MoveMotor.ICharacterControl;
 
+public enum MoveType
+{
+    NONE,
+    WALK,
+    RUN,
+    SPRINT,
+}
+
+
 public class LocomotionAbility : PlayerAbility
 {
-    public enum MoveType
-    {
-        NONE,
-        WALK,
-        RUN,
-        SPRINT,
-    }
-
     [Header("移动速度")]
     public float moveMultiplier = 0.1f;
     [SerializeField]
@@ -31,8 +32,6 @@ public class LocomotionAbility : PlayerAbility
     protected Transform m_rightFootTran;    
 
     private Vector3 m_lastForward;
-
-    private MoveType m_moveType = MoveType.RUN;
 
     /// <summary>
     /// 角速度
@@ -54,8 +53,6 @@ public class LocomotionAbility : PlayerAbility
 
     public override void OnUpdateAbility()
     {
-        m_moveType = m_actions.sprint? MoveType.SPRINT : MoveType.RUN;
-        m_moveType = m_actions.walk ? MoveType.WALK : m_moveType;
 
         CalculateAngularVelocity(ref m_angularVelocity, ref m_targetDeg);
         base.OnUpdateAbility();
@@ -90,7 +87,7 @@ public class LocomotionAbility : PlayerAbility
         playerController.animator.SetFloat(PlayerAnimation.Float_InputVerticalLerp_Hash, relativeMove.y, 0.2f, Time.fixedDeltaTime);
         playerController.animator.SetFloat(PlayerAnimation.Float_InputHorizontal_Hash, relativeMove.x);
         playerController.animator.SetFloat(PlayerAnimation.Float_InputVertical_Hash, relativeMove.y);
-        playerController.animator.SetFloat(PlayerAnimation.Float_Movement_Hash, m_actions.move.normalized.magnitude * (int)m_moveType, 0.2f, Time.fixedDeltaTime);
+        playerController.animator.SetFloat(PlayerAnimation.Float_Movement_Hash, m_actions.move.normalized.magnitude * (int)moveController.moveType, 0.2f, Time.fixedDeltaTime);
         playerController.animator.SetFloat(PlayerAnimation.Float_AngularVelocity_Hash, m_angularVelocity, 0.2f, Time.fixedDeltaTime);
         playerController.animator.SetFloat(PlayerAnimation.Float_Rotation_Hash, m_targetDeg);
         
@@ -129,7 +126,7 @@ public class LocomotionAbility : PlayerAbility
     private float GetMoveSpeed()
     {
         float speed = 0f;
-        switch (m_moveType)
+        switch (moveController.moveType)
         {
             case MoveType.WALK:
                 speed = m_walkSpeed;

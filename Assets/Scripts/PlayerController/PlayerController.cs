@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Demo_MoveMotor.ICharacterControl;
 using static UnityEngine.InputSystem.DefaultInputActions;
 
 public class PlayerController : PlayerAnimation
@@ -25,6 +26,10 @@ public class PlayerController : PlayerAnimation
 
     public Transform weaponPoint;
 
+    public OrbitCamera orbitCamera;
+
+    public ShakeCamera shakeCamera;
+
     protected override void Awake()
     {
         base.Awake();   
@@ -32,6 +37,8 @@ public class PlayerController : PlayerAnimation
         m_playerAbilities = GetComponents<PlayerAbility>();
         moveController = GetComponent<MoveController>();
         debugHelper = GetComponent<DebugHelper>();
+        orbitCamera = Camera.main.gameObject.GetComponent<OrbitCamera>();
+        shakeCamera = Camera.main.gameObject.GetComponent<ShakeCamera>();
         Array.Sort(m_playerAbilities, (PlayerAbility x, PlayerAbility y) => { return y.priority - x.priority; });
     }
 
@@ -46,10 +53,14 @@ public class PlayerController : PlayerAnimation
     {
         base.Update();
 
+        moveController.moveType = actions.sprint ? MoveType.SPRINT : MoveType.RUN;
+        moveController.moveType = actions.walk ? MoveType.WALK : moveController.moveType;
+
         if (m_currentAbilitiy != null && m_currentAbilitiy.updateMode == AbilityUpdateMode.Update)
             m_currentAbilitiy.OnUpdateAbility();
 
         PackUpWeapon();
+
     }
 
     public void FixedUpdate()
@@ -104,6 +115,7 @@ public class PlayerController : PlayerAnimation
         base.UpdateAnimatorInfo();
         animator.SetBool(Bool_Ground_Hash, moveController.IsGrounded());
         animator.SetBool(Bool_Gazing_Hash, actions.gazing);
+        animator.SetFloat(Float_GroundClearance_Hash, moveController.GetGroundClearance());
 
     }
 

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using static UnityEngine.InputSystem.DefaultInputActions;
 
 public class PlayerAnimation : MonoBehaviour
@@ -10,7 +11,15 @@ public class PlayerAnimation : MonoBehaviour
     [HideInInspector]
     public XAnimationStateInfos stateInfos;
 
+    public event UnityAction<AnimationEventDefine> OnAnimationEvent1;
+
+    public event UnityAction<AnimationEventDefine, int> OnAnimationEvent2;
+
+    public event UnityAction<AnimationEventDefine, string> OnAnimationEvent3;
+
     protected AnimatorStateInfo m_baseLayerInfo, m_fullBodyLayerInfo;
+
+    protected int m_curAnimationBase, m_curAnimationFullBody;
 
     protected int m_pauseFrameTimer;
 
@@ -147,6 +156,20 @@ public class PlayerAnimation : MonoBehaviour
         m_baseLayerInfo = animator.GetCurrentAnimatorStateInfo(BaseLayerIndex);
         m_fullBodyLayerInfo = animator.GetCurrentAnimatorStateInfo(FullBodyLayerIndex);
 
+        if (m_curAnimationBase != m_baseLayerInfo.shortNameHash)
+        {
+            OnAnimationEvent2.Invoke(AnimationEventDefine.ANIMATION_EXIT, m_curAnimationBase);
+            m_curAnimationBase = m_baseLayerInfo.shortNameHash;
+            OnAnimationEvent2.Invoke(AnimationEventDefine.ANIMATION_ENTER, m_curAnimationBase);
+        }
+
+        if (m_curAnimationFullBody != m_fullBodyLayerInfo.shortNameHash)
+        {
+            OnAnimationEvent2.Invoke(AnimationEventDefine.ANIMATION_EXIT, m_curAnimationFullBody);
+            m_curAnimationFullBody = m_fullBodyLayerInfo.shortNameHash;
+            OnAnimationEvent2.Invoke(AnimationEventDefine.ANIMATION_ENTER, m_curAnimationFullBody);
+        }
+
     }
 
 
@@ -169,6 +192,19 @@ public class PlayerAnimation : MonoBehaviour
                             e.OnAnimationEvent += ability.OnAnimatorEvent;
                     }
                 }
+            }
+        }
+
+        foreach (var ability in abilities)
+        {
+            AnimationEventDefine[] events = ability.GetAnimatorEvent();
+            if (events == null || events.Length == 0) continue;
+
+            foreach (var @event in events)
+            {
+                OnAnimationEvent1 += ability.OnAnimatorEvent;
+                OnAnimationEvent2 += ability.OnAnimatorEvent;
+                OnAnimationEvent3 += ability.OnAnimatorEvent;
             }
         }
     }
@@ -216,6 +252,7 @@ public class PlayerAnimation : MonoBehaviour
     public static int Float_Footstep_Hash = Animator.StringToHash("Float_Footstep");
     public static int Float_WallRunDir_Hash = Animator.StringToHash("Float_WallRunDir");
     public static int Float_IntroWeapon_Hash = Animator.StringToHash("Float_IntroWeapon");
+    public static int Float_GroundClearance_Hash = Animator.StringToHash("Float_GroundClearance");
     public static int Bool_Ground_Hash = Animator.StringToHash("Bool_Ground");
     public static int Bool_Gazing_Hash = Animator.StringToHash("Bool_Gazing");
 

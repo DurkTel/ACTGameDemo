@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 /// <summary>
 /// 轨道相机
@@ -81,6 +81,10 @@ public class OrbitCamera : MonoBehaviour
     /// 规则相机
     /// </summary>
     private Camera regularCamera;
+    /// <summary>
+    /// 相机震动
+    /// </summary>
+    private ShakeCamera shakeCamera;
     [SerializeField]
     private bool invertYAxis;
     [SerializeField]
@@ -110,9 +114,10 @@ public class OrbitCamera : MonoBehaviour
     private void Awake()
     {
         regularCamera = GetComponent<Camera>();
+        shakeCamera = GetComponent<ShakeCamera>();
         focusPoint = focus.position;
         transform.localRotation = Quaternion.Euler(orbitAngles);
-        Cursor.lockState = CursorLockMode.Locked;   
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     private void OnValidate()
@@ -123,6 +128,7 @@ public class OrbitCamera : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (shakeCamera.mIsShake) return;
         UpdateFocusPoint();
         Quaternion lookRotation;
         if (LockonRotation() || ManualRotation() || AutoMaticRotation())
@@ -152,7 +158,7 @@ public class OrbitCamera : MonoBehaviour
 
         //if (lockon == null)
         //{
-            transform.SetPositionAndRotation(lookPosition, lookRotation);
+        transform.SetPositionAndRotation(lookPosition, lookRotation);
         //}
         //else
         //{

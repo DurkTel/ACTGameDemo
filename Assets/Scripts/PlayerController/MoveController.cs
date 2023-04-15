@@ -15,6 +15,8 @@ public class MoveController : MonoBehaviour, IMove
 
     public float gravity { get; set; }
 
+    public MoveType moveType { get; set; }
+
     [SerializeField, Header("地面层级")]
     public LayerMask groundLayer;
 
@@ -27,6 +29,9 @@ public class MoveController : MonoBehaviour, IMove
     private bool m_isGrounded;
 
     private bool m_isFall;
+
+    private float m_groundClearance;
+
 
     #region 曲线运动
     /// <summary>
@@ -86,6 +91,7 @@ public class MoveController : MonoBehaviour, IMove
         m_animator = GetComponent<Animator>();
         rootTransform = transform;
         gravity = -20f;
+        EnableGravity(true);
     }
 
     public void FixedUpdate()
@@ -94,6 +100,11 @@ public class MoveController : MonoBehaviour, IMove
                 Vector3.down, out RaycastHit hitInfo, 0.5f - characterController.radius + characterController.skinWidth * 3, groundLayer);
 
         m_isFall = !m_isGrounded && !Physics.Raycast(rootTransform.position, Vector3.down, 0.3f, groundLayer);
+
+        if (!m_isGrounded && Physics.Raycast(rootTransform.position, Vector3.down, out RaycastHit groundHit, 9999, groundLayer))
+            m_groundClearance = groundHit.distance;
+        else
+            m_groundClearance = 0;  
 
         CalculateGravity();
         CurveMove();
@@ -254,6 +265,15 @@ public class MoveController : MonoBehaviour, IMove
     }
 
     /// <summary>
+    /// 获得离地间距
+    /// </summary>
+    /// <returns></returns>
+    public float GetGroundClearance()
+    {
+        return m_groundClearance;
+    }
+
+    /// <summary>
     /// 当前重力加速度
     /// </summary>
     /// <returns></returns>
@@ -266,9 +286,18 @@ public class MoveController : MonoBehaviour, IMove
     /// 设置重力加速度
     /// </summary>
     /// <param name="height">高度</param>
-    public void SetGravityAcceleration(float height)
+    public void SetGravityAccelerationByHeight(float height)
     {
         m_gravityVertical = Mathf.Sqrt(-2 * gravity * height);
+    }
+
+    /// <summary>
+    /// 设置重力加速度
+    /// </summary>
+    /// <param name="vertical">速度</param>
+    public void SetGravityAcceleration(float vertical)
+    {
+        m_gravityVertical = vertical;
     }
 
     /// <summary>
@@ -276,6 +305,7 @@ public class MoveController : MonoBehaviour, IMove
     /// </summary>
     private void CalculateGravity()
     {
+        if (!enableGravity) return;
         if (IsGrounded() && m_gravityVertical <= 0f)
         {
             m_gravityVertical = gravity * deltaTtime;

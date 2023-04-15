@@ -175,7 +175,7 @@ public class ClimbAbility : PlayerAbility
         else if(m_actions.escape)
         {
             m_actions.escape = false;
-            moveController.SetGravityAcceleration(0f);
+            moveController.SetGravityAccelerationByHeight(0f);
             playerController.SetAnimationState("Height Climb Fall", 0f);
         }
     }

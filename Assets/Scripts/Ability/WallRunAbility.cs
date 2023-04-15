@@ -99,7 +99,7 @@ public class WallRunAbility : PlayerAbility
 
         moveController.Move(m_wallRunForward, 0.1f);
         moveController.Rotate(m_wallRunForward, 20f);
-        moveController.SetGravityAcceleration(0f);
+        moveController.SetGravityAccelerationByHeight(0f);
     }
 
     private Vector3 CalculateOffset(float offset)
