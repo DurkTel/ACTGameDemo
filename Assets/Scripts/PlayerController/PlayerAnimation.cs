@@ -255,5 +255,6 @@ public class PlayerAnimation : MonoBehaviour
     public static int Float_GroundClearance_Hash = Animator.StringToHash("Float_GroundClearance");
     public static int Bool_Ground_Hash = Animator.StringToHash("Bool_Ground");
     public static int Bool_Gazing_Hash = Animator.StringToHash("Bool_Gazing");
+    public static int Bool_KnockDown_Hash = Animator.StringToHash("Bool_KnockDown");
 
 }

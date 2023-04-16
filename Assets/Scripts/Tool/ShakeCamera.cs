@@ -56,7 +56,7 @@ public class ShakeCamera : MonoBehaviour
     }
 
     //ÕñÆÁ
-    public void ShakeScreen(int stype, float period, float shakeTime, float maxWave, float minWave, float offPeriod = 0, bool breset = true, UnityAction finish = null, bool bRest = true)
+    public void ShakeScreen(int stype, float period, float shakeTime, float maxWave, float minWave, float offPeriod = 0, bool bRest = true, UnityAction finish = null)
     {
         ShakeOrient shakeOrient = (ShakeOrient)stype;
         //²»ÔÚÕñ¶¯×´Ì¬        

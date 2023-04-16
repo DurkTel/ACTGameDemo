@@ -13,11 +13,16 @@ MonoBehaviour:
   m_Name: HeavyAttack2
   m_EditorClassIdentifier: 
   skillName: 
+  tag: 
   animationName: Attack_5Combo_2
   attackPoint: 0.3
   attackBackswing: 0.42
   effectCount: 1
+  repulsionDistance: 0.08
+  strikeFly: 0
   priority: 0
+  autoLock: 1
+  force: 0
   condition: 2
   comboSkills:
   - range1: 0.42

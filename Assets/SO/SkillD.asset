@@ -13,10 +13,15 @@ MonoBehaviour:
   m_Name: SkillD
   m_EditorClassIdentifier: 
   skillName: 
+  tag: 
   animationName: Skill_D
   attackPoint: 0.5
   attackBackswing: 0.6
-  effectCount: 1
+  effectCount: 2
+  repulsionDistance: 0
+  strikeFly: 0
   priority: 2
+  autoLock: 0
+  force: 1
   condition: 21
   comboSkills: []

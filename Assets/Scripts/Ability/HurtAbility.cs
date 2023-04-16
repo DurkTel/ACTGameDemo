@@ -12,6 +12,8 @@ public class HurtAbility : PlayerAbility
 
     private int m_curAnimationHash;
 
+    private int m_knockDownTimer;
+
     public override bool Condition()
     {
         return m_actions.hurtBroadcastId > 0;
@@ -57,6 +59,12 @@ public class HurtAbility : PlayerAbility
         {
             AnimationEventDefine.ANIMATION_EXIT
         };
+    }
+
+    public override void OnResetAnimatorParameter()
+    {
+        base.OnResetAnimatorParameter();
+        playerController.animator.SetBool(PlayerAnimation.Bool_KnockDown_Hash, false);
     }
 
     private void RequestHurt()
@@ -107,6 +115,7 @@ public class HurtAbility : PlayerAbility
             dir = frontOrBack > 0 ? "Back" : "Front";
             flag = "Big";
             m_actions.knockDown = frontOrBack > 0 ? 1 : -1;
+            playerController.animator.SetBool(PlayerAnimation.Bool_KnockDown_Hash, true);
         }
         else
         {
@@ -123,6 +132,16 @@ public class HurtAbility : PlayerAbility
         m_curAnimationHash = Animator.StringToHash(name);   
 
         playerController.SetAnimationState(name);
+
+        TimerManager.Instance.DelTimer(m_knockDownTimer);
+        if (Mathf.Abs(m_actions.knockDown) > 0)
+        {
+            m_knockDownTimer = TimerManager.Instance.AddTimer(() =>
+            {
+                playerController.animator.SetBool(PlayerAnimation.Bool_KnockDown_Hash, false);
+                m_actions.knockDown = 0;
+            }, 0, 3f);
+        }
     }
 
     private void ReleaseHurt()

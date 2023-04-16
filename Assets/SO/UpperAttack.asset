@@ -21,6 +21,8 @@ MonoBehaviour:
   repulsionDistance: 0.45
   strikeFly: 0.15
   priority: 2
+  autoLock: 0
+  force: 1
   condition: 512
   comboSkills:
   - range1: 0.2

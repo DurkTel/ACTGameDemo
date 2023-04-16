@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -55,6 +56,14 @@ public class CombatSkillConfig : ScriptableObject
     /// 优先级
     /// </summary>
     public int priority;
+    /// <summary>
+    /// 自动锁定
+    /// </summary>
+    public bool autoLock;
+    /// <summary>
+    /// 强制执行
+    /// </summary>
+    public bool force;
     /// <summary>
     /// 触发条件
     /// </summary>

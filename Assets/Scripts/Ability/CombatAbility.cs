@@ -165,7 +165,16 @@ public class CombatAbility : PlayerAbility
         if (GetAttackSignal())
         {
             CombatSkillConfig newCombat = null;
-            if (m_curBroadcast.combatSkill.comboSkills.Length > 0)
+            foreach (var item in defaultCombats)
+            {
+                if (m_curBroadcast.combatSkill != item && item.force && CheckCondition(item.condition))
+                {
+                    newCombat = item;
+                    break;
+                }
+            }
+
+            if (newCombat == null && m_curBroadcast.combatSkill.comboSkills.Length > 0)
             {
                 foreach (var item in m_curBroadcast.combatSkill.comboSkills)
                 {
@@ -224,7 +233,7 @@ public class CombatAbility : PlayerAbility
         //ø®»‚
         playerController.SetAnimatorPauseFrame(0f, 10f);
         if (playerController.shakeCamera != null)
-            playerController.shakeCamera.ShakeScreen(2, 1f, 0.15f, 0.3f, 0.2f);
+            playerController.shakeCamera.ShakeScreen(1, 1f, 0.15f, 0.3f, 0.2f, 0f, false);
     }
 
     /// <summary>
@@ -251,22 +260,19 @@ public class CombatAbility : PlayerAbility
     /// </summary>
     private void AutoLock()
     {
-        if (m_actions.move.magnitude > 0) return;
+        if (!m_curBroadcast.combatSkill.autoLock) return;
+        if (m_actions.move.magnitude > 0)
+        {
+            Vector3 newVect = m_actions.move;
+            newVect.y = 0f;
+            moveController.Rotate(Quaternion.LookRotation(newVect), 0.1f, 0f);
+            return;
+        }
         Transform target = playerController.rootTransform.ObtainNearestTarget(autoLockRadius, m_damageLayer, playerController.rootTransform);
         if (target == null) return;
         Vector3 dir = target.position - playerController.rootTransform.position;
         dir.y = 0f;
         moveController.Rotate(Quaternion.LookRotation(dir), 0.2f, 0f);
-        //float dis = Vector3.Distance(playerController.rootTransform.position, target.position);
-        //if (dis >= autoCloseToDistanceMin)
-        //{
-        //    print(dis);
-        //    m_compensationPowerPlane = Mathf.Max(autoCloseToDistanceMax / 10, dis / 20);
-        //}
-        //else
-        //{
-        //    m_compensationPowerPlane = 0f;
-        //}
     }
 
     /// <summary>

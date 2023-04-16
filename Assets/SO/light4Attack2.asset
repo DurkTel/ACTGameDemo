@@ -13,11 +13,16 @@ MonoBehaviour:
   m_Name: light4Attack2
   m_EditorClassIdentifier: 
   skillName: 
+  tag: 
   animationName: Attack_4Combo_2
   attackPoint: 0.27
   attackBackswing: 0.4
   effectCount: 1
+  repulsionDistance: 0.08
+  strikeFly: 0
   priority: 0
+  autoLock: 1
+  force: 0
   condition: 2
   comboSkills:
   - range1: 0.4

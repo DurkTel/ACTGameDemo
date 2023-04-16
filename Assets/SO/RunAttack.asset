@@ -13,11 +13,16 @@ MonoBehaviour:
   m_Name: RunAttack
   m_EditorClassIdentifier: 
   skillName: 
+  tag: 
   animationName: Dash_Attack_ver_B
   attackPoint: 0.38
   attackBackswing: 0.5
   effectCount: 1
+  repulsionDistance: 0
+  strikeFly: 0
   priority: 1
+  autoLock: 1
+  force: 0
   condition: 257
   comboSkills:
   - range1: 0.5
