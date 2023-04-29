@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.WSA;
+using UnityEngine.Timeline;
 
 public class Test : MonoBehaviour
 {
@@ -11,9 +12,16 @@ public class Test : MonoBehaviour
         public int ss;
     }
 
+    public TimelineAsset asset; 
+
     void Start()
     {
         //print(LongestPalindrome("babad"));
+        foreach (var item in asset.outputs)
+        {
+            TrackAsset track = item.sourceObject as TrackAsset;
+            
+        }
     }
 
     // Update is called once per frame

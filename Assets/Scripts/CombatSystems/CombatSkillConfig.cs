@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName =  "CombatSkill", menuName = "Combat/CombatSkill")]
+[System.Serializable]
 public class CombatSkillConfig : ScriptableObject
 {
     [System.Flags]
