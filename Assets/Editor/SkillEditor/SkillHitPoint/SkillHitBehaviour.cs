@@ -5,11 +5,10 @@ using UnityEngine.Playables;
 
 namespace SkillEditor
 {
-    public class HitPointBehaviour : PlayableBehaviour
+    public class SkillHitBehaviour : PlayableBehaviour
     {
         public override void OnPlayableCreate(Playable playable)
         {
-            Debug.Log(111);
             playable.SetDuration(0.5f);
         }
     }

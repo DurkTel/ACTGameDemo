@@ -21,6 +21,11 @@ public class Test : MonoBehaviour
         {
             TrackAsset track = item.sourceObject as TrackAsset;
             
+            foreach (var clip in track.outputs)
+            {
+
+            }
+
         }
     }
 

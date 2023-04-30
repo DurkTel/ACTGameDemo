@@ -6,6 +6,7 @@ public class ShakeCamera : MonoBehaviour
 {
     public enum ShakeOrient
     {
+        none = 0,
         horizontal = 1,     //水平
         vertical,       //垂直
         forward,        //正朝向
@@ -56,9 +57,9 @@ public class ShakeCamera : MonoBehaviour
     }
 
     //振屏
-    public void ShakeScreen(int stype, float period, float shakeTime, float maxWave, float minWave, float offPeriod = 0, bool bRest = true, UnityAction finish = null)
+    public void ShakeScreen(ShakeOrient stype, float period, float shakeTime, float maxWave, float minWave, float offPeriod = 0, bool bRest = true, UnityAction finish = null)
     {
-        ShakeOrient shakeOrient = (ShakeOrient)stype;
+        ShakeOrient shakeOrient = stype;
         //不在振动状态        
         if (!mIsShake)
         {

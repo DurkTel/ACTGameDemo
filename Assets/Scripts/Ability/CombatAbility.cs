@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static CombatSkillConfig;
+using static ShakeCamera;
 
 public class CombatAbility : PlayerAbility
 {
@@ -233,7 +234,7 @@ public class CombatAbility : PlayerAbility
         //ø®»‚
         playerController.SetAnimatorPauseFrame(0f, 10f);
         if (playerController.shakeCamera != null)
-            playerController.shakeCamera.ShakeScreen(1, 1f, 0.15f, 0.3f, 0.2f, 0f, false);
+            playerController.shakeCamera.ShakeScreen(ShakeOrient.horizontal, 1f, 0.15f, 0.3f, 0.2f, 0f, false);
     }
 
     /// <summary>

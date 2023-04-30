@@ -4,8 +4,8 @@ using UnityEngine.Timeline;
 
 namespace SkillEditor
 {
-    [TrackClipType(typeof(HitPointPlayableAsset))]
-    public class HitPointTrack : TrackAsset
+    [TrackClipType(typeof(SkillHitClip))]
+    public class SkillHitTrack : TrackAsset
     {
 
     }
