@@ -9,10 +9,6 @@ namespace SkillEditor
     public class SkillParamClip : PlayableAsset
     {
         /// <summary>
-        /// 攻击段数
-        /// </summary>
-        public int effectCount;
-        /// <summary>
         /// 优先级
         /// </summary>
         public int priority;

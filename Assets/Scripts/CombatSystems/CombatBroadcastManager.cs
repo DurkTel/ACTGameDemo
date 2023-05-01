@@ -104,7 +104,7 @@ public class CombatBroadcastManager : MonoBehaviour
             CombatBroadcast broadcast = m_broadcastHurtQueue.Dequeue();
 
             //这个技能是否已经完成攻击段数
-            if (broadcast.toActor == null || (m_effectCounter.TryGetValue(broadcast.attackId, out int effectCount) && effectCount >= broadcast.combatSkill.effectCount))
+            if (broadcast.toActor == null || (m_effectCounter.TryGetValue(broadcast.attackId, out int effectCount) && effectCount >= broadcast.hitPoint.effectCount))
                 continue;
 
             TryAddEffectCount(broadcast.attackId);
@@ -133,6 +133,8 @@ public struct CombatBroadcast
     public PlayerController[] toActor;
 
     public CombatSkillConfig combatSkill;
+
+    public HitStruct hitPoint;
 
     public UnityAction hurtAction;
 

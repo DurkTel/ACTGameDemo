@@ -24,6 +24,8 @@ public class CombatAbility : PlayerAbility
 
     private CombatBroadcast m_curBroadcast;
 
+    private HitStruct m_curHitPoint;
+
     private int m_curBroadcastId;
 
     private float m_normalizedTime;
@@ -89,7 +91,6 @@ public class CombatAbility : PlayerAbility
     public override void OnUpdateAbility()
     {
         base.OnUpdateAbility();
-        m_normalizedTime = GetAttackProgress();
         ControlCombo();
 
     }
@@ -115,20 +116,40 @@ public class CombatAbility : PlayerAbility
     private void FixedUpdate()
     {
         if (!m_isEnable) return;
-        ControlDetection();
+        RequestDetection();
     }
 
     private void OnAnimatorMove()
     {
         if (!m_isEnable) return;
+        m_normalizedTime = GetAttackProgress();
         ReleaseAttack();
+        ControlDetection();
         moveController.MoveCompensation(m_compensationPowerPlane, m_compensationPowerAir);
     }
+
 
     /// <summary>
     /// ¿ØÖÆ´ò»÷¼ì²â
     /// </summary>
     private void ControlDetection()
+    {
+        m_combatDetection = false;
+        foreach (var item in m_curBroadcast.combatSkill.hits)
+        {
+            if(m_normalizedTime >= item.start && m_normalizedTime <= item.end)
+            {
+                m_combatDetection = true;
+                m_curHitPoint = item;
+                break;
+            }
+        }
+    }
+
+    /// <summary>
+    /// ÇëÇó´ò»÷
+    /// </summary>
+    private void RequestDetection()
     {
         if (!m_combatDetection || m_curBroadcastId < 0) return;
 
@@ -148,6 +169,7 @@ public class CombatAbility : PlayerAbility
                 if (temp.Count > 0 && CombatBroadcastManager.Instance.TypGetAttackBroascat(m_curBroadcastId, out CombatBroadcast broadcast))
                 {
                     m_curBroadcast = broadcast;
+                    m_curBroadcast.hitPoint = m_curHitPoint;
                     m_curBroadcast.toActor = temp.ToArray();
                     CombatBroadcastManager.Instance.AttackBroascatHurt(m_curBroadcast);
                     break;
@@ -175,7 +197,7 @@ public class CombatAbility : PlayerAbility
                 }
             }
 
-            if (newCombat == null && m_curBroadcast.combatSkill.comboSkills.Length > 0)
+            if (newCombat == null && m_curBroadcast.combatSkill.comboSkills != null && m_curBroadcast.combatSkill.comboSkills.Length > 0)
             {
                 foreach (var item in m_curBroadcast.combatSkill.comboSkills)
                 {
@@ -234,7 +256,7 @@ public class CombatAbility : PlayerAbility
         //¿¨Èâ
         playerController.SetAnimatorPauseFrame(0f, 10f);
         if (playerController.shakeCamera != null)
-            playerController.shakeCamera.ShakeScreen(ShakeOrient.horizontal, 1f, 0.15f, 0.3f, 0.2f, 0f, false);
+            playerController.shakeCamera.ShakeScreen(m_curHitPoint.shakeOrient, m_curHitPoint.period, m_curHitPoint.shakeTime, m_curHitPoint.maxWave, m_curHitPoint.minWave, 0f, false);
     }
 
     /// <summary>

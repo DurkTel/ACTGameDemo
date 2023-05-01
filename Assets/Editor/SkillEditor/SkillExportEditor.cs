@@ -13,6 +13,8 @@ public class SkillExportEditor : EditorWindow
 
     private string m_newName;
 
+    private double m_totalDuration;
+
     [MenuItem("Tools/SkillEditor")]
     static void Init()
     {
@@ -97,39 +99,18 @@ public class SkillExportEditor : EditorWindow
         {
             SkillTimeLine asset = select as SkillTimeLine;
             CombatSkillConfig skillObj = ScriptableObject.CreateInstance<CombatSkillConfig>();
-            double totalDuration = asset.duration;
+            m_totalDuration = asset.duration;
 
             foreach (TrackAsset track in asset.GetOutputTracks())
             {
                 if (track is SkillAnimationTrack)
-                {
-                    SkillAnimationTrack ani = track as SkillAnimationTrack;
-                    skillObj.skillName = ani.skillAnimationName;
-                }
+                    InitAnimationTrack(track as SkillAnimationTrack, skillObj);
+                else if (track is SkillHitTrack)
+                    InitHitTrack(track as SkillHitTrack, skillObj);
                 else if (track is SkillParamTrack)
-                {
-                    foreach (var item in track.GetClips())
-                    {
-                        SkillParamClip skillParam = item.asset as SkillParamClip;
-                        skillObj.effectCount = skillParam.effectCount;
-                        skillObj.autoLock = skillParam.autoLock;
-                        skillObj.force = skillParam.force;
-                        skillObj.priority = skillParam.priority;
-                        skillObj.tag = skillParam.tag;
-                        skillObj.condition = skillParam.condition;
-                    }
-                }
+                    InitParamTrack(track as SkillParamTrack, skillObj);
                 else if (track is SkillPerformTrack)
-                {
-                    foreach (var item in track.GetClips())
-                    {
-                        if (item.asset is SkillPerformPiontClip)
-                            skillObj.attackPoint = (float)(item.end / totalDuration);
-                        else if (item.asset is SkillPerformBackswingClip)
-                            skillObj.attackBackswing = (float)(item.start / totalDuration);
-                    }
-
-                }
+                    InitPerformTrack(track as SkillPerformTrack, skillObj);
             }
 
 
@@ -149,5 +130,60 @@ public class SkillExportEditor : EditorWindow
             AssetDatabase.Refresh();
         }
 
+    }
+
+
+    private void InitAnimationTrack(SkillAnimationTrack track, CombatSkillConfig skillObj)
+    {
+        skillObj.animationName = track.skillAnimationName;
+    }
+
+    private void InitHitTrack(SkillHitTrack track, CombatSkillConfig skillObj)
+    {
+        skillObj.hits ??= new List<HitStruct>();
+        skillObj.hits.Clear();
+        foreach (var item in track.GetClips())
+        {
+            SkillHitClip skillHit = item.asset as SkillHitClip;
+
+            HitStruct hit = new HitStruct();
+            hit.start = (item.start / m_totalDuration);
+            hit.end = (item.end / m_totalDuration);
+            hit.effectCount = skillHit.effectCout;
+            hit.repulsionDistance = skillHit.repulsionDistance;
+            hit.strikeFly = skillHit.strikeFly;
+            hit.shakeOrient = skillHit.shakeOrient;
+            hit.period = skillHit.period;
+            hit.shakeTime = skillHit.shakeTime;
+            hit.maxWave = skillHit.maxWave;
+            hit.minWave = skillHit.minWave;
+            hit.shakeCurve = skillHit.shakeCurve;
+
+            skillObj.hits.Add(hit);
+        }
+    }
+
+    private void InitParamTrack(SkillParamTrack track, CombatSkillConfig skillObj)
+    {
+        foreach (var item in track.GetClips())
+        {
+            SkillParamClip skillParam = item.asset as SkillParamClip;
+            skillObj.autoLock = skillParam.autoLock;
+            skillObj.force = skillParam.force;
+            skillObj.priority = skillParam.priority;
+            skillObj.tag = skillParam.tag;
+            skillObj.condition = skillParam.condition;
+        }
+    }
+
+    private void InitPerformTrack(SkillPerformTrack track, CombatSkillConfig skillObj)
+    {
+        foreach (var item in track.GetClips())
+        {
+            if (item.asset is SkillPerformPiontClip)
+                skillObj.attackPoint = (float)(item.end / m_totalDuration);
+            else if (item.asset is SkillPerformBackswingClip)
+                skillObj.attackBackswing = (float)(item.start / m_totalDuration);
+        }
     }
 }

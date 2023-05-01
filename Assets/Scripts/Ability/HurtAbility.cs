@@ -89,8 +89,8 @@ public class HurtAbility : PlayerAbility
         //if (m_isGrounded && m_curBroadcast.combatSkill.repulsionDistance < 2f && beatBackDir.y == 0f)
         //    moveController.Rotate(Quaternion.LookRotation(-beatBackDir), 0.15f, 0f);
 
-        m_compensationPowerPlane = m_curBroadcast.combatSkill.repulsionDistance;
-        m_compensationPowerAir = m_curBroadcast.combatSkill.strikeFly;
+        m_compensationPowerPlane = m_curBroadcast.hitPoint.repulsionDistance;
+        m_compensationPowerAir = m_curBroadcast.hitPoint.strikeFly;
 
         string dir = "";
         string flag = "";
@@ -100,7 +100,7 @@ public class HurtAbility : PlayerAbility
             dir = "Up";
             flag = "3";
         }
-        else if (m_curBroadcast.combatSkill.strikeFly > 0)
+        else if (m_curBroadcast.hitPoint.strikeFly > 0)
         {
             dir = "Up";
             flag = "1";
@@ -110,7 +110,7 @@ public class HurtAbility : PlayerAbility
             dir = m_actions.knockDown > 0 ? "Back" : "Front";
             flag = "Down";
         }
-        else if (m_curBroadcast.combatSkill.repulsionDistance >= 0.1f)
+        else if (m_curBroadcast.hitPoint.repulsionDistance >= 0.1f)
         {
             dir = frontOrBack > 0 ? "Back" : "Front";
             flag = "Big";

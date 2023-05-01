@@ -24,6 +24,7 @@ MonoBehaviour:
   autoLock: 1
   force: 0
   condition: 2
+  hits: []
   comboSkills:
   - range1: 0.4
     range2: 1

@@ -9,6 +9,10 @@ namespace SkillEditor
     public class SkillHitClip : PlayableAsset
     {
         /// <summary>
+        /// ´ò»÷´ÎÊı
+        /// </summary>
+        public int effectCout;
+        /// <summary>
         /// »÷ÍË¾àÀë
         /// </summary>
         public float repulsionDistance;

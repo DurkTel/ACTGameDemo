@@ -8,6 +8,7 @@ using System;
 [CustomEditor(typeof(SkillHitClip))]
 public class SkillHitClipDrawer : Editor
 {
+    protected GUIContent m_effectCout = new GUIContent("打击次数");
     protected GUIContent m_repulsionDistance = new GUIContent("击退距离");
     protected GUIContent m_strikeFly = new GUIContent("受击浮空系数");
     protected GUIContent m_shakeOrient = new GUIContent("镜头震动模式");
@@ -20,6 +21,7 @@ public class SkillHitClipDrawer : Editor
 
     public override void OnInspectorGUI()
     {
+        SerializedProperty effectCout = serializedObject.FindProperty("effectCout");
         SerializedProperty repulsionDistance = serializedObject.FindProperty("repulsionDistance");
         SerializedProperty strikeFly = serializedObject.FindProperty("strikeFly");
         SerializedProperty shakeOrient = serializedObject.FindProperty("shakeOrient");
@@ -29,6 +31,7 @@ public class SkillHitClipDrawer : Editor
         SerializedProperty minWave = serializedObject.FindProperty("minWave");
         SerializedProperty shakeCurve = serializedObject.FindProperty("shakeCurve");
 
+        EditorGUILayout.PropertyField(effectCout, m_effectCout);
         EditorGUILayout.PropertyField(repulsionDistance, m_repulsionDistance);
         EditorGUILayout.PropertyField(strikeFly, m_strikeFly);
         EditorGUILayout.PropertyField(shakeOrient, m_shakeOrient);
