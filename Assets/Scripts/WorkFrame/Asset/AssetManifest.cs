@@ -80,7 +80,7 @@ public class AssetManifest : ScriptableObject, ISerializationCallbackReceiver
             string ex = Path.GetExtension(path);
             if (ex != ".meta" && ex != ".cs")
             {
-                assetManifest.Add(path.Replace(ex, ""));
+                assetManifest.Add(path, true);
             }
         }
         EditorUtility.SetDirty(assetManifest);
@@ -91,6 +91,8 @@ public class AssetManifest : ScriptableObject, ISerializationCallbackReceiver
 
     public static AssetManifest GetAssetManifest(string path)
     {
+        if (!Directory.Exists(Application.dataPath + "/Plugins"))
+            Directory.CreateDirectory(Application.dataPath + "/Plugins");
         AssetManifest assetManifest = AssetDatabase.LoadAssetAtPath<AssetManifest>(path);
 
         if (assetManifest == null)
@@ -102,14 +104,16 @@ public class AssetManifest : ScriptableObject, ISerializationCallbackReceiver
         return assetManifest;
     }
 
-    public void Add(string assetPath)
+    public void Add(string assetPath, bool removeExtension = false)
     {
         string assetName = Path.GetFileName(assetPath);
 
+        string newPath = removeExtension ? assetPath.Replace(Path.GetExtension(assetPath), "") : assetPath;
+
         if (assetMap.ContainsKey(assetName))
-            assetMap[assetName] = assetPath;
+            assetMap[assetName] = newPath;
         else
-            assetMap.Add(assetName, assetPath);
+            assetMap.Add(assetName, newPath);
     }
 
     public bool Contains(string assetName)

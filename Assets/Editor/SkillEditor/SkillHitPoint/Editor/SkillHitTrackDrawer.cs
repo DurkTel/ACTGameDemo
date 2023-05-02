@@ -10,6 +10,7 @@ namespace SkillEditor
     {
         public override void OnInspectorGUI()
         {
+            base.OnInspectorGUI();  
             EditorGUILayout.HelpBox("   该轨道用于调整技能的攻击检测开启", MessageType.Info);
 
         }

@@ -136,6 +136,8 @@ public struct CombatBroadcast
 
     public HitStruct hitPoint;
 
+    public UnityAction beginAction;
+
     public UnityAction hurtAction;
 
     public void Release()
@@ -143,6 +145,7 @@ public struct CombatBroadcast
         fromActor = null;
         toActor = null;
         combatSkill = null;
+        beginAction = null;
         hurtAction = null;
         beginTime = 0f;
     }
@@ -150,7 +153,7 @@ public struct CombatBroadcast
     public void Begin()
     {
         beginTime = Time.realtimeSinceStartup;
-        fromActor.SetAnimationState(combatSkill.animationName);
+        beginAction?.Invoke();
     }
 
     public void Hurt()

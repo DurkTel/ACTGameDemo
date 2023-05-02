@@ -16,26 +16,39 @@ MonoBehaviour:
   tag: 
   animationName: Attack_3Combo_1
   attackPoint: 0.27631578
-  attackBackswing: 0.42105263
+  attackBackswing: 0.40789473
   priority: 0
   autoLock: 1
   force: 0
   condition: 1
+  audios:
+  - start: 0.2763157894738296
+    end: 0.40789473684231997
+    audio:
+    - {fileID: 8300000, guid: d54c6404489fe9a4680b78763977251b, type: 3}
+    hurtAudio:
+    - {fileID: 8300000, guid: 278648783527b83418f4d36d459cc864, type: 3}
+    - {fileID: 8300000, guid: 9c1ed261fac035049828ad068892525a, type: 3}
+    - {fileID: 8300000, guid: ffbfec92412bdf54f875fae2739df9b3, type: 3}
   hits:
   - start: 0.2763157894738296
-    end: 0.42105263157916895
+    end: 0.40789473684231997
     effectCount: 1
     repulsionDistance: 0.03
     strikeFly: 0
     shakeOrient: 1
     period: 1
     shakeTime: 0.15
-    maxWave: 0.2
-    minWave: -0.2
+    maxWave: 0.15
+    minWave: -0.15
     shakeCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  comboSkills: []
+  comboSkills:
+  - range1: 0.4078947368425831
+    range2: 1.0000000000007894
+    comboSkill: {fileID: 11400000, guid: 66b2e0d9d393cf14e870a52a45209dba, type: 2}
+    comboCondition: 1

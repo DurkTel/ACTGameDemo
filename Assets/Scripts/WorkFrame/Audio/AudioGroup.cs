@@ -33,7 +33,7 @@ public class AudioGroup : MonoBehaviour
 
     private AudioObject Create()
     {
-        AudioObject ao = GMAudioManager.instance.audioObject.Get();
+        AudioObject ao = GMAudioManager.Instance.audioObject.Get();
         ao.transform.SetParent(transform);
         ao.mixerGroup = audioMixerGroup;
         ao.audioSource.loop = isLoop;
@@ -107,6 +107,34 @@ public class AudioGroup : MonoBehaviour
         ao.Play(assetName);
     }
 
+    public void Play(AudioClip audioClip)
+    {
+        AudioObject ao = GetAudioObject();
+        if (ao == null) return;
+        ao.Play(audioClip);
+    }
+
+    public bool IsPlaying(string assetName)
+    {
+        foreach (var item in activeAudios)
+        {
+            if (item.assetName == assetName)
+                return true;
+        }
+
+        return false;
+    }
+
+    public bool IsPlaying(AudioClip audioClip)
+    {
+        foreach (var item in activeAudios)
+        {
+            if (item.audioSource.clip == audioClip)
+                return true;
+        }
+
+        return false;
+    }
 
     private void Update()
     {

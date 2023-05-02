@@ -8,6 +8,8 @@ namespace SkillEditor
     [TrackClipType(typeof(SkillComboClip))]
     public class SkillComboTrack : PlayableTrack
     {
+        [HideInInspector]
+        public CombatSkillConfig combatSkillConfig;
 
     }
 }

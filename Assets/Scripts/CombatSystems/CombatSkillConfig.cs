@@ -59,21 +59,25 @@ public class CombatSkillConfig : ScriptableObject
     /// </summary>
     public CombatAttackCondition condition;
     /// <summary>
+    /// 声效
+    /// </summary>
+    public List<AudioStruct> audios;
+    /// <summary>
     /// 打击点
     /// </summary>
     public List<HitStruct> hits;
     /// <summary>
     /// 连招
     /// </summary>
-    public ComboSkillStruct[] comboSkills;
+    public List<ComboSkillStruct> comboSkills;
 
 }
 
 [System.Serializable]   
 public struct ComboSkillStruct
 {
-    [Range(0f, 1f)]public float range1;
-    [Range(0f, 1f)] public float range2;
+    [Range(0f, 1f)]public double range1;
+    [Range(0f, 1f)] public double range2;
     public CombatSkillConfig comboSkill;
     public CombatSkillConfig.CombatAttackCondition comboCondition;
 }
@@ -125,4 +129,25 @@ public struct HitStruct
     /// 震动曲线
     /// </summary>
     public AnimationCurve shakeCurve;
+}
+
+[System.Serializable]
+public struct AudioStruct
+{
+    /// <summary>
+    /// 开始时间
+    /// </summary>
+    public double start;
+    /// <summary>
+    /// 结束时间
+    /// </summary>
+    public double end;
+    /// <summary>
+    /// 声效
+    /// </summary>
+    public AudioClip[] audio;
+    /// <summary>
+    /// 击中声效
+    /// </summary>
+    public AudioClip[] hurtAudio;
 }

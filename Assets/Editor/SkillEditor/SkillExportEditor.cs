@@ -58,13 +58,17 @@ public class SkillExportEditor : EditorWindow
         }
 
         string skillAssetsFolder = string.Format("Assets/Prefabs/SkillTimeLines/{0}/", m_newName);
-        bool isExist = File.Exists(skillAssetsFolder);
+        bool isExist = Directory.Exists(skillAssetsFolder);
         if (!isExist)
             Directory.CreateDirectory(skillAssetsFolder);
         else
         {
-            EditorUtility.DisplayDialog("警告", "已存在相同技能", "确定");
-            return;
+            if (!EditorUtility.DisplayDialog("警告", "已存在相同技能，是否替换", "确定", "取消"))
+                return;
+
+            Directory.Delete(skillAssetsFolder, true);
+            Directory.CreateDirectory(skillAssetsFolder);
+            AssetDatabase.Refresh();    
         }
         SkillTimeLine timelineAsset = ScriptableObject.CreateInstance<SkillTimeLine>();
         AssetDatabase.CreateAsset(timelineAsset, skillAssetsFolder + string.Format("{0}.playable", m_newName));
@@ -75,7 +79,9 @@ public class SkillExportEditor : EditorWindow
         timelineAsset.CreateTrack<SkillAnimationTrack>("技能动画轨道");
         timelineAsset.CreateTrack<SkillPerformTrack>("技能演出轨道");
         timelineAsset.CreateTrack<SkillHitTrack>("技能打击轨道");
+        timelineAsset.CreateTrack<SkillAudioTrack>("技能音效轨道");
         timelineAsset.CreateTrack<SkillParamTrack>("技能参数轨道");
+        timelineAsset.CreateTrack<SkillComboTrack>("技能派生轨道_1");
 
         bool isSavePrefabSuccess = false;
         PrefabUtility.SaveAsPrefabAsset(gameObject, skillAssetsFolder + string.Format("{0}.prefab", m_newName), out isSavePrefabSuccess);
@@ -101,6 +107,8 @@ public class SkillExportEditor : EditorWindow
             CombatSkillConfig skillObj = ScriptableObject.CreateInstance<CombatSkillConfig>();
             m_totalDuration = asset.duration;
 
+            skillObj.comboSkills ??= new List<ComboSkillStruct>();
+            skillObj.comboSkills.Clear();
             foreach (TrackAsset track in asset.GetOutputTracks())
             {
                 if (track is SkillAnimationTrack)
@@ -111,16 +119,24 @@ public class SkillExportEditor : EditorWindow
                     InitParamTrack(track as SkillParamTrack, skillObj);
                 else if (track is SkillPerformTrack)
                     InitPerformTrack(track as SkillPerformTrack, skillObj);
+                else if (track is SkillAudioTrack)
+                    InitAudioTrack(track as SkillAudioTrack, skillObj);
+                else if (track is SkillComboTrack)
+                    InitComboTrack(track as SkillComboTrack, skillObj);
             }
 
 
             string skillAssetsFolder = string.Format("Assets/SO/{0}/", select.name);
-            if (!File.Exists(skillAssetsFolder))
+            if (!Directory.Exists(skillAssetsFolder))
                 Directory.CreateDirectory(skillAssetsFolder);
             else
             {
-                EditorUtility.DisplayDialog("警告", "已存在相同技能", "确定");
-                return;
+                if (!EditorUtility.DisplayDialog("警告", "已存在相同技能，是否替换", "确定", "取消"))
+                    return;
+
+                Directory.Delete(skillAssetsFolder, true);
+                Directory.CreateDirectory(skillAssetsFolder);
+                AssetDatabase.Refresh();
             }
 
             AssetDatabase.CreateAsset(skillObj, string.Format("Assets/SO/{0}/{1}.asset", select.name, select.name));
@@ -185,5 +201,33 @@ public class SkillExportEditor : EditorWindow
             else if (item.asset is SkillPerformBackswingClip)
                 skillObj.attackBackswing = (float)(item.start / m_totalDuration);
         }
+    }
+
+    private void InitAudioTrack(SkillAudioTrack track, CombatSkillConfig skillObj)
+    {
+        skillObj.audios ??= new List<AudioStruct>();
+        skillObj.audios.Clear();
+        foreach (var item in track.GetClips())
+        {
+            AudioClip[] audioArray = (item.asset as SkillAudioClip).audio;
+            AudioClip[] hurtAudioArray = (item.asset as SkillAudioClip).hurtAudio;
+            AudioStruct audio = new AudioStruct();
+            audio.audio = audioArray;
+            audio.hurtAudio = hurtAudioArray;
+            audio.start = (item.start / m_totalDuration);
+            audio.end = (item.end / m_totalDuration);
+            skillObj.audios.Add(audio);
+        }
+    }
+
+    private void InitComboTrack(SkillComboTrack track, CombatSkillConfig skillObj)
+    {
+        ComboSkillStruct comboStruct = new ComboSkillStruct();
+        if (track.combatSkillConfig == null || track.duration == 0) return;
+        comboStruct.range1 = track.start / m_totalDuration;
+        comboStruct.range2 = track.end / m_totalDuration;
+        comboStruct.comboSkill = track.combatSkillConfig;
+        comboStruct.comboCondition = track.combatSkillConfig.condition;
+        skillObj.comboSkills.Add(comboStruct);
     }
 }

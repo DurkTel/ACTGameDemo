@@ -1,10 +1,12 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static CombatSkillConfig;
-using static ShakeCamera;
+using static UnityEditor.Progress;
 
+/// <summary>
+/// 攻击函数调用周期 ControlCombo -> ReleaseAttackSignal -> ControlDetection -> RequestDetection -> CombatBegin -> CombatSuccess -> ReleaseAttack
+/// 
+/// </summary>
 public class CombatAbility : PlayerAbility
 {
     public bool drawGizmos;
@@ -25,6 +27,8 @@ public class CombatAbility : PlayerAbility
     private CombatBroadcast m_curBroadcast;
 
     private HitStruct m_curHitPoint;
+
+    private AudioStruct m_curAudio;
 
     private int m_curBroadcastId;
 
@@ -77,7 +81,6 @@ public class CombatAbility : PlayerAbility
         base.OnEnableAbility();
         OnResetAnimatorParameter();
         CombatBroadcastManager.Instance.AttackBroascatBegin(m_curBroadcast);
-        AutoLock();
         moveController.EnableGravity(false);
     }
 
@@ -125,7 +128,41 @@ public class CombatAbility : PlayerAbility
         m_normalizedTime = GetAttackProgress();
         ReleaseAttack();
         ControlDetection();
+        ControlHitAudio();
         moveController.MoveCompensation(m_compensationPowerPlane, m_compensationPowerAir);
+    }
+
+    #region 攻击生命周期 
+
+    /// <summary>
+    /// 攻击开始回调
+    /// </summary>
+    private void CombatBegin()
+    {
+        AutoLock();
+        playerController.SetAnimationState(m_curBroadcast.combatSkill.animationName);
+
+    }
+
+    /// <summary>
+    /// 攻击成功回调
+    /// </summary>
+    private void CombatSuccess()
+    {
+        //卡肉
+        playerController.SetAnimatorPauseFrame(0f, 10f);
+        if (playerController.shakeCamera != null)
+            playerController.shakeCamera.ShakeScreen(m_curHitPoint.shakeOrient, m_curHitPoint.period, m_curHitPoint.shakeTime, m_curHitPoint.maxWave, m_curHitPoint.minWave, 0f, false);
+
+        //武器打击声效
+        if (m_curAudio.hurtAudio != null && m_curAudio.hurtAudio.Length > 0)
+        {
+            Random.InitState((int)Time.realtimeSinceStartup);
+            int index = Random.Range(0, m_curAudio.hurtAudio.Length);
+            AudioClip audio = m_curAudio.hurtAudio[index];
+            if (!GMAudioManager.IsPlaying("HitAudio", audio))
+                GMAudioManager.Play("HitAudio", audio);
+        }
     }
 
 
@@ -137,7 +174,7 @@ public class CombatAbility : PlayerAbility
         m_combatDetection = false;
         foreach (var item in m_curBroadcast.combatSkill.hits)
         {
-            if(m_normalizedTime >= item.start && m_normalizedTime <= item.end)
+            if (m_normalizedTime >= item.start && m_normalizedTime <= item.end)
             {
                 m_combatDetection = true;
                 m_curHitPoint = item;
@@ -197,7 +234,7 @@ public class CombatAbility : PlayerAbility
                 }
             }
 
-            if (newCombat == null && m_curBroadcast.combatSkill.comboSkills != null && m_curBroadcast.combatSkill.comboSkills.Length > 0)
+            if (newCombat == null && m_curBroadcast.combatSkill.comboSkills != null && m_curBroadcast.combatSkill.comboSkills.Count > 0)
             {
                 foreach (var item in m_curBroadcast.combatSkill.comboSkills)
                 {
@@ -219,7 +256,6 @@ public class CombatAbility : PlayerAbility
                 m_curBroadcast = InitCombatBroad(newCombat);
                 //广播战报
                 CombatBroadcastManager.Instance.AttackBroascatBegin(m_curBroadcast);
-                AutoLock();
                 ReleaseAttackSignal();
             }
         }
@@ -242,31 +278,6 @@ public class CombatAbility : PlayerAbility
         }
     }
 
-    private CombatBroadcast InitCombatBroad(CombatSkillConfig newCombat)
-    {
-        CombatBroadcast broadcast = CombatBroadcastManager.GetCombatBroadcast(out m_curBroadcastId);
-        broadcast.fromActor = playerController;
-        broadcast.combatSkill = newCombat;
-        broadcast.hurtAction = CombatSuccess;
-        return broadcast;
-    }
-
-    private void CombatSuccess()
-    {
-        //卡肉
-        playerController.SetAnimatorPauseFrame(0f, 10f);
-        if (playerController.shakeCamera != null)
-            playerController.shakeCamera.ShakeScreen(m_curHitPoint.shakeOrient, m_curHitPoint.period, m_curHitPoint.shakeTime, m_curHitPoint.maxWave, m_curHitPoint.minWave, 0f, false);
-    }
-
-    /// <summary>
-    /// 获取当前攻击信号
-    /// </summary>
-    /// <returns></returns>
-    private bool GetAttackSignal()
-    {
-        return m_actions.lightAttack || m_actions.heavyAttack || m_actions.attackEx;
-    }
 
     /// <summary>
     /// 重置攻击信号
@@ -277,6 +288,26 @@ public class CombatAbility : PlayerAbility
         m_actions.heavyAttack = false;
         m_actions.attackEx = false;
     }
+
+
+    /// <summary>
+    /// 构造战报
+    /// </summary>
+    /// <param name="newCombat"></param>
+    /// <returns></returns>
+    private CombatBroadcast InitCombatBroad(CombatSkillConfig newCombat)
+    {
+        CombatBroadcast broadcast = CombatBroadcastManager.GetCombatBroadcast(out m_curBroadcastId);
+        broadcast.fromActor = playerController;
+        broadcast.combatSkill = newCombat;
+        broadcast.beginAction = CombatBegin;
+        broadcast.hurtAction = CombatSuccess;
+        return broadcast;
+    }
+
+    #endregion
+
+    #region 攻击表现处理
 
     /// <summary>
     /// 自动锁定
@@ -296,6 +327,36 @@ public class CombatAbility : PlayerAbility
         Vector3 dir = target.position - playerController.rootTransform.position;
         dir.y = 0f;
         moveController.Rotate(Quaternion.LookRotation(dir), 0.2f, 0f);
+    }
+
+    private void ControlHitAudio()
+    {
+        if (m_curBroadcast.combatSkill.audios == null || m_curBroadcast.combatSkill.audios.Count <= 0) return;
+        foreach (var item in m_curBroadcast.combatSkill.audios)
+        {
+            if (m_normalizedTime >= item.start && m_normalizedTime <= item.end)
+            {
+                m_curAudio = item;
+                Random.InitState((int)Time.realtimeSinceStartup);
+                int index = Random.Range(0, m_curAudio.audio.Length);
+                AudioClip audio = m_curAudio.audio[index];
+                if (!GMAudioManager.IsPlaying("HitAudio", audio))
+                    GMAudioManager.Play("HitAudio", audio);
+                break;
+            }
+        }
+    }
+    #endregion
+
+    #region 扩展方法
+
+    /// <summary>
+    /// 获取当前攻击信号
+    /// </summary>
+    /// <returns></returns>
+    private bool GetAttackSignal()
+    {
+        return m_actions.lightAttack || m_actions.heavyAttack || m_actions.attackEx;
     }
 
     /// <summary>
@@ -351,11 +412,11 @@ public class CombatAbility : PlayerAbility
 
         return true;
     }
-
+    #endregion
 }
 
 
-[Serializable]
+[System.Serializable]
 public struct CombatDetectionPoint
 {
     public Transform startPoint;
