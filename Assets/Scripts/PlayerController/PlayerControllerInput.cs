@@ -254,6 +254,11 @@ public class PlayerControllerInput : MonoBehaviour, CrossPlatformInput.IGamePlay
         if (ButtonHandle(context) == PlayerInputPhase.Click)
             m_controller.actions.attackEx = true;
     }
+
+    public void OnRevenges(InputAction.CallbackContext context)
+    {
+        m_controller.actions.revenges = ButtonHandle(context) == PlayerInputPhase.Hold;
+    }
 }
 
 /// <summary>

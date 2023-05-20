@@ -65,6 +65,10 @@ public class PlayerControllerActions
     /// </summary>
     public bool attackEx = false;
     /// <summary>
+    /// ¸ñµ²
+    /// </summary>
+    public bool revenges = false;
+    /// <summary>
     /// »÷µ¹ 0 Î´»÷µ¹  1Ç°Å¿  -1ºóÅ¿
     /// </summary>
     public int knockDown = 0;

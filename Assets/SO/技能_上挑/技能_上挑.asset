@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7a7919aff549244ba65a384ccbc760f, type: 3}
+  m_Name: "\u6280\u80FD_\u4E0A\u6311"
+  m_EditorClassIdentifier: 
+  skillName: 
+  tag: 
+  animationName: UpperAttack
+  attackPoint: 0.14
+  attackBackswing: 0.24
+  priority: 0
+  autoLock: 1
+  force: 1
+  condition: 512
+  audios:
+  - start: 0.140000000000056
+    end: 0.240000000000096
+    audio:
+    - {fileID: 8300000, guid: d54c6404489fe9a4680b78763977251b, type: 3}
+    hurtAudio:
+    - {fileID: 8300000, guid: ffbfec92412bdf54f875fae2739df9b3, type: 3}
+  hits:
+  - start: 0.140000000000056
+    end: 0.240000000000096
+    effectCount: 1
+    repulsionDistance: 0
+    strikeFly: 0.13
+    shakeOrient: 1
+    period: 1
+    shakeTime: 0.2
+    maxWave: 1
+    minWave: -1
+    shakeCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  comboSkills:
+  - range1: 0.240000000000096
+    range2: 1.0000000000004001
+    comboSkill: {fileID: 11400000, guid: 0897f42fa0e870947aba3b8234fc1999, type: 2}
+    comboCondition: 129

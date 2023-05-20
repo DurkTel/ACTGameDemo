@@ -136,6 +136,34 @@ public class AudioGroup : MonoBehaviour
         return false;
     }
 
+    public bool Delete(string assetName)
+    {
+        foreach (var item in activeAudios)
+        {
+            if (item.assetName == assetName)
+            {
+                item.Delete();
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public bool Delete(AudioClip audioClip)
+    {
+        foreach (var item in activeAudios)
+        {
+            if (item.audioSource.clip == audioClip)
+            {
+                item.Delete();
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private void Update()
     {
         if (Time.frameCount % 60 == 0)

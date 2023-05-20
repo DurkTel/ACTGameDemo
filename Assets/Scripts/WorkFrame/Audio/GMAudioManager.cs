@@ -92,6 +92,24 @@ public class GMAudioManager : SingletonMonoAuto<GMAudioManager>
         return false;
     }
 
+    public static bool Delete(string AudioGroupName, AudioClip audioClip)
+    {
+        AudioGroup audioGroup;
+        if (Instance.audioGroups.TryGetValue(AudioGroupName, out audioGroup))
+            return audioGroup.Delete(audioClip);
+
+        return false;
+    }
+
+    public static bool Delete(string AudioGroupName, string assetName)
+    {
+        AudioGroup audioGroup;
+        if (Instance.audioGroups.TryGetValue(AudioGroupName, out audioGroup))
+            return audioGroup.Delete(assetName);
+
+        return false;
+    }
+
     public static void SetTotalAudio(float volume)
     {
         if (Instance.audioMixerGroups.TryGetValue("Master", out AudioMixerGroup group))

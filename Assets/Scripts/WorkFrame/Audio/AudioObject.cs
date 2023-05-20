@@ -66,6 +66,11 @@ public class AudioObject
         LoadAudioClip(assetName);
     }
 
+    public void Delete()
+    {
+        audioSource.Stop();
+    }
+
     public void Release()
     {
         audioSource.clip = null;

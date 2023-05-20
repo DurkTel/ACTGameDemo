@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using static ShakeCamera;
 
@@ -21,6 +22,7 @@ public class CombatSkillConfig : ScriptableObject
         Jump = 128,
         Sprint = 256,
         AttackEx = 512,
+        IsGround = 1024,
     }
     /// <summary>
     /// 技能名字
@@ -54,6 +56,10 @@ public class CombatSkillConfig : ScriptableObject
     /// 强制执行
     /// </summary>
     public bool force;
+    /// <summary>
+    /// 忽略攻击信号
+    /// </summary>
+    public bool ignoreSignal;
     /// <summary>
     /// 触发条件
     /// </summary>

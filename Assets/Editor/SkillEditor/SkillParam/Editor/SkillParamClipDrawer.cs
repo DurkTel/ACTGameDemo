@@ -16,6 +16,9 @@ namespace SkillEditor
 
         protected GUIContent m_condition = new GUIContent("释放条件");
 
+        protected GUIContent m_ignoreSignal = new GUIContent("忽略攻击信号进行连招派生");
+
+
 
         public override void OnInspectorGUI()
         {
@@ -24,12 +27,14 @@ namespace SkillEditor
             SerializedProperty force = serializedObject.FindProperty("force");
             SerializedProperty tag = serializedObject.FindProperty("tag");
             SerializedProperty condition = serializedObject.FindProperty("condition");
+            SerializedProperty ignoreSignal = serializedObject.FindProperty("ignoreSignal");
 
             EditorGUILayout.PropertyField(priority, m_priority);
             EditorGUILayout.PropertyField(autoLock, m_autoLock);
             EditorGUILayout.PropertyField(force, m_force);
             EditorGUILayout.PropertyField(tag, m_tag);
             EditorGUILayout.PropertyField(condition, m_condition);
+            EditorGUILayout.PropertyField(condition, m_ignoreSignal);
 
             serializedObject.ApplyModifiedProperties();
 

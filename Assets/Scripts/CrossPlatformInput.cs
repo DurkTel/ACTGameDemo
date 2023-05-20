@@ -152,6 +152,15 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": ""Hold"",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Revenges"",
+                    ""type"": ""Button"",
+                    ""id"": ""70ba7767-ac93-4a12-9b3b-e65a2ce018eb"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Hold(duration=0.15)"",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -385,6 +394,17 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
                     ""action"": ""AttackEx"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7ec8804f-04fe-449b-92d4-5bbb9e076ad5"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Revenges"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -407,6 +427,7 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
         m_GamePlay_MoveDown = m_GamePlay.FindAction("Move（Down）", throwIfNotFound: true);
         m_GamePlay_MoveLeft = m_GamePlay.FindAction("Move（Left）", throwIfNotFound: true);
         m_GamePlay_MoveRight = m_GamePlay.FindAction("Move（Right）", throwIfNotFound: true);
+        m_GamePlay_Revenges = m_GamePlay.FindAction("Revenges", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -480,6 +501,7 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
     private readonly InputAction m_GamePlay_MoveDown;
     private readonly InputAction m_GamePlay_MoveLeft;
     private readonly InputAction m_GamePlay_MoveRight;
+    private readonly InputAction m_GamePlay_Revenges;
     public struct GamePlayActions
     {
         private @CrossPlatformInput m_Wrapper;
@@ -498,6 +520,7 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
         public InputAction @MoveDown => m_Wrapper.m_GamePlay_MoveDown;
         public InputAction @MoveLeft => m_Wrapper.m_GamePlay_MoveLeft;
         public InputAction @MoveRight => m_Wrapper.m_GamePlay_MoveRight;
+        public InputAction @Revenges => m_Wrapper.m_GamePlay_Revenges;
         public InputActionMap Get() { return m_Wrapper.m_GamePlay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -549,6 +572,9 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
                 @MoveRight.started -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnMoveRight;
                 @MoveRight.performed -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnMoveRight;
                 @MoveRight.canceled -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnMoveRight;
+                @Revenges.started -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnRevenges;
+                @Revenges.performed -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnRevenges;
+                @Revenges.canceled -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnRevenges;
             }
             m_Wrapper.m_GamePlayActionsCallbackInterface = instance;
             if (instance != null)
@@ -595,6 +621,9 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
                 @MoveRight.started += instance.OnMoveRight;
                 @MoveRight.performed += instance.OnMoveRight;
                 @MoveRight.canceled += instance.OnMoveRight;
+                @Revenges.started += instance.OnRevenges;
+                @Revenges.performed += instance.OnRevenges;
+                @Revenges.canceled += instance.OnRevenges;
             }
         }
     }
@@ -615,5 +644,6 @@ public partial class @CrossPlatformInput : IInputActionCollection2, IDisposable
         void OnMoveDown(InputAction.CallbackContext context);
         void OnMoveLeft(InputAction.CallbackContext context);
         void OnMoveRight(InputAction.CallbackContext context);
+        void OnRevenges(InputAction.CallbackContext context);
     }
 }

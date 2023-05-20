@@ -19,7 +19,8 @@ public enum AbilityType
     Climb,
     WallRun,
     Combat,
-    Hurt
+    Hurt,
+    Revenges
 }
 
 public abstract class PlayerAbility : MonoBehaviour

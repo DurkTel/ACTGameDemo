@@ -20,7 +20,7 @@ MonoBehaviour:
   priority: 1
   autoLock: 1
   force: 0
-  condition: 1
+  condition: 1025
   audios:
   - start: 0.30821917808236066
     end: 0.4178082191783111
@@ -35,7 +35,7 @@ MonoBehaviour:
     end: 0.4178082191783111
     effectCount: 1
     repulsionDistance: 0.1
-    strikeFly: 0.05
+    strikeFly: 0
     shakeOrient: 1
     period: 1
     shakeTime: 0.2

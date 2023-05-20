@@ -20,7 +20,7 @@ MonoBehaviour:
   priority: 0
   autoLock: 1
   force: 0
-  condition: 1
+  condition: 1025
   audios:
   - start: 0.18571428571439186
     end: 0.3714285714287837
@@ -34,7 +34,7 @@ MonoBehaviour:
   - start: 0.18571428571439186
     end: 0.3714285714287837
     effectCount: 1
-    repulsionDistance: 0.03
+    repulsionDistance: 0.05
     strikeFly: 0
     shakeOrient: 1
     period: 1
@@ -52,3 +52,7 @@ MonoBehaviour:
     range2: 1.0000000000008573
     comboSkill: {fileID: 11400000, guid: b948053a26dc0f44b8e8f14c0e6f2334, type: 2}
     comboCondition: 1
+  - range1: 0.371428571428498
+    range2: 1.0000000000008573
+    comboSkill: {fileID: 11400000, guid: 81d14f00ae738ac4b8efece7918ee8a0, type: 2}
+    comboCondition: 2

@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7a7919aff549244ba65a384ccbc760f, type: 3}
+  m_Name: "\u8F7B\u653B\u51FB\u6D3E\u751F_5"
+  m_EditorClassIdentifier: 
+  skillName: 
+  tag: 
+  animationName: Attack_4Combo_3
+  attackPoint: 0.33333334
+  attackBackswing: 0.55
+  priority: 0
+  autoLock: 1
+  force: 0
+  condition: 1025
+  audios:
+  - start: 0.33333333333366666
+    end: 0.55000000000055
+    audio:
+    - {fileID: 8300000, guid: 6f2c61cbcbadc0948a4706a3175acd5b, type: 3}
+    hurtAudio:
+    - {fileID: 8300000, guid: ffbfec92412bdf54f875fae2739df9b3, type: 3}
+    - {fileID: 8300000, guid: c81689a82177210478fa2a2769998ea1, type: 3}
+  hits:
+  - start: 0.33333333333366666
+    end: 0.55000000000055
+    effectCount: 1
+    repulsionDistance: 0
+    strikeFly: 0.02
+    shakeOrient: 1
+    period: 1
+    shakeTime: 0.15
+    maxWave: 0.5
+    minWave: -0.5
+    shakeCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  comboSkills:
+  - range1: 0.55000000000055
+    range2: 1.000000000001
+    comboSkill: {fileID: 11400000, guid: 642345c5b1228f84d9f4dae7ffe16a30, type: 2}
+    comboCondition: 1

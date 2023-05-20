@@ -161,18 +161,6 @@ MonoBehaviour:
     m_DisplayName: SkillPerformBackswingClip
   m_Markers:
     m_Objects: []
---- !u!114 &-6320189161735532336
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 44a17eb46e0cf344e94ed8618b54a9d9, type: 3}
-  m_Name: SkillComboClip
-  m_EditorClassIdentifier: 
 --- !u!114 &-5243800665522073116
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -187,7 +175,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   effectCout: 1
   repulsionDistance: 0.1
-  strikeFly: 0.05
+  strikeFly: 0
   shakeOrient: 1
   period: 1
   shakeTime: 0.2
@@ -592,79 +580,10 @@ MonoBehaviour:
   m_Curves: {fileID: 0}
   m_Parent: {fileID: 11400000}
   m_Children: []
-  m_Clips:
-  - m_Version: 1
-    m_Start: 1.0166666666666666
-    m_ClipIn: 0
-    m_Asset: {fileID: -6320189161735532336}
-    m_Duration: 1.4166666666666665
-    m_TimeScale: 1
-    m_ParentTrack: {fileID: 3056861570241616825}
-    m_EaseInDuration: 0
-    m_EaseOutDuration: 0
-    m_BlendInDuration: -1
-    m_BlendOutDuration: -1
-    m_MixInCurve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    m_MixOutCurve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    m_BlendInCurveMode: 0
-    m_BlendOutCurveMode: 0
-    m_ExposedParameterNames: []
-    m_AnimationCurves: {fileID: 0}
-    m_Recordable: 0
-    m_PostExtrapolationMode: 0
-    m_PreExtrapolationMode: 0
-    m_PostExtrapolationTime: 0
-    m_PreExtrapolationTime: 0
-    m_DisplayName: SkillComboClip
+  m_Clips: []
   m_Markers:
     m_Objects: []
-  combatSkillConfig: {fileID: 11400000, guid: b948053a26dc0f44b8e8f14c0e6f2334, type: 2}
+  combatSkillConfig: {fileID: 0}
 --- !u!114 &4716618529013903821
 MonoBehaviour:
   m_ObjectHideFlags: 1

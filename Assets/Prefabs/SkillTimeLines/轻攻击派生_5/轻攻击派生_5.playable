@@ -104,7 +104,7 @@ MonoBehaviour:
     m_DisplayName: SkillComboClip
   m_Markers:
     m_Objects: []
-  combatSkillConfig: {fileID: 0}
+  combatSkillConfig: {fileID: 11400000, guid: 642345c5b1228f84d9f4dae7ffe16a30, type: 2}
 --- !u!114 &-5260201205441790126
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -475,10 +475,10 @@ MonoBehaviour:
   m_Name: SkillParamClip
   m_EditorClassIdentifier: 
   priority: 0
-  autoLock: 0
+  autoLock: 1
   force: 0
   tag: 
-  condition: 0
+  condition: 1
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -754,14 +754,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d49aec2df2679a14897926a9cfd5d993, type: 3}
   m_Name: SkillHitClip
   m_EditorClassIdentifier: 
-  effectCout: 0
+  effectCout: 1
   repulsionDistance: 0
-  strikeFly: 0
-  shakeOrient: 0
-  period: 0
-  shakeTime: 0
-  maxWave: 0
-  minWave: 0
+  strikeFly: 0.15
+  shakeOrient: 1
+  period: 1
+  shakeTime: 0.15
+  maxWave: 0.5
+  minWave: -0.5
   shakeCurve:
     serializedVersion: 2
     m_Curve: []
@@ -780,5 +780,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96028a6e67c098f40849102af82470d9, type: 3}
   m_Name: SkillAudioClip
   m_EditorClassIdentifier: 
-  audio: []
-  hurtAudio: []
+  audio:
+  - {fileID: 8300000, guid: 6f2c61cbcbadc0948a4706a3175acd5b, type: 3}
+  hurtAudio:
+  - {fileID: 8300000, guid: ffbfec92412bdf54f875fae2739df9b3, type: 3}
+  - {fileID: 8300000, guid: c81689a82177210478fa2a2769998ea1, type: 3}

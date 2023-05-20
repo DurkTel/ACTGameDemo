@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   effectCout: 1
   repulsionDistance: 0.08
-  strikeFly: 0.05
+  strikeFly: 0
   shakeOrient: 1
   period: 1
   shakeTime: 0.2
@@ -514,7 +514,7 @@ MonoBehaviour:
     m_DisplayName: SkillComboClip
   m_Markers:
     m_Objects: []
-  combatSkillConfig: {fileID: 0}
+  combatSkillConfig: {fileID: 11400000, guid: a9b18e6c75081064abeb4cbf15fbd7b5, type: 2}
 --- !u!114 &3443898375876827564
 MonoBehaviour:
   m_ObjectHideFlags: 1

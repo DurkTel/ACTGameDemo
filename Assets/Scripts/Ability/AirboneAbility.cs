@@ -56,7 +56,7 @@ public class AirboneAbility : PlayerAbility
 
     public override void OnUpdateAbility()
     {
-        OnUpdateAnimatorParameter();
+        base.OnUpdateAbility();
 
         if (m_actions.jump)
             JumpUpSecond();

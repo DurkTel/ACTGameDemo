@@ -25,6 +25,10 @@ namespace SkillEditor
         /// </summary>
         public string tag;
         /// <summary>
+        /// 忽略攻击信号
+        /// </summary>
+        public bool ignoreSignal;
+        /// <summary>
         /// 触发条件
         /// </summary>
         public CombatAttackCondition condition;

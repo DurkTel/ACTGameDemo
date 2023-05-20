@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7a7919aff549244ba65a384ccbc760f, type: 3}
+  m_Name: "\u7A7A\u4E2D\u653B\u51FB\u6D3E\u751F_1"
+  m_EditorClassIdentifier: 
+  skillName: 
+  tag: 
+  animationName: Jump_Attack_Combo_1
+  attackPoint: 0.3125
+  attackBackswing: 0.5
+  priority: 1
+  autoLock: 1
+  force: 0
+  condition: 129
+  audios:
+  - start: 0.31250000000039063
+    end: 0.5000000000006251
+    audio:
+    - {fileID: 8300000, guid: 6f2c61cbcbadc0948a4706a3175acd5b, type: 3}
+    hurtAudio:
+    - {fileID: 8300000, guid: ffbfec92412bdf54f875fae2739df9b3, type: 3}
+    - {fileID: 8300000, guid: 278648783527b83418f4d36d459cc864, type: 3}
+    - {fileID: 8300000, guid: 9c1ed261fac035049828ad068892525a, type: 3}
+  hits:
+  - start: 0.31250000000039063
+    end: 0.5000000000006251
+    effectCount: 1
+    repulsionDistance: 0
+    strikeFly: 0
+    shakeOrient: 1
+    period: 1
+    shakeTime: 0.1
+    maxWave: 0.1
+    minWave: -0.1
+    shakeCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  comboSkills:
+  - range1: 0.500000000000625
+    range2: 1.00000000000125
+    comboSkill: {fileID: 11400000, guid: 45513abd84079214bb6f672cdcbf7bb7, type: 2}
+    comboCondition: 129

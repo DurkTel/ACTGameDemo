@@ -20,7 +20,7 @@ MonoBehaviour:
   priority: 0
   autoLock: 1
   force: 0
-  condition: 1
+  condition: 1025
   audios:
   - start: 0.2763157894738296
     end: 0.40789473684231997

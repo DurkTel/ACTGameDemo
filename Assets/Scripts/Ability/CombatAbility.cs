@@ -160,8 +160,8 @@ public class CombatAbility : PlayerAbility
             Random.InitState((int)Time.realtimeSinceStartup);
             int index = Random.Range(0, m_curAudio.hurtAudio.Length);
             AudioClip audio = m_curAudio.hurtAudio[index];
-            if (!GMAudioManager.IsPlaying("HitAudio", audio))
-                GMAudioManager.Play("HitAudio", audio);
+            GMAudioManager.Delete("HitAudio", audio);
+            GMAudioManager.Play("HitAudio", audio);
         }
     }
 
@@ -222,7 +222,7 @@ public class CombatAbility : PlayerAbility
     private void ControlCombo()
     {
         if (!m_actions.weapon || m_curBroadcastId < 0) return;
-        if (GetAttackSignal())
+        if (m_curBroadcast.combatSkill.ignoreSignal || GetAttackSignal())
         {
             CombatSkillConfig newCombat = null;
             foreach (var item in defaultCombats)
@@ -337,6 +337,8 @@ public class CombatAbility : PlayerAbility
             if (m_normalizedTime >= item.start && m_normalizedTime <= item.end)
             {
                 m_curAudio = item;
+                if (m_curAudio.audio == null)
+                    continue;
                 Random.InitState((int)Time.realtimeSinceStartup);
                 int index = Random.Range(0, m_curAudio.audio.Length);
                 AudioClip audio = m_curAudio.audio[index];
@@ -408,6 +410,9 @@ public class CombatAbility : PlayerAbility
             return false;
 
         if (attackType.HasFlag(CombatAttackCondition.AttackEx) && !m_actions.attackEx)
+            return false;
+
+        if (attackType.HasFlag(CombatAttackCondition.IsGround) && !moveController.IsGrounded())
             return false;
 
         return true;

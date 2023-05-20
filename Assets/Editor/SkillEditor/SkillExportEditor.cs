@@ -189,6 +189,7 @@ public class SkillExportEditor : EditorWindow
             skillObj.priority = skillParam.priority;
             skillObj.tag = skillParam.tag;
             skillObj.condition = skillParam.condition;
+            skillObj.ignoreSignal = skillParam.ignoreSignal;
         }
     }
 

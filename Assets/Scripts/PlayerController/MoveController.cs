@@ -134,7 +134,7 @@ public class MoveController : MonoBehaviour, IMove
         //这一帧的移动速度
         Vector3 targetVelocity = (targetPosition - rootTransform.position) / deltaTtime;
         targetVelocity.y = GetGravityAcceleration() * deltaTtime;
-
+        
         characterController.Move(targetVelocity);
     }
 
@@ -352,7 +352,7 @@ public class MoveController : MonoBehaviour, IMove
         float x = m_animator.GetFloat(PlayerAnimation.Compensation_Right_Hash);
         float z = m_animator.GetFloat(PlayerAnimation.Compensation_Front_Hash);
         float y = m_animator.GetFloat(PlayerAnimation.Compensation_Up_Hash);
-
+        
         Vector3 moveCompensation = rootTransform.forward * z * planePower + rootTransform.right * x * planePower + rootTransform.up * y * airPower;
         characterController.Move(m_animator.deltaPosition + moveCompensation);
     }
